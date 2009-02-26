@@ -353,8 +353,8 @@ Licensed under the Academic Free License version 2.1
 <cfif request.speck.portal.lightbox>
 
 	<cfif not request.speck.portal.scriptaculous>
-	
-		<cfoutput><script type="text/javascript" src="/speck/javascripts/effects.js"></script>#nl#</cfoutput>
+
+		<cfoutput><script type="text/javascript" src="/speck/javascripts/scriptaculous.js?load=effects,builder"></script>#nl#</cfoutput>
 	
 	</cfif>
 

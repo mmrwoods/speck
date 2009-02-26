@@ -123,12 +123,16 @@ Licensed under the Academic Free License version 2.1
 				<!--
 				//<![CDATA[
 				function image_thumbnail_popup(id) {
-					var imageWindow = window.open("/speck/types/image/popup.cfm?app=#request.speck.appName#&id=" + id,"image_popup","menubar=no,scrollbars=yes,resizable=yes,width=10,height=10,screenX=150,screenY=100,left=150,top=100");
-					imageWindow.focus();
+					if (typeof Lightbox == "undefined") {
+						var imageWindow = window.open("/speck/types/image/popup.cfm?app=#request.speck.appName#&id=" + id,"image_popup","menubar=no,scrollbars=yes,resizable=yes,width=10,height=10,screenX=150,screenY=100,left=150,top=100");
+						imageWindow.focus();
+					}
 				}
 				function image_gallery_popup(ids,index) {
-					var imageWindow = window.open("/speck/types/image/gallery.cfm?app=#request.speck.appName#&ids=" + ids + "&index=" + index,"image_popup","menubar=no,scrollbars=yes,resizable=yes,width=10,height=10,screenX=150,screenY=100,left=150,top=100");
-					imageWindow.focus();
+					if (typeof Lightbox == "undefined") {
+						var imageWindow = window.open("/speck/types/image/gallery.cfm?app=#request.speck.appName#&ids=" + ids + "&index=" + index,"image_popup","menubar=no,scrollbars=yes,resizable=yes,width=10,height=10,screenX=150,screenY=100,left=150,top=100");
+						imageWindow.focus();
+					}
 				}
 				//]]>
 				//-->
