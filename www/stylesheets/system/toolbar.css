@@ -1,0 +1,71 @@
+table.spToolbar {
+	border-collapse: separate;
+	font: 10px Verdana, Arial, Helvetica, sans-serif; 
+	color: #000000;
+	background: #ece9d8;
+	border: 1px solid #333300;
+	text-align: center;
+	padding: 1px 3px 1px 0;
+}
+tr.spToolbar, td.spToolbar, form.spToolbar,  span.spToolbar, a.spToolbar {
+	font: 10px Verdana, Arial, Helvetica, sans-serif;
+	vertical-align : middle;
+	text-align: center;
+}
+td.spToolbarPrefix {text-align:left;}
+td.spLogout {text-align:right;line-height:15px;padding-top:2px;}
+form.spLogout {text-align:right;}
+a.spToolbar, span.spToolbar {
+	margin-right:5px;
+}
+a.spToolbar:link {
+	font: 10px Verdana, Arial, Helvetica, sans-serif;
+	color: #0000FF;
+	text-decoration: underline;
+}
+a.spToolbar:visited {
+	font: 10px Verdana, Arial, Helvetica, sans-serif; 
+	color: #0000FF;
+	text-decoration: underline;
+}
+a.spToolbar:hover { 
+	font: 10px Verdana, Arial, Helvetica, sans-serif;
+	color: white;
+	text-decoration: none; 
+	background-color: green;
+}
+a.spRefreshApp:hover { 
+	font: 10px Verdana, Arial, Helvetica, sans-serif;
+	color: white;
+	text-decoration: none; 
+	background-color: red;
+}
+input.spToolbar, select.spToolbar {
+	font: 10px Verdana, Arial, Helvetica, sans-serif;
+	color: #000000;
+	vertical-align: middle;
+}
+input.spToolbar.button {
+	background: #EFEFDE;
+	border: 1px solid #333300;
+}
+img.spToolbar { vertical-align: middle; }
+a.spViewDate { margin-right: 5px; }
+a.spViewDate span {visibility: hidden;}
+a.spViewDate { background: url(/speck/images/icons/silk/calendar.png) no-repeat; padding:0 0 4px 0; vertical-align: middle; }
+
+#spLoading {
+	font: 12px Verdana, Arial, Helvetica, sans-serif;
+	font-weight: bold;
+	color: white;
+	text-decoration: none; 
+	background-color: green;
+	padding:3px;
+}
+
+/* icons */
+a.spResetCache {background: url(/speck/images/icons/silk/page_refresh.png) no-repeat; padding:2px 0 2px 17px; color:#000; text-decoration:none;}
+a.spManageKeywords {background: url(/speck/images/icons/silk/chart_organisation.png) no-repeat; padding:2px 0 2px 17px; color:#000; text-decoration:none;}
+a.spManageUsers {background: url(/speck/images/icons/silk/group.png) no-repeat; padding:2px 0 2px 17px; color:#000; text-decoration:none;}
+a.spRefreshApp {background: url(/speck/images/icons/silk/arrow_refresh.png) no-repeat; padding:2px 0 2px 17px; color:#000; text-decoration:none;}
+a.spLogout {background: url(/speck/images/icons/silk/door_out.png) no-repeat; padding:2px 0 2px 17px; color:#000; text-decoration:none;}

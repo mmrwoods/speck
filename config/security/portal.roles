@@ -1,0 +1,7 @@
+[options]
+source = database
+
+[database]
+roleslist = SELECT rolename AS role FROM spRoles
+roleaccessors = SELECT accessor FROM spRolesAccessors WHERE UPPER(rolename)=UPPER(%)
+accessorroles = SELECT rolename AS role FROM spRolesAccessors WHERE UPPER(accessor)=UPPER(%)

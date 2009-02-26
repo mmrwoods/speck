@@ -1,0 +1,37 @@
+# Apache configuration for Speck rewrite URLs that don't use a prefix.
+# Set rewriteEngine to true and rewritePrefix to an empty string in your 
+# portal.cfg file before including this file in your apache vhosts config.
+
+# NOTE: This file is only necessary if you need to remove the rewrite 
+# prefix (e.g. go/) from your Speck URLs. If you can live with the go/
+# prefix, you just need to add one rewrite rule to your apache config...
+# RewriteRule ^/go/(.*)$ /index.cfm?spPath=$1 [PT,QSA,L]
+# In general, we recommend sticking with the prefix, it's far simpler.
+
+RewriteEngine On
+
+# RewriteLog /var/log/httpd/rewrite.log
+
+# RewriteLogLevel 3
+
+# Always rewrite / to /index.cfm. Not strictly required, but
+# avoids checking the next set of conditions unnecessarily
+# and passing each file specified in the DirectoryIndex
+# directive through the rewrite rule.
+RewriteRule ^/$ /index.cfm [PT,QSA,L]
+
+# Ignore requests for real files or directories
+RewriteCond %{DOCUMENT_ROOT}/%{SCRIPT_FILENAME} !-f
+RewriteCond %{DOCUMENT_ROOT}/%{SCRIPT_FILENAME} !-d
+
+# Ignore aliases and requests that might be handled by a servlet
+RewriteCond %{REQUEST_URI} !^/(speck|shared|cf|flash) [NC]
+
+# Allow for search engine safe URLs that don't use the rewrite engine
+RewriteCond %{REQUEST_URI} !\.cfm/
+
+# Finally, rewrite the URL, passing the path as a url parameter.
+# We need to pass the request through to the next handler so jrun
+# gets to process it. Query strings should be appended, internal
+# sub-requests should be ignored and this should be the last rule.
+RewriteRule ^/(.*)$ /index.cfm?spPath=$1 [PT,QSA,L,NS]

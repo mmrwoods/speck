@@ -1,0 +1,32 @@
+; -----------------------------------------------
+; Role information for "sydneyjabiru" application
+; -----------------------------------------------
+
+
+[options]
+;source=database
+source=file
+
+
+[database]
+; If source=database, use specified queries to read roles and roles-accessor mappings
+; datasource can be optionally specified if different to codb datasource
+
+roleslist=select role from roles
+roleaccessors=select accessor from roleaccessor where UPPER(role)=%
+accessorroles=select role from roleaccessor where UPPER(accessor)=%
+
+
+[file]
+; One role per line in the following format:
+; role1=accessor1,accessor2,...,accessorN
+; Reserved Speck permissions begin with "sp" prefix.
+
+; Superuser can do anything
+spSuper=robin
+
+; spEdit allows editing and promotion to review with promotion control enabled
+spEdit=admin,editors
+
+; spLive allows users to make changes to live content by direct editing or promotion
+spLive=admin

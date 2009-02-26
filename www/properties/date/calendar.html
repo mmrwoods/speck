@@ -1,0 +1,404 @@
+<html>
+<head>
+<Title>Calendar</Title>
+<Script language = "JavaScript">
+//Calendar control by Bart E Stough - bart@cjems.com
+//The calendar control provides a pop-up calendar that can be used stand-alone to view dates 
+//or as a control to return a formatted date string to a text field
+//The calendar control will accept the following parameters via the URL
+//None of the parameters are required
+//	form=[name of form text field resides on]
+//	field=[name of text field residing in form]
+//		To use standalone do not pass a form or field paramater
+//	offset=[a positive or negative number that relates desired display month with current month
+//				ie: current month is October - offset=-1 would return September]
+//	txtcolor=[color of text] - default is Black
+//	bgcolor=[background color of calendar - default is White
+//	hdrcolor=[color of header - default is White
+//	todaycolor=[color to highlight current date - default is Red
+//	todaytxtcolor=[color to highlight text of current date - default is White
+// Control the window size via the window.open function
+// Example
+//	<a href = "Calendar Control" onClick="JavaScript:window.open('calendar.html? _
+//				form=form1&field=text1&bgcolor=Yellow&txtcolor=Blue&hdrcolor=Red& _
+//				todaycolor=Orange&offset=-5','cal','noresize,width=225,height=160');return false"> _
+//				<font size="2">Open Calendar</font></a>
+
+
+// modifications by mark
+// * added todaytxtcolor, weekendcolor and weekendtxtcolor
+// * check if current value of form field is a date, if so, use as current date
+// * added previous and next year links
+
+// Modified 02 December 2003 : Mark Woods
+// * fix bug in getting working date offset from present date, always use 1 as day value, previous code would allow February 31 etc.
+
+// Modified 27 February 2004 : Mark Woods
+// * re-wrote days_in_month() function, previous version was unnecessarily complex and always returned 30 for March
+
+//Function acquired from inquiry.com to parse out url parameters
+
+/*******************************************************************************
+
+'args.js', written by Charlton D. Rose for Inquiry.Com
+
+Permission is granted to use and modify this script for any purpose,
+provided that this credit header is retained, unmodified, in the script.
+
+*******************************************************************************/
+
+
+// This function is included to overcome a bug in Netscape's implementation
+// of the escape () function:
+
+function myunescape (str)
+{
+        str = '' + str;
+        while (true)
+        {
+                var i = str . indexOf ('+');
+                if (i < 0)
+                        break;
+                str = str . substring (0, i) + ' ' + str . substring (i + 1, str . length);
+        }
+        return unescape (str);
+}
+
+
+
+// This function creates the args [] array and populates it with data
+// found in the URL's search string:
+
+function args_init ()
+{
+        args = new Array ();
+        var argstring = window . location . search;
+        if (argstring . charAt (0) != '?')
+                return;
+        argstring = argstring . substring (1, argstring . length);
+        var argarray = argstring . split ('&');
+        var i;
+        var singlearg;
+        for (i = 0; i < argarray . length; ++ i)
+        {
+                singlearg = argarray [i] . split ('=');
+                if (singlearg . length != 2)
+                        continue;
+                var key = myunescape (singlearg [0]);
+                var value = myunescape (singlearg [1]);
+                args [key] = value;
+        }
+}
+
+
+
+// Call the args_init () function to set up the args [] array:
+
+args_init ();
+
+//START MY CODE
+
+//Establish variables to account for milliseconds in time
+var oneMinute = 60 * 1000
+var oneHour = oneMinute * 60
+var oneDay = oneHour * 24
+var oneWeek = oneDay * 7
+
+
+//Determine current date - if date has already been selected in form field, use this as current
+var rePattern = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
+var current_value = opener.document.forms[args["form"]].elements[args["field"]].value;
+if ( rePattern.test(current_value) ) {
+	var arrYearMonthDay = current_value.split("-");
+	var objcurrentDate = new Date(Number(arrYearMonthDay[0]), Number(arrYearMonthDay[1]) - 1, Number(arrYearMonthDay[2]));
+} else {
+	var objcurrentDate = new Date();
+}
+var current_date = objcurrentDate.getDate();
+var current_year = objcurrentDate.getFullYear();
+var current_month = objcurrentDate.getMonth();
+
+
+//Set Current_Month_Offset
+Current_Month_Offset = 0;
+if ( args["offset"]){
+	Current_Month_Offset = eval(args["offset"]);
+}	
+	
+//Define Day Array for Date object
+var day_array = new Array("Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday");
+
+//Define month Array for Date Object
+var month_array = new Array("January","February","March","April","May","June","July","August","September","October","November","December");
+//var month_array = new Array("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec");
+
+//Define color of text
+if(args["txtcolor"]){
+	var txtcolor = args["txtcolor"];
+}else{
+	var txtcolor = "Black";
+}
+
+//Define background color
+if(args["bgcolor"]){
+	var bgcolor = args["bgcolor"];
+}else{
+	var bgcolor = "White";
+}
+
+//Define text color
+if(args["txtcolor"]){
+	var txtcolor = args["txtcolor"];
+}else{
+	var txtcolor = "Black";
+}
+
+//Define header color
+if(args["hdrcolor"]){
+	var hdrcolor = args["hdrcolor"];
+}else{
+	var hdrcolor = "White";
+}
+
+//Define current date color
+if(args["todaycolor"]){
+	var todaycolor = args["todaycolor"];
+}else{
+	var todaycolor = "Red";
+}
+
+//Define current date text color
+if(args["todaytxtcolor"]){
+	var todaytxtcolor = args["todaytxtcolor"];
+}else{
+	var todaytxtcolor = "White";
+}
+
+//define weekend color
+var weekendcolor = "ffffcc";
+var weekendtxtcolor = "Black";
+
+//Check for form and field name
+if(args["form"] && args["field"]){
+	formname = args["form"];
+	fieldname = args["field"];
+}else{
+	formname = "";
+	fieldname = "";
+}
+
+//function to test date object validity
+function show_date(date){
+	alert(day_array[date.getDay()]+" "+month_array[date.getMonth()]+" "+date.getDate()+","+date.getFullYear())
+}
+
+
+//Function to return correct month given offset
+function offset_month(offset,curmonth){
+	for (var i=0;i < Math.abs(offset);i++){
+		if (offset < 0){
+			curmonth = curmonth-1;
+			if(curmonth < 0){
+				curmonth = 11;
+			}
+		}else if (offset > 0){
+			curmonth = curmonth+1;
+			if(curmonth > 11){
+				curmonth = 0;
+			}
+		}
+	}
+	return curmonth;
+}
+//Function to return correct year given month offset
+function offset_year(offset,curmonth,curyear){
+for (var i=0;i < Math.abs(offset);i++){
+if (offset < 0){
+	curmonth = curmonth-1;
+		if(curmonth < 0){
+			curmonth = 11;
+			curyear = curyear - 1;
+		}
+	}
+	else
+	if (offset > 0){
+	curmonth = curmonth+1;
+		if(curmonth > 11){
+			curmonth = 0;
+			curyear = curyear + 1;
+		}
+	}
+}
+return curyear;
+}
+
+
+//Function to return number of days in month
+//Takes one parameter, a date object residing in the month in question
+function days_in_month(tmpDate) {
+	// determines number of days in month (rewritten by Mark)
+	var thisMonth =  tmpDate.getMonth();
+	var thisYear = tmpDate.getFullYear();
+	var daysInMonth = 31;
+	if (thisMonth == 3 || thisMonth == 5 || thisMonth == 8 || thisMonth == 10) 
+		daysInMonth = 30;
+	if (thisMonth == 1 && (thisYear/4) != Math.floor(thisYear/4))
+		daysInMonth = 28;
+	else if (thisMonth == 1 && (thisYear/4) == Math.floor(thisYear/4))
+		daysInMonth = 29;
+	return daysInMonth;
+}
+
+//Function to return first day of month as numeric day.  Use to get day from day_array
+function what_day_first(tmpDate){
+	var comparemonth = tmpDate.getMonth();
+	var compareyear = tmpDate.getFullYear();
+	//Make date object for first of month
+	var objOriginalDate = new Date(month_array[comparemonth] + " 01, " + compareyear + " 00:00:00");
+	return objOriginalDate.getDay();
+}
+
+//Function to return date
+function put_back(datestring){
+	//Define field name
+	callerform = args["form"];
+	callerfield = args["field"];
+	//Create new date object to format from
+	var tmpDate = new Date(datestring);
+	//Format to Long Format
+	var returndate = day_array[tmpDate.getDay()] + " " + month_array[tmpDate.getMonth()] + " " + tmpDate.getDate() + ", " + tmpDate.getFullYear();
+	
+	var thisMonth = tmpDate.getMonth() + 1 ;
+	thisMonth = thisMonth.toString();
+	var thisDay = tmpDate.getDate().toString();
+	if ( thisMonth.length == 1 ) {
+		thisMonth = "0" + thisMonth;
+	}
+	if ( thisDay.length == 1 ) {
+		thisDay = "0" + thisDay;
+	}
+	var returndate = tmpDate.getFullYear() + "-" + thisMonth + "-" + thisDay;
+	
+	//Send date back to calling field
+	opener.document.forms[callerform].elements[callerfield].value = returndate;
+	
+	//Close window, you are done
+	self.close();
+
+}
+
+
+//Set variables to write table
+
+
+//Create working date object offset from present date
+// always use 1st day of month when creating date object (otherwise we could end up trying to create 31 February etc.)
+var objDate = new Date(month_array[offset_month(Current_Month_Offset,objcurrentDate.getMonth())] + " 1, " +offset_year(Current_Month_Offset,objcurrentDate.getMonth(),objcurrentDate.getFullYear()) + " 00:00:00");
+
+//Determine current day
+//var current_day = objDate.getDay();
+
+//Determine where 1st falls on
+var first_day = what_day_first(objDate);
+
+//Counter for days
+var daycounter = 1;
+
+//Determines days in month
+Days_in_Month = days_in_month(objDate);
+</Script>
+
+<link rel="stylesheet" href="/speck/stylesheets/system/admin.css" type="text/css">
+</head>
+<body onblur="window.focus();" bgcolor="Silver" marginheight="3" marginwidth="3" topmargin="3" leftmargin="3">
+
+
+
+<Script language = "JavaScript">
+//Begin compilation of calendar
+//Create Header Table
+document.write("<table width = '100%'>");
+document.write("<tr>");
+	document.write("<td align='center'><a title='Previous Year' href = 'calendar.html?offset="+eval(Current_Month_Offset-12)+"&form="+formname+"&field="+fieldname+"&bgcolor="+bgcolor+"&txtcolor="+txtcolor+"&hdrcolor="+hdrcolor+"&todaycolor="+todaycolor+"&todaytxtcolor="+todaytxtcolor+"'><font color = '"+txtcolor+"'>&lt;&lt;</font></a></td>");
+	document.write("<td align='left'><a title='Previous Month' href = 'calendar.html?offset="+eval(Current_Month_Offset-1)+"&form="+formname+"&field="+fieldname+"&bgcolor="+bgcolor+"&txtcolor="+txtcolor+"&hdrcolor="+hdrcolor+"&todaycolor="+todaycolor+"&todaytxtcolor="+todaytxtcolor+"'><font color = '"+txtcolor+"'>prev.</font></a></td>");
+	document.write("<td align='center'><div align='center' ID = 'display_month'>");
+	document.write("<font size='2' color='"+txtcolor+"'><b>");
+	document.write(month_array[objDate.getMonth()].substring(0,3) + " " + objDate.getFullYear());  
+	document.write("</b></font>");
+	document.write("</div>");
+	document.write("</td>");
+	document.write("<td align='right'><a title='Next Month' href = 'calendar.html?offset="+eval(Current_Month_Offset+1)+"&form="+formname+"&field="+fieldname+"&bgcolor="+bgcolor+"&txtcolor="+txtcolor+"&hdrcolor="+hdrcolor+"&todaycolor="+todaycolor+"&todaytxtcolor="+todaytxtcolor+"'><font color = '"+txtcolor+"'>next</font></a></td>");
+	document.write("<td align='center'><a title='Next Year' href = 'calendar.html?offset="+eval(Current_Month_Offset+12)+"&form="+formname+"&field="+fieldname+"&bgcolor="+bgcolor+"&txtcolor="+txtcolor+"&hdrcolor="+hdrcolor+"&todaycolor="+todaycolor+"&todaytxtcolor="+todaytxtcolor+"'><font color = '"+txtcolor+"'>&gt;&gt;</font></a></td>");
+	document.write("</tr>");
+	document.write("</table>");
+
+//Start table
+
+document.write("<table width='100%' border='0'>");
+
+for(var i=0;i<7;i++){
+	document.write("<th bgcolor='"+hdrcolor+"'><font size='-6'>" + day_array[i].substring(0,3) + "</font></th>")
+}
+
+//Set firstrow variable to determine where to insert first
+var firstrow = 1;
+//j=rows
+for(var j=0;j<6;j++){
+	document.write("<tr>");
+	dayofweekcounter = 0;
+	//k=columns
+	for(var k=0;k<7;k++){
+		//Make sure firstrow occurs once
+		if (first_day == k){
+			firstrow = 0
+		}
+		if ((k < first_day && firstrow == 1) || (Days_in_Month < daycounter )){
+			if ( dayofweekcounter == 0 || dayofweekcounter == 6 ) {
+				var thisbgcolor = weekendcolor;
+				var thistxtcolor = weekendtxtcolor;
+			} else {
+				var thisbgcolor = bgcolor;
+				var thistxtcolor = txtcolor;
+			}
+			document.write("<td bgcolor='"+thisbgcolor+"'><div align='center'><font size='-6' color = '"+thistxtcolor+"'></font></div></td>");			
+		} else {
+			if (daycounter == current_date && objDate.getMonth() == current_month && objDate.getFullYear() == current_year){
+				var thisbgcolor = todaycolor;
+				var thistxtcolor = todaytxtcolor;
+				//if(args["form"] && args["field"]){
+				//	document.write("<td bgcolor='"+todaycolor+"'><div align='center'><a href='JavaScript:put_back(\""+(objDate.getMonth()+1)+"/"+daycounter+"/"+objDate.getFullYear()+"\")'><font size='-6' color = '"+todaytxtcolor+"'>"+daycounter+"</font></a></div></td>");		
+				//} else {
+				//	document.write("<td bgcolor='"+todaycolor+"'><div align='center'><font size='-6' color = '"+todaytxtcolor+"'>"+daycounter+"</font></div></td>");			
+				//}
+			} else {
+				if ( dayofweekcounter == 0 || dayofweekcounter == 6 ) {
+					var thisbgcolor = weekendcolor;
+					var thistxtcolor = weekendtxtcolor;
+				} else {
+					var thisbgcolor = bgcolor;
+					var thistxtcolor = txtcolor;
+				}
+				
+				//if(args["form"] && args["field"]){
+				//	document.write("<td bgcolor='"+bgcolor+"'><div align='center'><a href='JavaScript:put_back(\""+(objDate.getMonth()+1)+"/"+daycounter+"/"+objDate.getFullYear()+"\")'><font size='-6' color = '"+txtcolor+"'>"+daycounter+"</font></a></div></td>");			
+				//} else {
+				//	document.write("<td bgcolor='"+bgcolor+"'><div align='center'><font size='-6' color = '"+txtcolor+"'>"+daycounter+"</font></div></td>");			
+				//}
+			}
+			if(args["form"] && args["field"]){
+				document.write("<td bgcolor='"+thisbgcolor+"'><div align='center'><a href='JavaScript:put_back(\""+(objDate.getMonth()+1)+"/"+daycounter+"/"+objDate.getFullYear()+"\")'><font size='-6' color = '"+thistxtcolor+"'>"+daycounter+"</font></a></div></td>");			
+			} else {
+				document.write("<td bgcolor='"+thisbgcolor+"'><div align='center'><font size='-6' color = '"+thistxtcolor+"'>"+daycounter+"</font></div></td>");			
+			}
+			daycounter ++;
+		}
+		dayofweekcounter ++;
+	} //end for(var k=0;k<7;k++)
+	document.write("</tr>");
+} //end for(var j=0;j<6;j++)
+
+//Finish table
+document.write("</table>");
+</script>
+</body>
+</html>

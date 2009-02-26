@@ -1,0 +1,25 @@
+; ------------------------------------------------
+; Group information for "sydneyjabiru" application
+; ------------------------------------------------
+
+
+[options]
+;source=database
+source=file
+
+
+[database]
+; If source=database, use specified queries to read groups and group-user mappings
+; datasource can be optionally specified if different to codb datasource
+
+grouplist=select group from groups
+groupusers=select user from usergroup where UPPER(group)=%
+usergroups=select group from usergroup where UPPER(user)=%
+
+
+[file]
+; One group per line in the following format:
+; groupname=user1,user2,...,userN
+
+admin=robin
+editors=mwoods

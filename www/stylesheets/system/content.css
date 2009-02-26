@@ -1,0 +1,50 @@
+/* styles for the admin links etc. which are embedded into the output */
+
+/* block surrounding each content item */
+.spContentAdmin {border:0;}
+.spContentAdmin.spContentHighlight {
+	border:1px solid green;
+}
+.spContentAdmin.spContentWarning {
+	border:1px solid red;
+}
+/* span around admin links */
+.spAdminLinks {
+	font:10px Verdana, Arial, Helvetica, sans-serif;
+}
+/* admin links */
+a.spAdminLink {
+	font:10px Verdana, Arial, Helvetica, sans-serif;
+	color:#0000FF;
+	text-decoration:underline;
+}
+a.spAdminLink:hover {
+	font:10px Verdana, Arial, Helvetica, sans-serif;
+	background-color:green;
+	color:white;
+	text-decoration:none;
+}
+a.spAdminLink.spAdminWarning:hover {
+	font:10px Verdana, Arial, Helvetica, sans-serif;
+	background-color:red;
+	color:white;
+	text-decoration:none;
+}
+/* block surrounding each output cache when viewing cache info */
+.spCacheInfo {
+	border:1px solid silver;
+}
+/* heading block for each output cache */
+.spCacheInfoHeading {
+	background:silver;
+	font:10px Verdana, Arial, Helvetica, sans-serif;
+	color:black;
+}
+
+/* icons for admin links */
+a.spAdd {background: url(/speck/images/icons/silk/page_white_add_small.png) no-repeat; padding:0 0 0 11px; color:#000; text-decoration:none;}
+a.spEdit {background: url(/speck/images/icons/silk/page_white_edit_small.png) no-repeat; padding:0 0 0 11px; color:#000; text-decoration:none;}
+a.spDelete {background: url(/speck/images/icons/silk/page_white_delete_small.png) no-repeat; padding:0 0 0 11px; color:#000; text-decoration:none;}
+a.spPromote {background: url(/speck/images/icons/silk/page_white_get_small.png) no-repeat; padding:0 0 0 11px; color:#000; text-decoration:none;}
+a.spReview {background: url(/speck/images/icons/silk/page_white_magnify_small.png) no-repeat; padding:0 0 0 11px; color:#000; text-decoration:none;}
+a.spDemote {background: url(/speck/images/icons/silk/page_white_put_small.png) no-repeat; padding:0 0 0 11px; color:#000; text-decoration:none;}

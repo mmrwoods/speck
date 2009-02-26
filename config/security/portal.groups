@@ -1,0 +1,7 @@
+[options]
+source = database
+
+[database]
+grouplist = SELECT groupname AS "group" FROM spGroups
+groupusers = SELECT username AS "user" FROM spUsersGroups WHERE UPPER(groupname) = UPPER(%) AND ( expires IS NULL OR expires > CURRENT_TIMESTAMP )
+usergroups = SELECT groupname AS "group" FROM spUsersGroups WHERE UPPER(username) = UPPER(%) AND ( expires IS NULL OR expires > CURRENT_TIMESTAMP )

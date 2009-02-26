@@ -1,0 +1,28 @@
+; -----------------------------------------------
+; User information for "sydneyjabiru" application
+; -----------------------------------------------
+
+
+[options]
+;source=database
+source=file
+
+
+[database]
+; If source=database, use specified queries to read user information
+; datasource can be optionally specified if different to codb datasource
+
+userlist=select user, fullname, password, email from users
+userget=select fullname, password, email from users where UPPER(user)=%
+
+
+[file]
+; One user per line in following format:
+; user1=full name 1,password1,email1
+; user2=full name 2,password2,email2
+; ...
+; userN=full name N,passwordN,emailN
+; Username 'anonymous' not allowed.
+
+robin=Robin Hilliard,romeo,info@sydneyjabiru.com
+mwoods=Mark Woods,yerman,mark@thickpaddy.com
