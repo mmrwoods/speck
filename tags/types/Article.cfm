@@ -912,7 +912,7 @@ Licensed under the Academic Free License version 2.1
 		<!--- set the label for all articles that don't have one, so we can use the label as an identifier in the URL (rather than the spId) --->
 		<!--- Note: this isn't totally reliable, there's nothing stopping two articles having the same title and label at the moment. --->
 		<cfquery name="qArticles" datasource="#context.codb#">
-			SELECT spId FROM Article WHERE spLabel IS NULL
+			SELECT title, spId, spLabel FROM Article WHERE spLabel IS NULL
 		</cfquery>
 		
 		<cfloop query="qArticles">
