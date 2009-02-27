@@ -235,10 +235,9 @@ Attributes:
 			
 			<!---
 			This property value should be unique. This is damn tricky with the promotion model enabled, and in 
-			the short term I've gone for the easy solution of just forcing uniqueness at all revisions if 
-			promotion is enabled. Otherwise, I'd have to add code to spPromote to deal with demotion/rollbacks.
-			With promotion disabled, we just need to check the tip revisions. We use spContentGet to determine 
-			whether the property value is unique or not.
+			the short term I've gone for the easy solution of just rejecting the property value as not unique 
+			if another content item has a matching property value at any revision. With promotion disabled, we 
+			just need to check the tip revisions.
 			--->
 			
 			<cfscript>

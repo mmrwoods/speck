@@ -18,6 +18,7 @@ Licensed under the Academic Free License version 2.1
 		required="yes"
 		maxlength="250"
 		displaySize="70"
+		unique="yes"
 		finder="yes">
 	
  	<cf_spProperty
@@ -903,6 +904,41 @@ Licensed under the Academic Free License version 2.1
 			
 		</cfif>
 
+	</cf_spHandler>
+	
+	
+	<cf_spHandler method="refresh">
+	
+		<!--- set the label for all articles that don't have one, so we can use the label as an identifier in the URL (rather than the spId) --->
+		<!--- Note: this isn't totally reliable, there's nothing stopping two articles having the same title and label at the moment. --->
+		<cfquery name="qArticles" datasource="#context.codb#">
+			SELECT spId FROM Article WHERE spLabel IS NULL
+		</cfquery>
+		
+		<cfloop query="qArticles">
+		
+			<cfscript>
+				if ( not len(spLabel) ) {
+					newLabel = lCase(trim(title));
+					newLabel = replace(newLabel,"&amp;","&","all");
+					newLabel = replace(newLabel,"&euro;","euro","all");
+					newLabel = reReplace(newLabel,"&([a-zA-Z])acute;","\1","all");
+					newLabel = reReplace(newLabel,"&(##)?[a-zA-Z0-9]+;","","all");
+					newLabel = reReplace(newLabel,"[^A-Za-z0-9\-]+","-","all");
+					newLabel = reReplace(newLabel,"[\-]+","-","all");
+					newLabel = replace(urlEncodedFormat(newLabel),"%2D","-","all");
+				}
+			</cfscript>
+			
+			<cfquery name="qUpdate" datasource="#context.codb#">
+				UPDATE Article 
+				SET spLabel = '#newLabel#', 
+					spLabelIndex = '#uCase(newLabel)#'
+				WHERE spId = '#spId#'
+			</cfquery>
+		
+		</cfloop>
+		
 	</cf_spHandler>
 	
 		
