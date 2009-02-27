@@ -9,6 +9,7 @@ Licensed under the Academic Free License version 2.1
 
 <cf_spPropertyHandler>
 
+
 	<cf_spPropertyHandlerMethod method="validateAttributes">
 		
 		<!--- check format of yearRange, must be YYYY,YYYY --->
@@ -149,10 +150,8 @@ Licensed under the Academic Free License version 2.1
 		
 	</cf_spPropertyHandlerMethod>
 	
-	<cf_spPropertyHandlerMethod method="renderFormField">
 	
-		<cfparam name="stPD.richEdit" default="false" type="boolean">
-		<cfparam name="stPD.defaultCurrent" default="false" type="boolean">
+	<cf_spPropertyHandlerMethod method="renderFormField">
 
 		<!--- format value --->
 		<cfscript>
@@ -219,6 +218,5 @@ Licensed under the Academic Free License version 2.1
 			
 	</cf_spPropertyHandlerMethod>
 	
-	<!--- No customised actions implemented for readFormField, contentGet or contentPut --->
 	
 </cf_spPropertyHandler>

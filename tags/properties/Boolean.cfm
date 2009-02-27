@@ -15,6 +15,11 @@ Licensed under the Academic Free License version 2.1
 		<cfparam name="stPD.inputType" default="radio">
 		<cfparam name="stPD.defaultValue" default="0">
 		
+		<!--- TODO: document these options, don't think they're mentioned on speckcms.org --->
+		<cfparam name="stPD.trueCaption" default="Yes">
+		<cfparam name="stPD.falseCaption" default="No">
+		<cfparam name="stPD.checkboxCaption" default="">
+		
 		<cfif not listFind("0,1",stPD.defaultValue)>
 		
 			<cf_spError error="ATTR_INV" lParams="#stPD.defaultValue#,defaultValue" context=#caller.ca.context#>
@@ -45,13 +50,6 @@ Licensed under the Academic Free License version 2.1
 	
 	
 	<cf_spPropertyHandlerMethod method="renderFormField">
-	
-		<cfparam name="stPD.inputType" default="radio">
-		<cfparam name="stPD.defaultValue" default="0">
-		
-		<cfparam name="stPD.trueCaption" default="Yes">
-		<cfparam name="stPD.falseCaption" default="No">
-		<cfparam name="stPD.checkboxCaption" default="">
 		
 		<cfscript>
 			if ( not isBoolean(value) ) {

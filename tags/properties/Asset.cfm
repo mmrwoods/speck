@@ -73,6 +73,7 @@ Licensed under the Academic Free License version 2.1
 
 <cf_spPropertyHandler>
 
+
 	<cf_spPropertyHandlerMethod method="contentGet">
 	
 		<!--- 
@@ -458,16 +459,6 @@ Licensed under the Academic Free License version 2.1
 		
 		
 		<cf_spPropertyHandlerMethod method="readFormField">
-		
-			<!--- these cfparam statements can be removed once all apps have been refreshed --->
-			<cfparam name="stPD.width" default="">
-			<cfparam name="stPD.height" default="">
-			<cfparam name="stPD.maxWidth" default="">
-			<cfparam name="stPD.maxHeight" default="">
-			<cfparam name="stPD.cropToExact" default="no" type="boolean">
-			<cfparam name="stPD.preserveAspect" default="yes" type="boolean">
-			<cfparam name="stPD.jpegCompression" default="90">
-			<cfparam name="stPD.source" default="">
 		
 			<cfset fs = request.speck.fs>
 			

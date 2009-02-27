@@ -9,6 +9,7 @@ Licensed under the Academic Free License version 2.1
 
 <cf_spPropertyHandler>
 
+
 	<cf_spPropertyHandlerMethod method="validateAttributes">
 
 		<cfparam name="stPD.minValue" default="">
@@ -87,6 +88,7 @@ Licensed under the Academic Free License version 2.1
 
 	</cf_spPropertyHandlerMethod>
 	
+	
 	<cf_spPropertyHandlerMethod method="renderFormField">
 		
 		<cfparam name="stPD.defaultValue" default=""> <!--- temporary code - remove once all apps have been refreshed --->
@@ -117,6 +119,5 @@ Licensed under the Academic Free License version 2.1
 		
 	</cf_spPropertyHandlerMethod>
 	
-	<!--- No customised actions implemented for readFormField, contentGet or contentPut --->
 	
 </cf_spPropertyHandler>

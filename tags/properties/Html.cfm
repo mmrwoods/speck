@@ -52,11 +52,6 @@ Licensed under the Academic Free License version 2.1
 	
 	
 	<cf_spPropertyHandlerMethod method="readFormField">
-	
-		<!--- there can be removed once all applications have been refreshed --->
-		<cfparam name="stPD.allowTarget" default="true" type="boolean">
-		<cfparam name="stPD.forceRelativeLinks" default="true" type="boolean">
-		<cfparam name="stPD.forceTarget" default="true" type="boolean">
 
 		<cfset newValue = trim(value)>
 		
@@ -478,17 +473,6 @@ Licensed under the Academic Free License version 2.1
 
 	
 	<cf_spPropertyHandlerMethod method="renderFormField">
-		
-		<!--- remove these after apps have been refreshed --->
-		<cfparam name="stPD.imageWidth" default="">
-		<cfparam name="stPD.imageHeight" default="">
-		<cfparam name="stPD.imageMaxWidth" default="">
-		<cfparam name="stPD.imageMaxHeight" default="">
-		<cfparam name="stPD.imageCropToExact" default="yes" type="boolean">
-		<cfparam name="stPD.imageJpegCompression" default="90">
-		
-		<cfparam name="stPD.allowTarget" default="true" type="boolean">
-		<cfparam name="stPD.forceTarget" default="true" type="boolean">
 	
 		<cfif listLen(stPD.displaySize) eq 2>
 		

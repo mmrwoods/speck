@@ -35,10 +35,6 @@ Licensed under the Academic Free License version 2.1
 	
 	
 	<cf_spPropertyHandlerMethod method="validateValue">
-	
-		<!--- temporary code, can be removed once all apps have been refreshed --->
-		<cfparam name="stPD.allowRelativeUrl" type="boolean" default="yes">
-		<cfparam name="stPD.match" default="">
 		
 		<cfif len(stPD.match) and len(value) and not reFind(stPD.match,newValue)>
 		
@@ -70,13 +66,6 @@ Licensed under the Academic Free License version 2.1
 	
 	
 	<cf_spPropertyHandlerMethod method="readFormField">
-		
-		<!--- temporary code, can be removed once all apps have been refreshed --->
-		<cfparam name="stPD.allowRelativeUrl" type="boolean" default="yes">
-		
-		<cfif request.speck.appName eq "lonely">
-			<cfset stPD.allowRelativeUrl = false>
-		</cfif>
 		
 		<cfset newValue = value>
 
@@ -164,6 +153,5 @@ Licensed under the Academic Free License version 2.1
 	
 	</cf_spPropertyHandlerMethod>
 	
-	<!--- No customised actions implemented for contentGet or contentPut --->
 	
 </cf_spPropertyHandler>

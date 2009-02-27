@@ -13,6 +13,7 @@ Note: uses some strings from simplepicker property type
 
 <cf_spPropertyHandler>
 
+
 	<cf_spPropertyHandlerMethod method="validateAttributes">
 	
 		<cfparam name="stPD.list" default=""> <!--- deprecated, valueList is clearer --->
@@ -44,9 +45,6 @@ Note: uses some strings from simplepicker property type
 		
 		</cfif>
 		
-		<!--- set the maxLength using maxSelect attribute, 50 characters for each list item should be more than enough --->	
-		<!--- <cfset stPD.maxLength = (stPD.maxSelect * 50)> --->
-		
 		<!--- set the maxLength of the db column to 2000 so we can deal with changes to the maxSelect attribute --->
 		<cfset stPD.maxLength = 2000>
 			
@@ -54,9 +52,6 @@ Note: uses some strings from simplepicker property type
 
 
 	<cf_spPropertyHandlerMethod method="renderFormField">
-	
-		<cfparam name="stPD.defaultValue" default="">
-		<cfparam name="stPD.optionList" default="#request.speck.capitalize(stPD.valueList)#">
 	
 		<cfscript>
 			size = int(val(listLast(stPD.displaySize)));
@@ -174,16 +169,6 @@ Note: uses some strings from simplepicker property type
 					</cfif>
 				
 				</cfloop>
-				
-				<!--- <cfloop list="#stPD.valueList#" delimiters="#stPD.delimiter#" index="i">
-					
-					<cfif not listFindNoCase(selectedValues,i)>
-						
-						<cfoutput><option value="#i#">#request.speck.capitalize(i)#</option></cfoutput>
-						
-					</cfif>
-		
-				</cfloop> --->
 						
 				<cfoutput>
 				</select>
@@ -207,28 +192,6 @@ Note: uses some strings from simplepicker property type
 					</cfif>
 				
 				</cfloop>
-				
-				<!--- <cfloop from="1" to="#listLen(stPD.valueList,stPD.delimiter)#" index="i">
-				
-					<cfset thisValue = listGetAt(stPD.valueList,i,stPD.delimiter)>
-					
-					<cfif listFindNoCase(selectedValues,thisValue)>
-					
-						<cfoutput><option value="#thisValue#"><cfif len(stPD.optionList)>#listGetAt(stPD.optionList,i,stPD.delimiter)#<cfelse>#request.speck.capitalize(thisValue)#</cfif></option></cfoutput>
-					
-					</cfif>
-				
-				</cfloop> --->
-				
-				<!--- <cfloop list="#stPD.valueList#" delimiters="#stPD.delimiter#" index="i">
-					
-					<cfif listFindNoCase(selectedValues,i)>
-						
-						<cfoutput><option value="#i#">#i#</option></cfoutput>
-						
-					</cfif>
-		
-				</cfloop> --->
 						
 				<cfoutput>
 				</select>
@@ -270,12 +233,6 @@ Note: uses some strings from simplepicker property type
 				<cfoutput><option value="#thisValue#"<cfif listFind(selectedValues,thisValue)> selected="yes"</cfif>>#listGetAt(stPD.optionList,i,stPD.delimiter)#</option></cfoutput>
 			
 			</cfloop>
-				
-			<!--- <cfloop list="#stPD.valueList#" delimiters="#stPD.delimiter#" index="i">
-				
-				<cfoutput><option value="#i#"<cfif listFind(selectedValues,i)> selected="yes"</cfif>>#request.speck.capitalize(i)#</option></cfoutput>
-	
-			</cfloop> --->
 			
 			<cfoutput>
 			</select>

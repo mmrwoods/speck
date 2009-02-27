@@ -9,6 +9,7 @@ Licensed under the Academic Free License version 2.1
 
 <cf_spPropertyHandler>
 
+
 	<cf_spPropertyHandlerMethod method="validateAttributes">
 			
 		<cfparam name="stPD.autoPromote" default="yes"> <!--- if promotion is enabled - promote picked items along with the content item containing this property? --->
@@ -35,13 +36,6 @@ Licensed under the Academic Free License version 2.1
 			<cf_spError error="ATTR_INV" lParams="#stPD.maxSelect#,maxSelect" context=#caller.ca.context#>
 		</cfif>
 		
-		<!--- set the maxLength using maxSelect attribute (35 chars for each UUID + comma separators --->
-		<!--- <cfset maxLength = (stPD.maxSelect * 35) + (stPD.maxSelect - 1)>
-		<!--- only force maxLength to computed value if computed value gt user-defined value --->
-		<cfif maxLength gt stPD.maxLength>
-			<cfset stPD.maxLength = maxLength>
-		</cfif> --->
-		
 		<!--- feck it, just force the maxLength to 4000 to allow for changes to the maxSelect attribute --->
 		<cfset stPD.maxLength = 4000>
 			
@@ -50,14 +44,6 @@ Licensed under the Academic Free License version 2.1
 	
 	<cf_spPropertyHandlerMethod method="renderFormField">
 	
-		<!--- these statements can be removed once all apps have been refreshed --->
-		<cfparam name="stPD.dependent" default="no">
-		<cfparam name="stPD.append" default="no">
-		<cfparam name="request.speck.strings.A_PICKER_DELETE_CONFIRM" default="'Delete %1?\n\nNote: Changes to all form fields will be saved.'">
-		<cfparam name="request.speck.strings.A_PICKER_CANNOT_REMOVE_ALERT" default="'%1 is a required property.\n\nYou cannot remove the last item from the selection.'">
-		<cfparam name="request.speck.strings.A_PICKER_CANNOT_DELETE_ALERT" default="'%1 is a required property.\n\nYou cannot delete the last item in the selection.'">
-		<cfparam name="request.speck.strings.T_DEFAULT_PICKER_DELETE_CAPTION" default="Delete this item">
-			
 		<!--- Get type info --->
 		<cfmodule template=#request.speck.getTypeTemplate(stPD.contentType)# r_stType="stType">
 		
@@ -159,25 +145,7 @@ Licensed under the Academic Free License version 2.1
 				pickerpopup_#stPD.name#.close();
 			}
 			
-			function add_#stPD.name#(ids,html) {
-				// Deprecated function called from contentPut method in Odyssey content types.
-				// Kept here in the source just to stop old code calling it from breaking.
-				// Replaced by new picker_add_#stPD.name#(ids) function, which 
-				// basically does the same thing but is automatically called by the edit 
-				// method of the default type when content is saved and the admin window was 
-				// launched from a picker property. This means when you launch the add content 
-				// window from a picker property in an existing admin window, the default type 
-				// is aware that this has happened and will automatically attempt to populate 
-				// the list of picked items when a new item is saved/added.
-				// All that Odyssey messing is no longer necessary, and should never have been!
-				document.speditform.#stPD.name#.value = ids<cfif stPD.maxSelect gt 1> + "," + document.speditform.#stPD.name#.value</cfif>;
-				//submitForm_#stPD.name#();
-			}
-			
 			function picker_add_#stPD.name#(ids) {
-				// TODO: Allow developers to configure whether new items get appended or prepended to list.
-				// 		 Probably best to have this set per application, with a system default. Allowing it
-				//		 to be set per picker property instance might be a bit confusing for users.
 				try {
 					pickerpopup_#stPD.name#.resizeTo(200, 200); // um, this is horrible, but it works
 				} catch(e) { 
@@ -498,9 +466,6 @@ Licensed under the Academic Free License version 2.1
 	
 	
 	<cf_spPropertyHandlerMethod method="promote">
-	
-		<cfparam name="stPD.autoPromote" default="yes">
-		<cfparam name="stPD.dependent" default="no">
 		
 		<cfif stPD.autoPromote or stPD.dependent>
 		
@@ -566,7 +531,6 @@ Licensed under the Academic Free License version 2.1
 		available as newValue, so we can just update the database directly.
 		Note: not tested with revisioning or promotion enabled (should work tho).
 		--->
-		<cfparam name="stPD.dependent" default="no">
 		
 		<cfif len(newValue)>
 		
@@ -625,8 +589,6 @@ Licensed under the Academic Free License version 2.1
 	
 	
 	<cf_spPropertyHandlerMethod method="delete">
-	
-		<cfparam name="stPD.dependent" default="no">
 	
 		<cfif stPD.dependent and request.speck.isUUID(listFirst(value))>
 		
