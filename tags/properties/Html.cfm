@@ -25,10 +25,10 @@ Licensed under the Academic Free License version 2.1
 		<cfparam name="stPD.safeText" type="boolean" default="true">
 		<cfparam name="stPD.tidyWordHTML" type="boolean" default="true">
 		<cfparam name="stPD.allowFont" type="boolean" default="false"> <!--- allow font tags? --->
-		<cfparam name="stPD.allowStyle" type="boolean" default="false"> <!--- allow style attributes? --->
-		<cfparam name="stPD.allowClass" type="boolean" default="false"> <!--- allow class attributes? --->
-		<cfparam name="stPD.allowSpan" type="boolean" default="false"> <!--- allow span tags? --->
-		<cfparam name="stPD.allowDiv" type="boolean" default="false"> <!--- allow div tags? --->
+		<cfparam name="stPD.allowStyle" type="boolean" default="true"> <!--- allow style attributes? --->
+		<cfparam name="stPD.allowClass" type="boolean" default="true"> <!--- allow class attributes? --->
+		<cfparam name="stPD.allowSpan" type="boolean" default="true"> <!--- allow span tags? --->
+		<cfparam name="stPD.allowDiv" type="boolean" default="true"> <!--- allow div tags? --->
 		<cfparam name="stPD.allowBr" type="boolean" default="true"> <!--- allow br tags? --->
 		<cfparam name="stPD.tidy" type="boolean" default="true"> <!--- attempt to use JTidy to clean html / convert to xhtml --->
 		<cfparam name="stPD.forceParagraphs" type="boolean" default="false"> <!--- force html to be wrapped in paragraph tags --->
