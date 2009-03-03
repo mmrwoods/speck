@@ -85,7 +85,7 @@ Licensed under the Academic Free License version 2.1
 				
 			</cfif>
 		
-			<cfset value = replaceNoCase(value,"and","_","all")>
+			<cfset value = replaceNoCase(value," and ","_","all")> <!--- maybe this is unnecessary --->
 			<cfset value = lCase(reReplace(value,"[^A-Za-z0-9\.]+","_","all"))>
 			
 		</cfif>
