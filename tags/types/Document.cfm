@@ -117,27 +117,33 @@ Licensed under the Academic Free License version 2.1
 			<div class="document_display">
 			<div class="document_display_title<cfif len(fileExt)> #fileExt#</cfif>"><#attributes.titleElement#></cfoutput>
 			
-			<cfif attributes.showIcon>
+			<cfif attributes.showIcon and len(fileExt)>
 
-				<cfif len(fileExt) and fileExists("#request.speck.speckInstallRoot##fs#www#fs#properties#fs#asset#fs##fileExt#.png")>
+				<cfif fileExists("#request.speck.speckInstallRoot##fs#www#fs#properties#fs#asset#fs#icons#fs##fileExt#.png")>
 					
 					<cfset icon = fileExt>
 					
-				<cfelseif fileExists("#request.speck.speckInstallRoot##fs#www#fs#properties#fs#asset#fs#txt.png")>
-				
-					<cfset icon = "txt">
-				
-				</cfif>
-				
-				<cfif isDefined("icon")>
+				<cfelse>
 					
-					<cfoutput><a href="#content.document#" target="#attributes.target#"><img class="document_display_image" alt="#uCase(icon)# icon" title="#uCase(icon)# icon" style="float:none;border:none;" src="/speck/properties/asset/#icon#.png" width="16" height="16" border="0" align="absmiddle"></a>&nbsp;</cfoutput>	
-				
+					<cfset mimeType = request.speck.getMIMEType(fileExt)>
+					
+					<cfif fileExists("#request.speck.speckInstallRoot##fs#www#fs#properties#fs#asset#fs#icons#fs##listFirst(mimeType,"/")#.png")>
+						
+						<cfset icon = listFirst(mimeType,"/")>
+						
+					<cfelse>
+					
+						<cfset icon = "application">
+						
+					</cfif>
+	
 				</cfif>
+				
+				<cfoutput><a href="#content.document#" target="#attributes.target#"><img class="document_display_image" title="Download file" alt="<cfif len(icon) lte 4>#uCase(icon)#<cfelse>#request.speck.capitalize(icon)#</cfif> icon" style="float:none;border:none;" src="/speck/properties/asset/icons/#icon#.png" width="16" height="16" border="0" align="absmiddle"></a>&nbsp;</cfoutput>	
 				
 			</cfif>
 			
-			<cfoutput><a href="#content.document#" target="#attributes.target#">#content.title#</a></#attributes.titleElement#>
+			<cfoutput><a href="#content.document#" title="Download file" target="#attributes.target#">#content.title#</a></#attributes.titleElement#>
 			<em><!--- <a href="#content.document#">Download File</a> ---> (#fileName#<cfif isDefined("hFileSize")> | #hFileSize#</cfif>)</em></div></cfoutput>
 			
 			<cfif len(content.description)>
