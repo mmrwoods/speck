@@ -5,7 +5,7 @@ table.spToolbar {
 	background: #ece9d8;
 	border: 1px solid #333300;
 	text-align: center;
-	padding: 1px 3px 1px 0;
+	padding: 3px 3px 3px 0;
 }
 tr.spToolbar, td.spToolbar, form.spToolbar,  span.spToolbar, a.spToolbar {
 	font: 10px Verdana, Arial, Helvetica, sans-serif;

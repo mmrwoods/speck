@@ -36,7 +36,9 @@ Licensed under the Academic Free License version 2.1
 		displaySize="60,3"
 		maxlength="500"
 		richEdit="yes"
-		fckToolbarSet="Basic">	
+		fckToolbarSet="Basic"
+		safeText="#attributes.context.getConfigString("types","article","content_safe_text","yes")#"
+		replaceParagraphs="#attributes.context.getConfigString("types","article","content_force_paragraphs","yes")#">	
 		
 	<cf_spProperty
 		name="document"

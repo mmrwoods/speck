@@ -305,6 +305,9 @@ Renders toolbar allowing editors and reviewers (i.e. spEdit or spReview permissi
 		</script>
 		<a class="spToolbar spManageKeywords" href="javascript:launch_keywords();" title="#stStrings.manageKeywordsTooltip#">#stStrings.manageKeywords#</a>
 		</cfoutput>
+		
+		<!--- TODO: add shortcut link here to edit the properties for the current keyword --->
+		
 	</cfif>
 	
 	<cfif isDefined("request.speck.portal") and structKeyExists(application.speck.securityZones,"portal") and request.speck.userHasPermission("spSuper,spUsers")>

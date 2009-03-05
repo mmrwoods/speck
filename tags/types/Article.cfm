@@ -191,6 +191,7 @@ Licensed under the Academic Free License version 2.1
 		<#attributes.titleElement# class="article_print_title">#content.title#</#attributes.titleElement#>
 		</cfoutput>
 		
+		<!---
 		<cfif len(content.pubdate)>
 		
 			<cfoutput><div class="article_print_pubdate"></cfoutput>
@@ -217,6 +218,7 @@ Licensed under the Academic Free License version 2.1
 			</cfoutput>
 			
 		</cfif>
+		--->
 		
 		<cfif attributes.showImage and len(trim(content.mainImage))>
 			<cfscript>
