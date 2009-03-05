@@ -18,6 +18,8 @@
 	
 	<cf_spHandler method="display">
 	
+		<cfparam name="attributes.showIcon" type="boolean" default="true">
+		
 		<cfscript>
 			if ( request.speck.session.showAdminLinks ) {
 				where = "";
@@ -30,6 +32,7 @@
 			type="Document" 
 			id="#content.documents#" 
 			enableAdminLinks="no"
+			showIcon="#attributes.showIcon#"
 			separator=""
 			where="#where#"
 			orderByIds="yes">

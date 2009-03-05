@@ -65,8 +65,8 @@ Licensed under the Academic Free License version 2.1
 		
 		<!--- target for link to document --->
 		<cfparam name="attributes.target" default="">
+		
 		<cfparam name="attributes.showIcon" type="boolean" default="true">
-		<cfparam name="attributes.titleElement" default="strong">
 	
 		<cfif len(trim(content.document))>
 		
@@ -115,7 +115,7 @@ Licensed under the Academic Free License version 2.1
 			
 			<cfoutput>
 			<div class="document_display">
-			<div class="document_display_title<cfif len(fileExt)> #fileExt#</cfif>"><#attributes.titleElement#></cfoutput>
+			<div class="document_display_title<cfif len(fileExt)> #fileExt#</cfif>"><strong></cfoutput>
 			
 			<cfif attributes.showIcon and len(fileExt)>
 
@@ -143,7 +143,7 @@ Licensed under the Academic Free License version 2.1
 				
 			</cfif>
 			
-			<cfoutput><a href="#content.document#" title="Download file" target="#attributes.target#">#content.title#</a></#attributes.titleElement#>
+			<cfoutput><a href="#content.document#" title="Download file" target="#attributes.target#">#content.title#</a></strong>
 			<em><!--- <a href="#content.document#">Download File</a> ---> (#fileName#<cfif isDefined("hFileSize")> | #hFileSize#</cfif>)</em></div></cfoutput>
 			
 			<cfif len(content.description)>
