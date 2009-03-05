@@ -65,6 +65,8 @@ Licensed under the Academic Free License version 2.1
 		
 		<!--- target for link to document --->
 		<cfparam name="attributes.target" default="">
+		<cfparam name="attributes.showIcon" type="boolean" default="true">
+		<cfparam name="attributes.titleElement" default="strong">
 	
 		<cfif len(trim(content.document))>
 		
@@ -113,25 +115,35 @@ Licensed under the Academic Free License version 2.1
 			
 			<cfoutput>
 			<div class="document_display">
-			<div class="document_display_title"><strong></cfoutput>
+			<div class="document_display_title<cfif len(fileExt)> #fileExt#</cfif>"><#attributes.titleElement#></cfoutput>
+			
+			<cfif attributes.showIcon>
 
-			<cfif len(fileExt) and fileExists("#request.speck.speckInstallRoot##fs#www#fs#properties#fs#asset#fs##fileExt#.gif")>
+				<cfif len(fileExt) and fileExists("#request.speck.speckInstallRoot##fs#www#fs#properties#fs#asset#fs##fileExt#.png")>
+					
+					<cfset icon = fileExt>
+					
+				<cfelseif fileExists("#request.speck.speckInstallRoot##fs#www#fs#properties#fs#asset#fs#txt.png")>
 				
-				<cfoutput><a href="#content.document#" target="#attributes.target#"><img class="document_display_image" style="float:none;" src="/speck/properties/asset/#fileExt#.gif" width="16" height="16" border="0" align="absmiddle"></a>&nbsp;</cfoutput>
+					<cfset icon = "txt">
 				
-			<cfelseif fileExists("#request.speck.speckInstallRoot##fs#www#fs#properties#fs#asset#fs#txt.gif")>
+				</cfif>
 				
-				<cfoutput><a href="#content.document#" target="#attributes.target#"><img class="document_display_image" style="float:none;" src="/speck/properties/asset/txt.gif" width="16" height="16" border="0" align="absmiddle"></a>&nbsp;</cfoutput>			
+				<cfif isDefined("icon")>
+					
+					<cfoutput><a href="#content.document#" target="#attributes.target#"><img class="document_display_image" alt="#uCase(icon)# icon" title="#uCase(icon)# icon" style="float:none;border:none;" src="/speck/properties/asset/#icon#.png" width="16" height="16" border="0" align="absmiddle"></a>&nbsp;</cfoutput>	
+				
+				</cfif>
 				
 			</cfif>
 			
-			<cfoutput><a href="#content.document#" target="#attributes.target#">#content.title#</a></strong>
+			<cfoutput><a href="#content.document#" target="#attributes.target#">#content.title#</a></#attributes.titleElement#>
 			<em><!--- <a href="#content.document#">Download File</a> ---> (#fileName#<cfif isDefined("hFileSize")> | #hFileSize#</cfif>)</em></div></cfoutput>
 			
 			<cfif len(content.description)>
 			
 				<cfoutput>
-				<p class="document_display_description" style="margin:0;padding:0;">#content.description#</p>
+				<p class="document_display_description">#content.description#</p>
 				</cfoutput>
 			
 			</cfif>
