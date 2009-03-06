@@ -586,8 +586,6 @@ Licensed under the Academic Free License version 2.1
 		<cfparam name="attributes.titleElement" default="h3">
 		<cfparam name="attributes.relatedDocumentsCaption" default="Related Documents">
 		<cfparam name="attributes.relatedDocumentsElement" default="h4">
-		<cfparam name="attributes.documentTitleElement" default="h5">
-
 		<cfparam name="attributes.insertContent" default=""> <!--- use to insert into content after paragraph numbered below --->
 		<cfparam name="attributes.insertAfterParagraph" default="3">
 		
@@ -731,12 +729,8 @@ Licensed under the Academic Free License version 2.1
 				<div class="article_display_documents">
 				<#attributes.relatedDocumentsElement#>#attributes.relatedDocumentsCaption#</#attributes.relatedDocumentsElement#>
 				</cfoutput>
-			
-				<!--- <cfoutput>
-				<#attributes.relatedDocumentsElement# class="article_display_documents">Related documents</#attributes.relatedDocumentsElement#>
-				</cfoutput> --->
 				
-				<cf_spContent type="Document" enableAdminLinks="no" enableAddLink="no" qContent="#qDocuments#" titleElement="#attributes.documentTitleElement#">
+				<cf_spContent type="Document" enableAdminLinks="no" enableAddLink="no" qContent="#qDocuments#">
 				
 				<cfoutput>
 				</div>

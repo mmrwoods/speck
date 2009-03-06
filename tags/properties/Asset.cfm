@@ -437,13 +437,29 @@ Licensed under the Academic Free License version 2.1
 				
 					<cfset fs = request.speck.fs>
 					
-					<cfif fileExists("#request.speck.speckInstallRoot##fs#www#fs#properties#fs#asset#fs##fileExt#.gif")>
+					<cfif len(fileExt)>
+		
+						<cfif fileExists("#request.speck.speckInstallRoot##fs#www#fs#properties#fs#asset#fs#icons#fs##fileExt#.png")>
+							
+							<cfset icon = fileExt>
+							
+						<cfelse>
+							
+							<cfset mimeType = request.speck.getMIMEType(fileExt)>
+							
+							<cfif fileExists("#request.speck.speckInstallRoot##fs#www#fs#properties#fs#asset#fs#icons#fs##listFirst(mimeType,"/")#.png")>
+								
+								<cfset icon = listFirst(mimeType,"/")>
+								
+							<cfelse>
+							
+								<cfset icon = "application">
+								
+							</cfif>
+			
+						</cfif>
 						
-						<cfoutput><a href="#value#" target="_blank"><img src="/speck/properties/asset/#fileExt#.gif" width="16" height="16" border="0" align="absmiddle"></a>&nbsp;</cfoutput>
-						
-					<cfelseif fileExists("#request.speck.speckInstallRoot##fs#www#fs#properties#fs#asset#fs#txt.gif")>
-						
-						<cfoutput><a href="#value#" target="_blank"><img src="/speck/properties/asset/txt.gif" width="16" height="16" border="0" align="absmiddle"></a>&nbsp;</cfoutput>			
+						<cfoutput><a href="#value#" target="_blank"><img style="float:none;border:none;" src="/speck/properties/asset/icons/#icon#.png" width="16" height="16" border="0" align="absmiddle"></a>&nbsp;</cfoutput>	
 						
 					</cfif>
 					

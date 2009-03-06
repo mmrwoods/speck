@@ -180,20 +180,42 @@ Licensed under the Academic Free License version 2.1
 					fileName = mid(content.document,startSubstr,endSubstr-startSubstr);
 				} else {
 					fileName = listLast(content.document,"/");
-				}	
+				}
+				
+				if ( listLen(fileName,".") gt 1 ) {
+					fileExt = lCase(listLast(fileName,"."));
+				} else {
+					fileExt = "";
+				}
 			</cfscript>
 			
 			<cfset fs = request.speck.fs>
-
-			<cfif fileExists("#request.speck.speckInstallRoot##fs#www#fs#properties#fs#asset#fs##listLast(fileName,".")#.gif")>
 			
-				<cfoutput><img src="/speck/properties/asset/#listLast(fileName,".")#.gif" width="16" height="16" border="0" align="absmiddle">&nbsp;</cfoutput>
+			<cfif len(fileExt)>
+
+				<cfif fileExists("#request.speck.speckInstallRoot##fs#www#fs#properties#fs#asset#fs#icons#fs##fileExt#.png")>
+					
+					<cfset icon = fileExt>
+					
+				<cfelse>
+					
+					<cfset mimeType = request.speck.getMIMEType(fileExt)>
+					
+					<cfif fileExists("#request.speck.speckInstallRoot##fs#www#fs#properties#fs#asset#fs#icons#fs##listFirst(mimeType,"/")#.png")>
+						
+						<cfset icon = listFirst(mimeType,"/")>
+						
+					<cfelse>
+					
+						<cfset icon = "application">
+						
+					</cfif>
+	
+				</cfif>
 				
-			<cfelseif fileExists("#request.speck.speckInstallRoot##fs#www#fs#properties#fs#asset#fs#txt.gif")>
+				<cfoutput><img style="float:none;border:none;" src="/speck/properties/asset/icons/#icon#.png" width="16" height="16" border="0" align="absmiddle">&nbsp;</cfoutput>	
 				
-				<cfoutput><img src="/speck/properties/asset/txt.gif" width="16" height="16" border="0" align="absmiddle">&nbsp;</cfoutput>			
-				
-			</cfif>			
+			</cfif>		
 			
 			<cfoutput>#content.title# (#fileName#)</cfoutput>
 			
