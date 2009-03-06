@@ -287,6 +287,17 @@ Renders toolbar allowing editors and reviewers (i.e. spEdit or spReview permissi
 		</cfoutput>
 	</cfif>
 	<cfif attributes.manageKeywords and findNoCase("spKeywords",request.speck.keywordsSources) and request.speck.userHasPermission("spSuper,spKeywords")>
+	
+		<cfif isDefined("request.speck.portal") and request.speck.userHasPermission("spSuper,spEdit")>
+		
+			<!--- force spContent to output all the admin functions, but without returning any content or outputting any links --->
+			<cf_spContent type="spKeywords" enableAdminLinks="yes" enableAddLink="no" maxRows="0">
+			<cfoutput>
+			<a class="spToolbar spEditKeyword" href="javascript:javascript:launch_edit('spKeywords','#request.speck.portal.qKeyword.spId#', '', '','Navigation Section');" title="Edit configuration for current page">Page Config</a>
+			</cfoutput>
+		
+		</cfif>
+		
 		<cfif isDefined("request.speck.portal")>
 			<cfset windowWidth = 725>
 		<cfelse>
@@ -305,8 +316,6 @@ Renders toolbar allowing editors and reviewers (i.e. spEdit or spReview permissi
 		</script>
 		<a class="spToolbar spManageKeywords" href="javascript:launch_keywords();" title="#stStrings.manageKeywordsTooltip#">#stStrings.manageKeywords#</a>
 		</cfoutput>
-		
-		<!--- TODO: add shortcut link here to edit the properties for the current keyword --->
 		
 	</cfif>
 	

@@ -258,10 +258,10 @@ Licensed under the Academic Free License version 2.1
 	</tr>
 	<tr>
 	<td style="vertical-align:middle"><span class="required">*</span><label for="password">Password</label></td>
-	<td><input type="password" name="password" id="password" value="#form.password#" size="35" maxlength="20" /></td>
+	<td><input type="password" name="password" id="password" value="#form.password#" <cfif not len(request.speck.portal.passwordEncryption)>title="#form.password#"</cfif> size="35" maxlength="20" /></td>
 	<td>&nbsp;</td>
 	<td style="vertical-align:middle"><span class="required">*</span><label for="password_confirm">Confirm Password</label></td>
-	<td><input type="password" name="password_confirm" id="password_confirm" value="#form.password_confirm#" size="35" maxlength="20" /></td>
+	<td><input type="password" name="password_confirm" id="password_confirm" value="#form.password_confirm#" <cfif not len(request.speck.portal.passwordEncryption)>title="#form.password#"</cfif> size="35" maxlength="20" /></td>
 	</tr>
 	<tr>
 	<td style="vertical-align:middle"><label for="email">Email Address</label></td>

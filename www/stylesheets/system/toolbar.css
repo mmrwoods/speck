@@ -66,6 +66,7 @@ a.spViewDate { background: url(/speck/images/icons/silk/calendar.png) no-repeat;
 /* icons */
 a.spResetCache {background: url(/speck/images/icons/silk/page_refresh.png) no-repeat; padding:2px 0 2px 17px; color:#000; text-decoration:none;}
 a.spManageKeywords {background: url(/speck/images/icons/silk/chart_organisation.png) no-repeat; padding:2px 0 2px 17px; color:#000; text-decoration:none;}
+a.spEditKeyword {background: url(/speck/images/icons/silk/page_gear.png) no-repeat; padding:2px 0 2px 17px; color:#000; text-decoration:none;}
 a.spManageUsers {background: url(/speck/images/icons/silk/group.png) no-repeat; padding:2px 0 2px 17px; color:#000; text-decoration:none;}
 a.spRefreshApp {background: url(/speck/images/icons/silk/arrow_refresh.png) no-repeat; padding:2px 0 2px 17px; color:#000; text-decoration:none;}
 a.spLogout {background: url(/speck/images/icons/silk/door_out.png) no-repeat; padding:2px 0 2px 17px; color:#000; text-decoration:none;}
