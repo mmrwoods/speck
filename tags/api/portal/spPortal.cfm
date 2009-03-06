@@ -837,6 +837,7 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 			stNewKeyword = structNew();
 			stNewkeyword.keyword = "home";
 			stNewKeyword.name = "Home";
+			stNewKeyword.title = stPortal.name;
 			stNewKeyword.href = "#stPortal.appWebRoot#/";
 			stNewKeyword.spMenu = 1;
 			stNewKeyword.spSitemap = 1;
