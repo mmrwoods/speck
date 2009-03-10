@@ -6,8 +6,8 @@
 // but this should be avoided unless you need to use JavaScript to do the customisation (e.g. to add a toolbar set)
 
 FCKConfig.ToolbarSets["Default"] = [
-	['Cut','Copy','Paste','PasteText','PasteWord','-','Undo','Redo','-','SpellCheck','-','Table','Link','Unlink','Anchor','Image','-','Rule','-','SpecialChar','-','RemoveFormat'],
-	['FontFormat','Bold','Italic','Underline','StrikeThrough','-','Subscript','Superscript','-','OrderedList','UnorderedList','-','Source']
+	['Paste','PasteText','PasteWord','-','SpellCheck','-','Table','Link','Unlink','Anchor','Image','-','OrderedList','UnorderedList','-','SpecialChar','-','Rule','-','ShowBlocks','Source'],
+	['FontFormat','Style','RemoveFormat','Bold','Italic','Underline','StrikeThrough','CreateDiv']
 ] ;
 
 FCKConfig.ToolbarSets["Basic"] = [
@@ -15,7 +15,7 @@ FCKConfig.ToolbarSets["Basic"] = [
 ] ;
 
 FCKConfig.ToolbarSets["Minimal"] = [
-	['PasteText','-','Bold','Italic','Underline','StrikeThrough','-','OrderedList','UnorderedList','-','Link','Unlink','SpecialChar']
+	['PasteText','-','Bold','Italic','-','OrderedList','UnorderedList','-','Link','Unlink','Image','SpecialChar','-','Source']
 ] ;
 
 // FCKConfig.ImageBrowser = false;
@@ -54,3 +54,31 @@ FCKConfig.PreserveSessionOnFileBrowser = true;
 FCKConfig.UseBROnCarriageReturn = true;
 FCKConfig.EnterMode = "br";
 FCKConfig.ShiftEnterMode = "p";
+
+FCKConfig.CustomStyles = "";
+FCKConfig.StylesXmlPath = "/speck/properties/html/editors/fckeditor/speckstyles.xml";
+
+FCKConfig.TemplatesXmlPath = "/speck/properties/html/editors/fckeditor/specktemplates.xml";
+
+FCKConfig.Keystrokes = [
+	[ CTRL + 65 /*A*/, true ],
+	[ CTRL + 67 /*C*/, true ],
+	[ CTRL + 70 /*F*/, true ],
+	[ CTRL + 83 /*S*/, true ],
+	[ CTRL + 84 /*T*/, true ],
+	[ CTRL + 88 /*X*/, true ],
+	[ CTRL + 86 /*V*/, 'PasteText' ],
+	[ CTRL + 45 /*INS*/, true ],
+	[ SHIFT + 45 /*INS*/, 'PasteText' ],
+	[ CTRL + 88 /*X*/, 'Cut' ],
+	[ SHIFT + 46 /*DEL*/, 'Cut' ],
+	[ CTRL + 90 /*Z*/, 'Undo' ],
+	[ CTRL + 89 /*Y*/, 'Redo' ],
+	[ CTRL + SHIFT + 90 /*Z*/, 'Redo' ],
+	[ CTRL + 76 /*L*/, 'Link' ],
+	[ CTRL + 66 /*B*/, 'Bold' ],
+	[ CTRL + 73 /*I*/, 'Italic' ],
+	[ CTRL + 85 /*U*/, 'Underline' ],
+	[ CTRL + SHIFT + 83 /*S*/, 'Save' ],
+	[ CTRL + ALT + 13 /*ENTER*/, 'FitWindow' ]
+] ;
