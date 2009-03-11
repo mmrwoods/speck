@@ -15,11 +15,13 @@
 }
 .hint {
 	cursor:help;
-	border:1px solid gray;
+	/*border:1px solid gray;
 	background-color:#eee;
 	font-weight:bold;
 	padding-left:2px;
-	padding-right:2px;
+	padding-right:2px;*/
+	padding: 0 0 2px 16px;
+	background: url(/speck/images/icons/silk/help.png) no-repeat;
 }
 #loading, #saving {
 	font: 12px Verdana, Arial, Helvetica, sans-serif;

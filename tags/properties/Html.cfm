@@ -40,7 +40,7 @@ Licensed under the Academic Free License version 2.1
 		<!--- use rich text editor? --->
 		<cfparam name="stPD.richEdit" default="false" type="boolean"> 
 
-		<!--- optional attributes for re-sizing images uploading using FCK editor --->
+		<!--- optional attributes for re-sizing images uploaded using FCK editor --->
 		<cfparam name="stPD.imageWidth" default="">
 		<cfparam name="stPD.imageHeight" default="">
 		<cfparam name="stPD.imageMaxWidth" default="">
@@ -254,7 +254,7 @@ Licensed under the Academic Free License version 2.1
 						input = reReplaceNoCase(input,"<p[^>]*>","<p>","all");
 						// remove any existing end paragraph tags (we'll insert these as appropriate later)
 						input = reReplaceNoCase(input,"</p[[:space:]]*>","","all");
-						// remove paragraph tags from within other block level elements
+						// remove paragraph tags from within other block level elements, with the exception of divs
 						do {
 							input = reReplaceNoCase(input,"(<(h[1-6]|dl|ol|ul|td|li|address|code)>)([^<]*)<p>","\1\3 ","all");
 						} while ( reFindNoCase("(<(h[1-6]|dl|ol|ul|td|li|address|code)>)([^<]*)<p>",input) );
@@ -479,17 +479,25 @@ Licensed under the Academic Free License version 2.1
 			<cfif stPD.richEdit>
 					
 				<!---
-				Get configuration for FCKEditor...
-				The editor can be customised in three ways:
-				[1] Config keys and values can be added to an fckeditor configuration file for this app
-					(i.e. <appInstallRoot>/fckeditor.cfg)
-				[2] A limited subset of available configuration keys can be passed as cf_spProperty 
-					attributes. These attributes are dealt with below and are named using the name of 
-					the config key prefixed with "fck". 
-				[3]	You can also use CustomConfigurationsPath FCKEditor configuration setting and add 
-					your own JavaScript configuration files to customise the editor. You might need to 
-					do this if you need to add a new toolbar set or modify the existing toolbar sets, 
-					but you should avoid using this setting unless absolutely necessary.
+				The editor can be customised per application in a number of ways:
+				[1] FCKeditor configuration settings that take simple values can be added to an fckeditor
+					configuration file for the application, i.e. <appInstallRoot>/fckeditor.cfg. The file 
+					should have one section named [settings]. This method of configuration only allows for 
+					simple name/value pairs, so it can't be used to change key bindings or toolbars. It's 
+					still the recommended method of configuring FCKeditor per application though.
+				[2] The toolbar, width, height, editor area css, options for the format drop down in 
+					the toolbar and even a custom configuration path can be set using attributes of 
+					cf_spProperty. These attribtues are the FCKEditor config setting, prefixed with "fck", 
+					e.g. fckToolbarSet="Basic". The toolbar set and height are typically the only things 
+					that need to be changed using an attribute of cf_spProperty.
+				[3] Speck will automatically set the EditorAreaCSS, StylesXmlPath and TemplatesXmlPath 
+					if you put matching files into the stylesheets directory (fckeditor.css, fckstyles.xml 
+					and fcktemplates.xml respectively) and these settings have not already been configured.
+				[4]	You can also tell Speck to load your own FCKeditor CustomConfigurationsPath rather 
+					then the default Speck one by simply dropping a file called fckconfig.js into a 
+					<appInstallRoot>/www/javascripts directory. You should really only need to do this 
+					if you need to change key bindings or add/modify toolbars.
+				Note that the ImageBrowserURL and SpellerPagesServerScript settings cannot be customised.
 				--->
 				<cfscript>
 					// build a single config struct from the config file and cf_spProperty attributes
@@ -507,19 +515,15 @@ Licensed under the Academic Free License version 2.1
 						stConfig.ToolbarSet = "Default"; 
 					}
 					// CustomConfigurationsPath
-					if ( isDefined("stPD.fckCustomConfigurationsPath") ) { 
+					if ( isDefined("stPD.fckCustomConfigurationsPath") and len(stPD.fckCustomConfigurationsPath) ) { 
 						stConfig.CustomConfigurationsPath = stPD.fckCustomConfigurationsPath;
-					} else if ( not isDefined("stConfig.CustomConfigurationsPath") ) {
-						// default custom config (speckconfig.js)
-						stConfig.CustomConfigurationsPath = "/speck/properties/html/editors/fckeditor/speckconfig.js";
 					}
-					stConfig.CustomConfigurationsPath = stConfig.CustomConfigurationsPath & "?" & getTickCount();
 					// Width
 					if ( isDefined("stPD.fckWidth") ) { 
 						stConfig.Width = stPD.fckWidth;
 					} else if ( not isDefined("stConfig.Width") ) {
 						// default width
-						stConfig.Width = "450"; 
+						stConfig.Width = "452"; 
 					}
 					// Height
 					if ( isDefined("stPD.fckHeight") ) { 
@@ -529,13 +533,42 @@ Licensed under the Academic Free License version 2.1
 						stConfig.Height = "250"; 
 					}
 					// EditorAreaCSS (note: no default value)
-					if ( isDefined("stPD.fckEditorAreaCSS") ) { stConfig.EditorAreaCSS = stPD.fckEditorAreaCSS; }
+					if ( isDefined("stPD.fckEditorAreaCSS") and len(stPD.fckEditorAreaCSS) ) { 
+						stConfig.EditorAreaCSS = stPD.fckEditorAreaCSS; 
+					}
+					// FontFormats (note: no default value)
+					if ( isDefined("stPD.fckFontFormats") and len(stPD.fckFontFormats) ) { 
+						stConfig.FontFormats = stPD.fckFontFormats; 
+					}
+					
 					fs = request.speck.fs;
+					// automatically set EditorAreaCSS, StylesXmlPath and TemplatesXmlPath if settings not found in config struct
 					if ( ( not structKeyExists(stConfig,"EditorAreaCSS") or not len(stConfig.EditorAreaCSS) ) and fileExists(request.speck.appInstallRoot & fs & "www" & fs & "stylesheets" & fs & "fckeditor.css") ) {
 						stConfig.EditorAreaCSS = "/stylesheets/fckeditor.css";
 					}
-					// FontFormats (note: no default value)
-					if ( isDefined("stPD.fckFontFormats") ) { stConfig.FontFormats = stPD.fckFontFormats; }
+					if ( not structKeyExists(stConfig,"StylesXmlPath") or not len(stConfig.StylesXmlPath) ) {
+						if ( fileExists(request.speck.appInstallRoot & fs & "www" & fs & "stylesheets" & fs & "fckstyles.xml") ) {
+							stConfig.StylesXmlPath = "/stylesheets/fckstyles.xml";
+						} else {
+							stConfig.StylesXmlPath = "/speck/properties/html/editors/fckeditor/speckstyles.xml";
+						}
+					}
+					if ( not structKeyExists(stConfig,"TemplatesXmlPath") or not len(stConfig.TemplatesXmlPath) ) {
+						if ( fileExists(request.speck.appInstallRoot & fs & "www" & fs & "stylesheets" & fs & "fcktemplates.xml") ) {
+							stConfig.TemplatesXmlPath = "/stylesheets/fcktemplates.xml";
+						} else {
+							stConfig.TemplatesXmlPath = "/speck/properties/html/editors/fckeditor/specktemplates.xml";
+						}
+					}
+					// if CustomConfigurationsPath not set in config struct, set to app specific fckconfig.js if exists, otherwise default speck configuration
+					if ( not structKeyExists(stConfig,"CustomConfigurationsPath") or not len(stConfig.CustomConfigurationsPath) ) {
+						if ( fileExists(request.speck.appInstallRoot & fs & "www" & fs & "javascripts" & fs & "fckconfig.js") ) {
+							stConfig.CustomConfigurationsPath = "/javascripts/fckconfig.js";
+						} else {
+							stConfig.CustomConfigurationsPath = "/speck/properties/html/editors/fckeditor/speckconfig.js";
+						}
+					}
+					stConfig.CustomConfigurationsPath = stConfig.CustomConfigurationsPath & "?" & getTickCount();			
 					
 					// hide the target option from the link dialog window when either target aren't allowed or are forced by readFormField
 					if ( not stPD.allowTarget or stPD.forceTarget) { stConfig.LinkDlgHideTarget = true; }
@@ -551,6 +584,9 @@ Licensed under the Academic Free License version 2.1
 					connectorURL = connectorURL & "&jpegCompression=" & stPD.imageJpegCompression;
 					stConfig.ImageBrowserURL = "/speck/properties/html/editors/fckeditor/editor/filemanager/browser/default/browser.html?Type=Image&Connector=" & urlEncodedFormat(connectorURL);
 					
+					// force use of Speck spellerpages script (the one included with FCKeditor still hasn't been updated to work with *nix)
+					stConfig.SpellerPagesServerScript = '/speck/properties/html/editors/fckeditor/speckspellchecker.cfm';
+			
 					// if forceParagraphs set to true, then force UseBROnCarriageReturn to false (Speck defaults to true) and switch enter modes around
 					if ( stPD.forceParagraphs ) {
 						stConfig.UseBROnCarriageReturn = false;

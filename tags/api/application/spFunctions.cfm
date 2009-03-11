@@ -430,6 +430,21 @@ Licensed under the Academic Free License version 2.1
 		return structNew();
 	}
 	
+	// this probably isn't the best place for this function, but unfortunately there is now code that depends on it being available in request.speck scope
+	function getDomainFromHostName() {
+		// some crude code to get an email domain from the current host name
+		var domain = "";
+		if ( arrayLen(arguments) ) {
+			domain = lCase(arguments[1]);
+		} else {
+			domain = lCase(cgi.HTTP_HOST);
+		}
+		if ( listLen(domain,".") gt 2 ) {
+			domain = listDeleteAt(domain,1,".");
+		}
+		return lCase(domain);
+	}
+	
 	function forceParagraphs(input) {
 		// ruthless, ugly, no holds barred function to force the use of paragraph tags in input
 		// this WILL screw up some formatting, use with caution
@@ -498,6 +513,7 @@ Licensed under the Academic Free License version 2.1
 	stServer.getDisplayMethodUrl = getDisplayMethodUrl;
 	stServer.getPropertyDefinition = getPropertyDefinition;
 	stServer.forceParagraphs = forceParagraphs;
+	stServer.getDomainFromHostName = getDomainFromHostName;
 
 </cfscript>
 

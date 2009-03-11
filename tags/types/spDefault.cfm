@@ -536,7 +536,7 @@ Licensed under the Academic Free License version 2.1
 						value=#displayValue#>	
 				
 				<cfelse>
-				
+						
 					<cfoutput>
 					<tr <cfif len(stPD.class)>class="#stPD.class#"</cfif> <cfif len(stPD.style)>style="#stPD.style#"</cfif>>
 					<td style="padding-top:5px;" width="60"></cfoutput>
@@ -547,10 +547,10 @@ Licensed under the Academic Free License version 2.1
 					
 					<cfif isDefined("stPD.hint") and len(stPD.hint)>
 					
-						<cfoutput>&nbsp;<span class="hint" onmouseover="return escape('#jsStringFormat(stPD.hint)#');">?</span>&nbsp;</cfoutput>
+						<cfoutput>&nbsp;<span class="hint" onmouseover="return escape('#jsStringFormat(stPD.hint)#');"><!--- ? ---></span>&nbsp;</cfoutput>
 
 					</cfif>
-					
+
 					<cfoutput>
 					</td>
 					<td>

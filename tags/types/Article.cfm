@@ -79,6 +79,7 @@ Licensed under the Academic Free License version 2.1
 		required="yes"
 		displaySize="70,20"
 		fckHeight="400"
+		fckFontFormats="#attributes.context.getConfigString("types","article","content_fck_font_formats","")#"
 		maxlength="32000"
 		richEdit="yes"
 		safeText="#attributes.context.getConfigString("types","article","content_safe_text","yes")#"

@@ -857,18 +857,19 @@ I'm sure this all used to be necessary in CF5
 			<cfdirectory action="list" directory="#stApp.appInstallRoot##fs#config" filter="*.cfg" name="qConfig">
 			<cfloop query="qConfig">
 				
-				<cftry>
+				<!--- removed try/catch/log code - we really need to know about these problems when refreshing an app --->
+				<!--- <cftry> --->
 				
 					<cf_spGetProfileStructure file="#stApp.appInstallRoot##fs#config#fs##qConfig.name#" variable="stProfile">
 					<cfset stApp.config[replaceNoCase(qConfig.name,".cfg","")] = duplicate(stProfile)>
 				
-				<cfcatch>
+				<!--- <cfcatch>
 					<cflog type="warning" 
 						file="#stApp.appName#"
 						application="no"
 						text="CF_SPAPP: Could not parse configuration file #stApp.appInstallRoot##fs#config#fs##qConfig.name#">
 				</cfcatch>
-				</cftry>
+				</cftry> --->
 			
 			</cfloop>
 			
@@ -1564,27 +1565,3 @@ I'm sure this all used to be necessary in CF5
 	<cfset request.speck.contentStylesheet = "/speck/stylesheets/content.css">
 </cfif>
 
-<!--- temporary code, can be removed once all applications have been refrehed --->
-<cfparam name="request.speck.database.longVarcharCFSQLType" default="CF_SQL_LONGVARCHAR">
-
-<cfif not structKeyExists(request.speck,"getDomainFromHostName")>
-
-	<!--- TODO: move function to spFunctions and add code to read spFunctions and copy missing function to application.speck and request.speck if necessary --->
-	<cfscript>
-		function getDomainFromHostName() {
-			// some crude code to get an email domain from the current host name
-			var domain = "";
-			if ( arrayLen(arguments) ) {
-				domain = lCase(arguments[1]);
-			} else {
-				domain = lCase(cgi.HTTP_HOST);
-			}
-			if ( listLen(domain,".") gt 2 ) {
-				domain = listDeleteAt(domain,1,".");
-			}
-			return lCase(domain);
-		}
-		request.speck.getDomainFromHostName = getDomainFromHostName;
-	</cfscript>
-
-</cfif>

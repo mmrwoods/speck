@@ -106,7 +106,7 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 		// and remove the final directory in web document root to get the app install root
 		appInstallRoot = listDeleteAt(webDocumentRoot,listLen(webDocumentRoot,fs),fs);
 			
-		stPortal = structNew(); // save all configuration settings here and save to application scope when finished initialising
+		stPortal = structNew(); // save all configuration settings here and save to application scope when finished initialising	
 	</cfscript>
 	
 	<!--- default portal configuration settings... --->
@@ -119,7 +119,25 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 	
 	<!--- these are the only configuration settings which should generally need to be set per application --->
 	<cfparam name="stPortal.name" default="#attributes.name#"> <!--- name of site, can be used by shared templates when outputting site name --->
-	<cfparam name="stPortal.domain" default="#reReplaceNoCase(cgi.http_host,"^www\.","")#"> <!--- TODO: default this using getDomainFromHostName() function --->
+	
+	<cfscript>
+		// copied from spFunctions
+		function getDomainFromHostName() {
+			// some crude code to get an email domain from the current host name
+			var domain = "";
+			if ( arrayLen(arguments) ) {
+				domain = lCase(arguments[1]);
+			} else {
+				domain = lCase(cgi.HTTP_HOST);
+			}
+			if ( listLen(domain,".") gt 2 ) {
+				domain = listDeleteAt(domain,1,".");
+			}
+			return lCase(domain);
+		}		
+	</cfscript>
+	<cfparam name="stPortal.domain" default="#getDomainFromHostName()#">
+	
 	<!---<cfparam name="stPortal.description" default="">---> <!--- default meta description for site pages. OBSOLETE - DO NOT USE, HAS NO EFFECT ANYMORE --->
 	<!---<cfparam name="stPortal.keywords" default="">---> <!--- default meta keywords for site pages. OBSOLETE - DO NOT USE, HAS NO EFFECT ANYMORE --->
 	<cfparam name="stPortal.stylesheet" default="">
@@ -1279,6 +1297,18 @@ request.speck.portal.cacheKeyword = replace(request.speck.portal.keyword,".","_"
 		request.speck.portal.keywordSeparator = ".";
 	}
 	breadcrumbs = arrayNew(1);
+	
+	function appendBreadcrumb(urlId,caption) {
+		var title = caption;
+		if ( arrayLen(arguments) gt 2 ) { title = arguments[3]; }
+		stBreadcrumb = structNew();
+		stBreadcrumb.caption = caption;
+		stBreadcrumb.title = title;
+		stBreadcrumb.href = request.speck.getDisplayMethodUrl(urlId,title);
+		arrayAppend(request.speck.portal.breadcrumbs,stBreadcrumb);
+	}
+			
+	request.speck.portal.appendBreadcrumb = appendBreadcrumb;
 </cfscript>
 
 <cfif request.speck.portal.qKeyword.recordCount>
