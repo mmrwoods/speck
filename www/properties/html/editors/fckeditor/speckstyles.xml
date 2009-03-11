@@ -4,6 +4,10 @@
 	<!-- Block Styles -->
 	<Style name="Normal" element="p" />
 	
+	<Style name="Clear Images" element="div" >
+		<Attribute name="class" value="clearfix" />
+	</Style>
+	
 	<!-- Some standard styles used with yaml and some other css frameworks -->
 	<!--
 	<Style name="Note" element="div" >
@@ -30,6 +34,16 @@
 	-->
 
 	<!-- Inline Styles -->
+	
+	<Style name="Red Text" element="span">
+		<Style name="color" value="red" />
+	</Style>
+	<Style name="Yellow Background" element="span">
+		<Style name="background-color" value="yellow" />
+	</Style>
+	<Style name="Green Background" element="span">
+		<Style name="background-color" value="lime" />
+	</Style>
 
 	<Style name="Subscript" element="sub" />
 	<Style name="Superscript" element="sup" />
@@ -37,21 +51,21 @@
 	<Style name="Big" element="big" />
 	<Style name="Small" element="small" />
 	<Style name="Typewriter" element="tt" />
+	
+	<Style name="Cited Work" element="cite" />
+	<Style name="Inline Quotation" element="q" />	
 
+	<Style name="Deleted Text" element="del" />
+	<Style name="Inserted Text" element="ins" />
+	
 	<Style name="Computer Code" element="code" />
 	<Style name="Keyboard Phrase" element="kbd" />
 	<Style name="Sample Text" element="samp" />
 	<Style name="Variable" element="var" />
 
-	<Style name="Deleted Text" element="del" />
-	<Style name="Inserted Text" element="ins" />
-
-	<Style name="Cited Work" element="cite" />
-	<Style name="Inline Quotation" element="q" />
-
 	<!-- Object Styles -->
 
-	<Style name="Image on Left" element="img">
+	<!--<Style name="Image on Left" element="img">
 		<Attribute name="style" value="padding: 5px; margin-right: 5px" />
 		<Attribute name="border" value="2" />
 		<Attribute name="align" value="left" />
@@ -60,6 +74,6 @@
 		<Attribute name="style" value="padding: 5px; margin-left: 5px" />
 		<Attribute name="border" value="2" />
 		<Attribute name="align" value="right" />
-	</Style>
+	</Style>-->
 	
 </Styles>

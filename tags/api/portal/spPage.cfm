@@ -288,6 +288,28 @@ Licensed under the Academic Free License version 2.1
 <meta name="generator" content="SpeckCMS" />
 <meta name="description" content="#replace(description,"""","&quot;","all")#" />
 <meta name="keywords" content="#replace(keywords,"""","&quot;","all")#" />
+<style type="text/css">
+/* float clearing for IE6 */
+* html .clearfix{
+  height: 1%;
+  overflow: visible;
+}
+/* float clearing for IE7 */
+*+html .clearfix{
+  min-height: 1%;
+}
+/* float clearing for everyone else */
+.clearfix:after {
+	content: ".";
+	display: block;
+	font-size:0;
+	height: 0;
+	clear: both;
+	visibility: hidden;
+}
+/* required for safari */
+.clearfix { display: block; }
+</style>
 </cfoutput>
 
 <cfif len(request.speck.portal.stylesheet)>

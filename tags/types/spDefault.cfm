@@ -547,7 +547,8 @@ Licensed under the Academic Free License version 2.1
 					
 					<cfif isDefined("stPD.hint") and len(stPD.hint)>
 					
-						<cfoutput>&nbsp;<span class="hint" onmouseover="return escape('#jsStringFormat(stPD.hint)#');"><!--- ? ---></span>&nbsp;</cfoutput>
+						<!--- note: that space within the span tags is necessary for IE6 --->
+						<cfoutput>&nbsp;<span class="hint" onmouseover="return escape('#jsStringFormat(stPD.hint)#');"><!--- ? ---> </span>&nbsp;</cfoutput>
 
 					</cfif>
 

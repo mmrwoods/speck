@@ -254,33 +254,33 @@ Licensed under the Academic Free License version 2.1
 						input = reReplaceNoCase(input,"<p[^>]*>","<p>","all");
 						// remove any existing end paragraph tags (we'll insert these as appropriate later)
 						input = reReplaceNoCase(input,"</p[[:space:]]*>","","all");
-						// remove paragraph tags from within other block level elements, with the exception of divs
+						// remove paragraph tags from within other block level elements
 						do {
-							input = reReplaceNoCase(input,"(<(h[1-6]|dl|ol|ul|td|li|address|code)>)([^<]*)<p>","\1\3 ","all");
-						} while ( reFindNoCase("(<(h[1-6]|dl|ol|ul|td|li|address|code)>)([^<]*)<p>",input) );
+							input = reReplaceNoCase(input,"(<(h[1-6]|dl|ol|ul|td|li|address|div|code)>)([^<]*)<p>","\1\3 ","all");
+						} while ( reFindNoCase("(<(h[1-6]|dl|ol|ul|td|li|address|div|code)>)([^<]*)<p>",input) );
 						
 						// insert opening paragraph tags
 						if ( left(input,1) neq "<" and left(input,3) neq "<p>" )
 							input = "<p>" & input;
-						input = reReplaceNoCase(input,"(</(h[1-6]|dl|ol|ul|table|script|object|address|code|hr)[^>]*>)[[:space:]]*([A-Za-z0-9]{1})","\1#nl#<p>\3","all");
+						input = reReplaceNoCase(input,"(</(h[1-6]|dl|ol|ul|table|script|object|address|code|div|hr)[^>]*>)[[:space:]]*([A-Za-z0-9]{1})","\1#nl#<p>\3","all");
 				
 						// insert closing paragraph tags
 						paragraphArray = listToArray(replace(input,"<p>",chr(30),"all"),chr(30));
 						for ( i=1; i lte arrayLen(paragraphArray); i = i +1 ) {
-							if ( reFindNoCase("<(h[1-6]|dl|ol|ul|table|script|object|address|code|hr)[^>]*>",paragraphArray[i]) ) {
-								output = output & "<p>" & reReplaceNoCase(paragraphArray[i],"(<(h[1-6]|dl|ol|ul|table|script|object|address|code|hr)[^>]*>)","</p>#nl#\1");
+							if ( reFindNoCase("<(h[1-6]|dl|ol|ul|table|script|object|address|code|div|hr)[^>]*>",paragraphArray[i]) ) {
+								output = output & "<p>" & reReplaceNoCase(paragraphArray[i],"(<(h[1-6]|dl|ol|ul|table|script|object|address|code|div|hr)[^>]*>)","</p>#nl#\1");
 							} else {
 								output = output & "<p>" & trim(paragraphArray[i]) & "</p>" & nl;
 							}
 						}
 				
-						// tidy up an empty paragraphs (browsers are supposed to ignore them, but I'm taking no chances)
+						// tidy up any empty paragraphs (browsers are supposed to ignore them, but I'm taking no chances)
 						output = reReplace(output,"<p>[[:space:]]*</p>","","all");
 						return output;
 					}
 				</cfscript>
 				
-				<cfset newValue = forceParagraphs(newValue)>			
+				<cfset newValue = forceParagraphs(newValue)>
 			
 			</cfif>
 			
