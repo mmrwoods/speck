@@ -457,7 +457,7 @@ Licensed under the Academic Free License version 2.1
 	 
 	
 	<cf_spHandler method="summary">
-	
+
 		<cfscript>
 			cssClass = "article_summary";
 			if ( content.spRowNumber eq content.spStartRow ) {

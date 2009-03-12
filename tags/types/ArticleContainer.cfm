@@ -23,25 +23,16 @@ Licensed under the Academic Free License version 2.1
 		
 	<cf_spHandler method="display">
 	
-		<cfparam name="attributes.titleElement" default="h3"> 
-		<cfparam name="attributes.showThumbnail" default="no" type="boolean">
-		<cfparam name="attributes.embedImage" default="no" type="boolean">
-		<cfparam name="attributes.readMoreCaption" default="&raquo;&nbsp;read more">
-		<cfparam name="attributes.separator" default="<span style='display:block;clear:both;height:0;font:0/0;'>&nbsp;</span>">
-		<cfparam name="attributes.properties" default="title,summary,thumbnailImage,thumbnailImageDimensions">
-		
+		<!--- we don't want to pass the caller attributes to spContentGet, so call it separately --->
+		<cf_spContentGet type="Article" id="#content.articles#" orderByIds="yes" r_qContent="qContent">
+
+		<!--- render the query results using spContent --->
 		<cf_spContent 
-				type="Article" 
-				id="#content.articles#" 
-				method="summary" 
-				properties="#attributes.properties#"
-				enableAdminLinks="no"
-				showThumbnail="#attributes.showThumbnail#"
-				readMoreCaption="#attributes.readMoreCaption#"
-				embedImage="#attributes.embedImage#"
-				separator="#attributes.separator#"
-				titleElement="#attributes.titleElement#"
-				orderByIds="yes">
+			type="Article" 
+			qContent="#qContent#" 
+			method="summary"
+			enableAdminLinks="no"
+			attributeCollection="#caller.attributes#">				
 	
 	</cf_spHandler>
 	
