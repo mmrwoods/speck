@@ -2,9 +2,11 @@
 <Styles>
 
 	<!-- Block Styles -->
-	<Style name="Normal" element="p" />
+	<Style name="Normal" element="p" >
+		<Attribute name="class" value="" />
+	</Style>
 	
-	<Style name="Clear Images" element="div" >
+	<Style name="Clear Images" element="p" >
 		<Attribute name="class" value="clearfix" />
 	</Style>
 	

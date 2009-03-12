@@ -465,7 +465,7 @@ Licensed under the Academic Free License version 2.1
 		input = reReplaceNoCase(input,"(<br[[:space:]]*/?>)([[:space:]]*)(</(p|h[1-6]|dl|ol|ul|td|li|address|code)>)","\3","all");
 		//input = reReplaceNoCase(input,"(<p>[[:space:]]*){1,}","<p>","all");
 		// remove attributes from existing paragraph tags and lowercase all existing paragraph tags
-		input = reReplaceNoCase(input,"<p[^>]*>","<p>","all");
+		// input = reReplaceNoCase(input,"<p[^>]*>","<p>","all");
 		// remove any existing end paragraph tags (we'll insert these as appropriate later)
 		input = reReplaceNoCase(input,"</p[[:space:]]*>","","all");
 		// remove paragraph tags from within other block level elements
