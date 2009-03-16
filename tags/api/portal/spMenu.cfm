@@ -255,6 +255,7 @@ Licensed under the Academic Free License version 2.1
 						a.r_menu = ""; // never return the menu as a variable
 						if ( not attributes.levelSpecificSelectors ) {
 							a.listId = ""; // ids are unique
+							a.listClass = "";
 						}
 						if ( isNumeric(tabIndex) ) {
 							a.tabIndex = tabIndex; // pass the tab index along to keep the sequence in proper order

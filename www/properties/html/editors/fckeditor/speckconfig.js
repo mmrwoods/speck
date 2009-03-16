@@ -33,7 +33,7 @@ FCKConfig.ToolbarSets["Basic"] = [
 ] ;
 
 FCKConfig.ToolbarSets["Minimal"] = [
-	['PasteText','-','SpellCheck','-','Bold','Italic','-','Subscript','Superscript','-','OrderedList','UnorderedList','-','Link','Unlink','Anchor','Image','SpecialChar','-','ShowBlocks','Source']
+	['PasteText','-','Bold','Italic','Underline','StrikeThrough','-','Subscript','Superscript','-','OrderedList','UnorderedList','-','Link','Unlink','-','SpecialChar']
 ] ;
 
 // FCKConfig.ImageBrowser = false;
