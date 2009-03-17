@@ -407,7 +407,7 @@ Licensed under the Academic Free License version 2.1
 					<cfoutput>
 					<script>
 						function delete_#lCase(stPD.name)#() {
-							if (window.confirm("Delete #lCase(stPD.caption)# file #fileName#?\n\nAll changes to the form will be saved.")) {
+							if (window.confirm("Delete file #fileName#?\n\nAll changes to the form will be saved.")) {
 								if ( document.speditform.spDeleteAssets.value == "" ) {
 									document.speditform.spDeleteAssets.value = "#stPD.name#";
 								} else {
@@ -420,14 +420,16 @@ Licensed under the Academic Free License version 2.1
 							}
 						}
 					</script>
-					&nbsp;<input type="button" class="button" value="Delete" title="Delete #lCase(stPD.caption)# file #fileName#" onclick="delete_#lCase(stPD.name)#();" />
+					<input type="button" class="button" value="Delete" title="Delete #lCase(stPD.caption)# file #fileName#" onclick="delete_#lCase(stPD.name)#();" />
 					</cfoutput>
 				
 				</cfif>
 				
 				<cfset fileExt = listLast(fileName,".")>
 				
-				<cfoutput><div style="margin:3px;" class="alternateRow"></cfoutput>
+				<cfoutput><div style="margin:3px;" class="alternateRow">
+				<!---<table cellpadding="0" cellspacing="0" border="0" width="100%"><tr><td>--->
+				</cfoutput>
 				
 				<cfif listFindNoCase("png,gif,jpg,jpeg",fileExt)>
 				
@@ -466,6 +468,12 @@ Licensed under the Academic Free License version 2.1
 					<cfoutput><a href="#value#" target="_blank">#fileName#</a></cfoutput>
 					
 				</cfif>
+
+				<!---
+				<cfoutput>
+				</td><td align="right"><input type="button" class="button" value="Delete"></td></tr></table>
+				</cfoutput>
+				--->
 				
 				<cfoutput></div></cfoutput>
 				

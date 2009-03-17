@@ -536,10 +536,12 @@ Licensed under the Academic Free License version 2.1
 						value=#displayValue#>	
 				
 				<cfelse>
+					
+					<cfparam name="request.speck.bFieldsetOpen" default="false">
 						
 					<cfoutput>
 					<tr <cfif len(stPD.class)>class="#stPD.class#"</cfif> <cfif len(stPD.style)>style="#stPD.style#"</cfif>>
-					<td style="padding-top:5px;" width="60"></cfoutput>
+					<td style="padding-top:5px;" <cfif not request.speck.bFieldsetOpen>width="60"</cfif>></cfoutput>
 					
 					<cfif stPD.required><cfoutput><span class="required">*</span></cfoutput></cfif>
 					
