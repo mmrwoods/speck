@@ -362,7 +362,7 @@ Licensed under the Academic Free License version 2.1
 
 	<cfoutput>
 	<tr>
-	<td nowrap="yes"><label for="notes">Notes</label>&nbsp;<span class="hint" onmouseover="return escape('The notes field is only accessible from this window. Standard users cannot view or edit their own notes.');">?</span>&nbsp;</td>
+	<td nowrap="yes"><label for="notes">Notes</label>&nbsp;<span class="hint" onmouseover="return escape('The notes field is only accessible from this window. Standard users cannot view or edit their own notes.');"> </span>&nbsp;</td>
 	<td colspan="4">
 		<textarea name="notes" id="notes" rows="3" cols="80">#form.notes#</textarea>
 	</td>
@@ -391,12 +391,12 @@ Licensed under the Academic Free License version 2.1
 
 	<cfoutput>
 	<tr>
-	<td style="vertical-align:middle" nowrap="yes"><label for="suspended">Account Status</label>&nbsp;<span class="hint" onmouseover="return escape('Set status to suspended to prevent a user from logging in without deleting them.');">?</span>&nbsp;</td>
+	<td style="vertical-align:middle" nowrap="yes"><label for="suspended">Account Status</label>&nbsp;<span class="hint" onmouseover="return escape('Set status to suspended to prevent a user from logging in without deleting them.');"> </span>&nbsp;</td>
 	<td style="vertical-align:middle" colspan="2">
 		<input type="radio" name="suspended" value="0"<cfif not form.suspended> checked="yes"</cfif><cfif bSuperUser> disabled="yes"</cfif> />Active
 		<input type="radio" name="suspended" value="1"<cfif form.suspended> checked="yes"</cfif><cfif bSuperUser> disabled="yes"</cfif> />Suspended
 	</td>
-	<td style="vertical-align:middle" nowrap="yes"><label for="expires">Account Expires</label>&nbsp;<span class="hint" onmouseover="return escape('Set an expiry date for this account to prevent a user logging in from that date forward.');">?</span>&nbsp;</td>
+	<td style="vertical-align:middle" nowrap="yes"><label for="expires">Account Expires</label>&nbsp;<span class="hint" onmouseover="return escape('Set an expiry date for this account to prevent a user logging in from that date forward.');"> </span>&nbsp;</td>
 	<td style="vertical-align:middle" colspan="2">
 		<input type="text" name="expires" value="#form.expires#" <cfif bSuperUser> disabled="yes"</cfif> onfocus="if (this.value == 'YYYY-MM-DD' ) { this.value='' };" size="14" maxlength="10" style="vertical-align:middle;">
 		<a href="javascript:return false;" 

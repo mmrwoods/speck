@@ -139,7 +139,7 @@ Licensed under the Academic Free License version 2.1
 	
 				</cfif>
 				
-				<cfoutput><a href="#content.document#" target="#attributes.target#"><img class="document_display_image" title="Download file" alt="<cfif len(icon) lte 4>#uCase(icon)#<cfelse>#request.speck.capitalize(icon)#</cfif> icon" style="float:none;border:none;" src="/speck/properties/asset/icons/#icon#.png" width="16" height="16" border="0" align="absmiddle"></a>&nbsp;</cfoutput>	
+				<cfoutput><a href="#content.document#" target="#attributes.target#"><img class="document_display_icon" title="Download file" alt="<cfif len(icon) lte 4>#uCase(icon)#<cfelse>#request.speck.capitalize(icon)#</cfif> icon" style="float:none;border:none;" src="/speck/properties/asset/icons/#icon#.png" width="16" height="16" border="0" align="absmiddle"></a>&nbsp;</cfoutput>	
 				
 			</cfif>
 			
