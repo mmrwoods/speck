@@ -344,25 +344,41 @@ Licensed under the Academic Free License version 2.1
 <cfparam name="request.speck.portal.scriptaculous" default="false">
 <cfparam name="request.speck.portal.lightbox" default="false">
 
-<cfif request.speck.portal.prototype or request.speck.portal.scriptaculous or request.speck.portal.lightbox>
+<cfscript>
+	if ( request.speck.portal.lightbox ) {
+		request.speck.portal.prototype = true;
+		if ( not isBoolean(request.speck.portal.scriptaculous) ) {
+			if ( not listFind(request.speck.portal.scriptaculous,"builder") ) {
+				listPrepend(request.speck.portal.scriptaculous,"builder");
+			}
+			if ( not listFind(request.speck.portal.scriptaculous,"effects") ) {
+				listPrepend(request.speck.portal.scriptaculous,"effects");
+			}
+		} else if ( not request.speck.portal.scriptaculous ) {
+			request.speck.portal.scriptaculous = "effects,builder";
+		}
+	} else if ( not isBoolean(request.speck.portal.scriptaculous) or request.speck.portal.scriptaculous ) {
+		request.speck.portal.prototype = true;
+	}
+</cfscript>
+
+<cfif request.speck.portal.prototype>
 
 	<cfoutput><script type="text/javascript" src="/speck/javascripts/prototype.js"></script>#nl#</cfoutput>
 	
 </cfif>
 
-<cfif request.speck.portal.scriptaculous>
+<cfif not isBoolean(request.speck.portal.scriptaculous)>
+	
+	<cfoutput><script type="text/javascript" src="/speck/javascripts/scriptaculous.js?load=#request.speck.portal.scriptaculous#"></script>#nl#</cfoutput>
+	
+<cfelseif request.speck.portal.scriptaculous>
 
 	<cfoutput><script type="text/javascript" src="/speck/javascripts/scriptaculous.js"></script>#nl#</cfoutput>
-
+	
 </cfif>
 
 <cfif request.speck.portal.lightbox>
-
-	<cfif not request.speck.portal.scriptaculous>
-
-		<cfoutput><script type="text/javascript" src="/speck/javascripts/scriptaculous.js?load=effects,builder"></script>#nl#</cfoutput>
-	
-	</cfif>
 
 	<cfoutput><script type="text/javascript" src="/speck/javascripts/lightbox.js"></script>#nl#</cfoutput>
 	<cfoutput><link rel="stylesheet" href="/speck/stylesheets/lightbox.css" type="text/css" media="screen" />#nl#</cfoutput>

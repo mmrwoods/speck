@@ -905,9 +905,9 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 </cfif>
 
 <!--- copy application.speck.portal into request scope for every request --->
-<cflock scope="application" type="readonly" timeout="5">
+<!--- <cflock scope="application" type="readonly" timeout="5">
 <cfset request.speck.portal = duplicate(application.speck.portal)>
-</cflock>
+</cflock> --->
 
 <!--- cache control header (not sure about this, need to do a bit of reading ;-) --->
 <cfheader name="Cache-Control" value="private, no-cache, must-revalidate">

@@ -12,8 +12,14 @@ Licensed under the Academic Free License version 2.1
 <cfparam name="attributes.selectedClass" default=""> <!--- class for current keyword link --->
 <cfparam name="attributes.prefix" default=""> <!--- prefix each link caption with this string --->
 <cfparam name="attributes.suffix" default=""> <!--- suffix each link caption with this string --->
-<cfparam name="attributes.truncate" default="false" type="boolean">
-<cfparam name="attributes.truncateAt" default="30" type="numeric">
+<cfparam name="attributes.truncate" default="false" type="boolean"> <!--- true or number of chars to truncate at --->
+<cfif isNumeric(attributes.truncate)>
+	<cfset truncateAt = attributes.truncate>
+<cfelseif structKeyExists(attributes,"truncateAt")> <!--- old deprecated attribute --->
+	<cfset truncateAt = attributes.truncateAt>
+<cfelse>
+	<cfset truncateAt = 30>
+</cfif>
 <cfparam name="attributes.wrap" default="true" type="boolean"> <!--- if false replace spaces with &nbsp; in link captions --->
 <cfparam name="attributes.case" default=""> <!--- set to UPPER, LOWER or CAPITALIZE/CAPITALISE to force case --->
 <cfparam name="attributes.tabIndex" default=""> <!--- add tabIndex to links starting at attributes.tabIndex value (which must be a positive integer) --->
@@ -91,9 +97,9 @@ Licensed under the Academic Free License version 2.1
 			</cfswitch>
 		</cfif>
 		
-		<cfif attributes.truncate and attributes.truncateAt gt 0 and len(thisCaption) gt attributes.truncateAt>
+		<cfif attributes.truncate and len(thisCaption) gt truncateAt>
 		
-			<cfset thisCaption = left(thiscaption,attributes.truncateAt-3) & "...">
+			<cfset thisCaption = left(thiscaption,truncateAt-3) & "...">
 
 		</cfif>
 		
