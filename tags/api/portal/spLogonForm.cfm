@@ -13,6 +13,13 @@
 			queryString = listAppend(queryString,lCase(key) & "=" & urlEncodedFormat(url[key]),"&");
 		}
 	}
+	if ( not structKeyExists(form,"referrer") ) {
+		if ( len(cgi.HTTP_REFERER) ) {
+			form.referrer = cgi.HTTP_REFERER;
+		} else {
+			form.referrer = "";
+		}
+	}
 </cfscript>
 
 <cfoutput>
@@ -28,6 +35,7 @@
 	//-->
 </script>
 <form id="spLogonForm" name="spLogonForm" action="#cgi.script_name#?#queryString#" method="post">
+<input type="hidden" name="referer" value="#form.referrer#" />
 </cfoutput>
 
 <cfif attributes.fieldset>
@@ -73,7 +81,12 @@
 	<td>&nbsp;</td>
 	</tr>
 	<tr>
-	<td colspan="3" align="right" style="padding:3px;"><input type="submit" class="form_button" value="Login" /></td>
+	<td colspan="3" align="right" style="padding:3px;">
+	<input type="submit" class="form_button" value="Login" />
+	<cfif len(form.referrer)>
+		<input type="button" class="form_button" onclick="window.location.href='#form.referrer#';" value="Cancel">
+	</cfif>
+	</td>
 	</tr>
 </cfoutput>
 

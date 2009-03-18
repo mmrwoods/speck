@@ -283,7 +283,12 @@ Licensed under the Academic Free License version 2.1
 	</cf_spPropertyHandlerMethod>
 	
 
-	<!--- only call other methods if we have to - a nifty little performance hack from Robin --->
+	<!--- 
+	A nifty little performance hack from Robin...
+	Avoid calling spPropertyHandlerMethod for each method when method is contentGet.
+	spPropertyHandlerMethod will immediately exit when the method name doesn't match
+	the method name passed to this template, but this avoids even bothering with that.
+	--->
 	<cfif attributes.method neq "contentGet">
 	
 		
