@@ -1391,7 +1391,7 @@ I'm sure this all used to be necessary in CF5
 <cflock scope="APPLICATION" timeout="3" type="READONLY">
 <cfscript>
 	for (key in application.speck) {
-		if ( not listFindNoCase("cache,queryCache,wasCached,securityZones",key) ) {
+		if ( not listFindNoCase("cache,queryCache,wasCached,securityZones,portal",key) ) {
 			request.speck[key] = duplicate(application.speck[key]);
 		}
 	}

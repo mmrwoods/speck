@@ -37,4 +37,8 @@ Licensed under the Academic Free License version 2.1
 	}
 </cfscript>
 	
+<!--- copy application.speck.portal into request scope for every request (Application.cfm calls spApp, not spPortal) --->
+<cflock scope="application" type="readonly" timeout="5">
+<cfset request.speck.portal = duplicate(application.speck.portal)>
+</cflock>
 	
