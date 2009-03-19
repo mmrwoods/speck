@@ -434,12 +434,20 @@ Licensed under the Academic Free License version 2.1
 	function getDomainFromHostName() {
 		// some crude code to get an email domain from the current host name
 		var domain = "";
+		var domainElements = 2;
 		if ( arrayLen(arguments) ) {
 			domain = lCase(arguments[1]);
 		} else {
 			domain = lCase(cgi.HTTP_HOST);
 		}
-		if ( listLen(domain,".") gt 2 ) {
+		if ( listFind("uk,au",listLast(domain,".")) ) {
+			// tld is a country that issues domains at the third level.
+			// This only handles the listed countries and assumes that 
+			// all domains issued by the country domain registry are 
+			// at the third level (which isn't necessarily true). 
+			domainElements = 3;
+		}
+		while ( listLen(domain,".") gt domainElements ) {
 			domain = listDeleteAt(domain,1,".");
 		}
 		return lCase(domain);
