@@ -466,7 +466,7 @@ Licensed under the Academic Free License version 2.1
 		
 		var nl = chr(13) & chr(10);
 		var blockElementsPattern = "address|blockquote|div|dl|form|h1|h2|h3|h4|h5|h6|hr|ol|p|pre|table|ul";
-		var cleanElementsPattern = "address|blockquote|div|dd|dt|h1|h2|h3|h4|h5|h6|li|p|pre|td|th";
+		var cleanElementsPattern = "address|div|dd|dt|h1|h2|h3|h4|h5|h6|li|pre|td|th";
 
 		// tidy up the html
 		// rip out any non-breaking spaces
@@ -485,8 +485,8 @@ Licensed under the Academic Free License version 2.1
 		
 		// remove paragraph tags from within other content elements
 		do {
-			html = reReplaceNoCase(html,"(<(#cleanElementsPattern#)[^>]*>)([^<]*)<p>","\1\3 ","all");
-		} while ( reFindNoCase("(<(#cleanElementsPattern#)[^>]*>)([^<]*)<p>",html) );
+			html = reReplaceNoCase(html,"(<(#cleanElementsPattern#)[^>]*>)([^<]*)<p[^>]*>","\1\3 ","all");
+		} while ( reFindNoCase("(<(#cleanElementsPattern#)[^>]*>)([^<]*)<p[^>]*>",html) );
 		
 		// insert opening paragraph tags
 		if ( not reFindNoCase("^<(#blockElementsPattern#)>",html) ) {
@@ -501,8 +501,13 @@ Licensed under the Academic Free License version 2.1
 		}
 
 		// tidy up any empty paragraphs (browsers are supposed to ignore them, but I'm taking no chances)
-		// this shouldn't be necessary anymore
-		// html = reReplace(html,"<p>[[:space:]]*</p>","","all");
+		html = reReplace(html,"<p[^>]*>[[:space:]]*</p>","","all");
+		
+		// force content of blockquotes to be wrapped in paragraph tags...
+		html = reReplace(html,"(<blockquote>)[[:space:]]*([A-Za-z0-9]{1})","\1<p>\2","all");
+		html = reReplace(html,"(<blockquote>)[[:space:]]*(<[^p])","\1<p>\2","all");
+		html = reReplace(html,"([A-Za-z0-9]{1})[[:space:]]*(</blockquote>)","\1</p>\2","all");
+		html = reReplace(html,"(</[^p][^>]*>)[[:space:]]*(</blockquote>)","\1</p>\2","all");
 		
 		return html;
 	}
