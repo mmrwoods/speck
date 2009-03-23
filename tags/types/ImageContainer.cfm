@@ -8,34 +8,34 @@ Licensed under the Academic Free License version 2.1
 --->
 
 <cf_spType
-        name="ImageContainer"
-        description="Image Container">
-
-        <cf_spProperty
-                name="images"
-                caption="Images"
-                type="Picker"
-                contentType="Image"
-                required="yes"
-                maxSelect="25"
-                dependent="#attributes.context.getConfigString("types","image_container","images_dependent","no")#"
-                showSort="yes">
-
-        <cf_spHandler method="display">
-
-                <cfparam name="attributes.columns" default="1">
-                <cfparam name="attributes.showCaption" default="yes">
-
-                <cf_spContent
-                        type="Image"
-                        method="thumbnail"
-                        id="#content.images#"
-                        enableAdminLinks="no"
-                        showCaption="#attributes.showCaption#"
-                        columns="#attributes.columns#"
-                        orderByIds="yes">
-
-        </cf_spHandler>
+	name="ImageContainer"
+	description="Image Container">
+	
+	<cf_spProperty
+		name="images"
+		caption="Images"
+		type="Picker"
+		contentType="Image"
+		required="yes"
+		maxSelect="25"
+		dependent="#attributes.context.getConfigString("types","image_container","images_dependent","no")#"
+		showSort="yes">
+	
+	<cf_spHandler method="display">
+		
+		<cfparam name="attributes.columns" default="1">
+		<cfparam name="attributes.showCaption" default="yes">
+		
+		<cf_spContent
+			type="Image"
+			method="thumbnail"
+			id="#content.images#"
+			enableAdminLinks="no"
+			showCaption="#attributes.showCaption#"
+			columns="#attributes.columns#"
+			orderByIds="yes">
+	
+	</cf_spHandler>
 
 </cf_spType>
 
