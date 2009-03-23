@@ -521,7 +521,39 @@ Licensed under the Academic Free License version 2.1
 		
 		<cfif attributes.replaceKeywordInUrl and len(content.spKeywords)>
 			
-			<cfset fullArticleUrl = request.speck.getDisplayMethodUrl(urlId,content.title,listFirst(content.spKeywords))>
+			<!--- replace the keyword in the url with the first valid one from content.spKeywords --->
+			<cfset fullArticleKeyword = listFirst(content.spKeywords)>
+
+			<cfif structKeyExists(request.speck,"portal") and structKeyExists(request.speck.types.article,"keywordTemplates") and len(request.speck.types.article.keywordTemplates)>
+			
+				<!--- get a list of keywords where the article templates are used, we should only use these keywords if possible --->
+				<cfquery name="qValidKeywords" dbtype="query">
+					SELECT keyword 
+					FROM request.speck.qKeywords 
+					WHERE template IN (#listQualify(request.speck.types.article.keywordTemplates,"'")#)
+				</cfquery>
+				
+				<cfset lValidKeywords = valueList(qValidKeywords.keyword)>
+				
+				<cfif len(lValidKeywords) and not listFind(lValidKeywords,fullArticleKeyword) and listLen(content.spKeywords) gt 1>
+				
+					<!--- first keyword in spKeywords doesn't look like it can display an article, try and find the first one that can --->
+					<cfloop list="#listRest(content.spKeywords)#" index="keyword">
+						
+						<cfif listFind(lValidKeywords,keyword)>
+						
+							<cfset fullArticleKeyword = keyword>
+							<cfbreak>
+						
+						</cfif>
+						
+					</cfloop>
+					
+				</cfif>
+
+			</cfif>
+			
+			<cfset fullArticleUrl = request.speck.getDisplayMethodUrl(urlId,content.title,fullArticleKeyword)>
 		
 		<cfelse>
 			

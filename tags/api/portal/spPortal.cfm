@@ -119,25 +119,7 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 	
 	<!--- these are the only configuration settings which should generally need to be set per application --->
 	<cfparam name="stPortal.name" default="#attributes.name#"> <!--- name of site, can be used by shared templates when outputting site name --->
-	
-	<cfscript>
-		// copied from spFunctions
-		function getDomainFromHostName() {
-			// some crude code to get an email domain from the current host name
-			var domain = "";
-			if ( arrayLen(arguments) ) {
-				domain = lCase(arguments[1]);
-			} else {
-				domain = lCase(cgi.HTTP_HOST);
-			}
-			if ( listLen(domain,".") gt 2 ) {
-				domain = listDeleteAt(domain,1,".");
-			}
-			return lCase(domain);
-		}		
-	</cfscript>
-	<cfparam name="stPortal.domain" default="#getDomainFromHostName()#">
-	
+	<cfparam name="stPortal.domain" default=""> <!--- domain name used by default when building email address etc. - if left blank, will be derived from host name --->
 	<!---<cfparam name="stPortal.description" default="">---> <!--- default meta description for site pages. OBSOLETE - DO NOT USE, HAS NO EFFECT ANYMORE --->
 	<!---<cfparam name="stPortal.keywords" default="">---> <!--- default meta keywords for site pages. OBSOLETE - DO NOT USE, HAS NO EFFECT ANYMORE --->
 	<cfparam name="stPortal.stylesheet" default="">
@@ -848,6 +830,13 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 		<cfset application.speck.securityZones.portal.users.options.encryption = stPortal.passwordEncryption>
 		</cflock>
 		
+	</cfif>
+	
+	<cfif not len(trim(stPortal.domain))>
+	
+		<!--- derive domain name from host name - note: this code is here, after spApp, because we use the getDomainFromHost() name function from spFunctions --->
+		<cfset stPortal.domain = request.speck.getDomainFromHostName()>
+	
 	</cfif>
 	
 	<cfif request.speck.qKeywords.recordCount eq 0>
