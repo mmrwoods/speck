@@ -453,52 +453,58 @@ Licensed under the Academic Free License version 2.1
 		return lCase(domain);
 	}
 	
-	function forceParagraphs(input) {
-		// ruthless, ugly, no holds barred function to force the use of paragraph tags in input
-		// this WILL screw up some formatting, use with caution
-		var nl = chr(13) & chr(10);
-		var paragraphArray = arrayNew(1);
-		var output = "";
+	function forceParagraphs(html) {
 		
-		// tidy up the input
+		// force the use of paragraph tags in html - useful when you're trying to force structural markup
+		
+		// This function absolutely brutal and might make a balls of your html. It assumes that any content 
+		// not already inside a block level element should be within a paragraph. In the course of forcing 
+		// this outcome, it removes all end paragraph tags, inserts opening tags as necessary after the 
+		// closing of existing block level elements (i.e. if they're missing) and then just slaps a load of 
+		// end paragraph tags in before opening block level elements. The only significant issue I can see
+		// with this is it'll remove paragraph tags from within divs, which shouldn't really be a problem.
+		
+		var nl = chr(13) & chr(10);
+		var blockElementsPattern = "address|blockquote|div|dl|form|h1|h2|h3|h4|h5|h6|hr|ol|p|pre|table|ul";
+		var cleanElementsPattern = "address|blockquote|div|dd|dt|h1|h2|h3|h4|h5|h6|li|p|pre|td|th";
+
+		// tidy up the html
 		// rip out any non-breaking spaces
-		input = trim(input);		
-		input = replaceNoCase(input,"&nbsp;"," ","all");
-		input = replaceNoCase(input,"&##160;"," ","all");
+		html = trim(html);		
+		html = replaceNoCase(html,"&nbsp;"," ","all");
+		html = replaceNoCase(html,"&##160;"," ","all");
 		// replace sequences of two or more br tags with a p tag
-		input = reReplaceNoCase(input,"(<br[[:space:]]*/?>[[:space:]]*){2,}","<p>","all");
-		// remove br tags from the beginning of block level elements
-		input = reReplaceNoCase(input,"(<(p|h[1-6]|dl|ol|ul|td|li|address|code)>)([[:space:]]*)<br[[:space:]]*/?>","\1","all");
-		// remove br tags from the end of block level elements
-		input = reReplaceNoCase(input,"(<br[[:space:]]*/?>)([[:space:]]*)(</(p|h[1-6]|dl|ol|ul|td|li|address|code)>)","\3","all");
-		//input = reReplaceNoCase(input,"(<p>[[:space:]]*){1,}","<p>","all");
-		// remove attributes from existing paragraph tags and lowercase all existing paragraph tags
-		// input = reReplaceNoCase(input,"<p[^>]*>","<p>","all");
+		html = reReplaceNoCase(html,"(<br[[:space:]]*/?>[[:space:]]*){2,}","<p>","all");
+		
+		// clean leading and trailing br tags from content elements like dt, td, h1 etc.
+		html = reReplaceNoCase(html,"(<(#cleanElementsPattern#)>)([[:space:]]*)<br[[:space:]]*/?>","\1","all");
+		html = reReplaceNoCase(html,"(<br[[:space:]]*/?>)([[:space:]]*)(</(#cleanElementsPattern#)>)","\3","all");
+
 		// remove any existing end paragraph tags (we'll insert these as appropriate later)
-		input = reReplaceNoCase(input,"</p[[:space:]]*>","","all");
-		// remove paragraph tags from within other block level elements
+		html = reReplaceNoCase(html,"</p[[:space:]]*>","","all");
+		
+		// remove paragraph tags from within other content elements
 		do {
-			input = reReplaceNoCase(input,"(<(h[1-6]|dl|ol|ul|td|li|address|div|code)>)([^<]*)<p>","\1\3 ","all");
-		} while ( reFindNoCase("(<(h[1-6]|dl|ol|ul|td|li|address|div|code)>)([^<]*)<p>",input) );
+			html = reReplaceNoCase(html,"(<(#cleanElementsPattern#)[^>]*>)([^<]*)<p>","\1\3 ","all");
+		} while ( reFindNoCase("(<(#cleanElementsPattern#)[^>]*>)([^<]*)<p>",html) );
 		
 		// insert opening paragraph tags
-		if ( left(input,1) neq "<" and left(input,3) neq "<p>" )
-			input = "<p>" & input;
-		input = reReplaceNoCase(input,"(</(h[1-6]|dl|ol|ul|table|script|object|address|code|div|hr)[^>]*>)[[:space:]]*([A-Za-z0-9]{1})","\1#nl#<p>\3","all");
+		if ( not reFindNoCase("^<(#blockElementsPattern#)>",html) ) {
+			html = "<p>" & html;
+		}
+		html = reReplaceNoCase(html,"(</(#blockElementsPattern#)[^>]*>)[[:space:]]*([A-Za-z0-9]{1})","\1#nl#<p>\3","all");
 
 		// insert closing paragraph tags
-		paragraphArray = listToArray(replace(input,"<p>",chr(30),"all"),chr(30));
-		for ( i=1; i lte arrayLen(paragraphArray); i = i +1 ) {
-			if ( reFindNoCase("<(h[1-6]|dl|ol|ul|table|script|object|address|code|div|hr)[^>]*>",paragraphArray[i]) ) {
-				output = output & "<p>" & reReplaceNoCase(paragraphArray[i],"(<(h[1-6]|dl|ol|ul|table|script|object|address|code|div|hr)[^>]*>)","</p>#nl#\1");
-			} else {
-				output = output & "<p>" & trim(paragraphArray[i]) & "</p>" & nl;
-			}
+		html = reReplaceNoCase(html,"([A-Za-z0-9]{1})[[:space:]]*(<(#blockElementsPattern#)[^>]*>)","\1</p>#nl#\2","all");
+		if ( not reFindNoCase("</(#blockElementsPattern#)>$",html) ) {
+			html = trim(html) & "</p>";
 		}
 
 		// tidy up any empty paragraphs (browsers are supposed to ignore them, but I'm taking no chances)
-		output = reReplace(output,"<p>[[:space:]]*</p>","","all");
-		return output;
+		// this shouldn't be necessary anymore
+		// html = reReplace(html,"<p>[[:space:]]*</p>","","all");
+		
+		return html;
 	}
 
 	stServer.buildString = buildString;
