@@ -593,6 +593,7 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 						email #textDDLString(100)#,
 						phone #textDDLString(100)#,
 						notes #textDDLString(4000)#,
+						expires #tsDDLString#,
 						PRIMARY KEY (username)
 					)
 				</cfquery>
