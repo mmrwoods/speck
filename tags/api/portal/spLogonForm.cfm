@@ -71,7 +71,7 @@
 	<tr>
 	<td style="vertical-align:middle;padding:3px;"><label for="spLogonUser">Username</label></td>
 	<td>&nbsp;</td>
-	<td style="padding:3px;"><input type="text" class="form_field" name="spLogonUser" id="spLogonUser" value="#form.spLogonUser#" size="25" maxlength="20" /></td>
+	<td style="padding:3px;"><input type="text" class="form_field" name="spLogonUser" id="spLogonUser" value="#form.spLogonUser#" size="25" maxlength="100" /></td>
 	<td>&nbsp;</td>
 	</tr>
 	<tr>

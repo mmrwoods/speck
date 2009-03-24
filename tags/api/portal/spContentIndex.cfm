@@ -1,3 +1,13 @@
+<cfprocessingdirective pageencoding="utf-8">
+<!--- 
+WARNING: THIS FILE MUST BE SAVED UT8 ENCODED 
+If it's not UTF8 encoded, the code to normalize accented characters will fail.
+The characters on the next line have code points above 255 - if any of them 
+appear fscked up, then this template has been saved as something other than 
+UTF8 and needs to be converted back to UTF8.
+ɸʊΘѰф
+--->
+
 <cfsetting enablecfoutputonly="true">
 <!---
 This collective work is Copyright (C) 2001-2007 by Robin Hilliard (robin@zeta.org.au) and Mark Woods (mark@thickpaddy.com), 
@@ -51,6 +61,13 @@ once defined (probably with some additional cf_spType attributes).
 <cfset attributes.title = reReplace(attributes.title,"<[^>]*>","","all")>
 <cfset attributes.description = reReplace(attributes.description,"<[^>]*>","","all")>
 <cfset attributes.body = reReplace(attributes.body,"<[^>]*>","","all")>
+
+<!--- normalize some html escaped accented characters in the body (the body is just an indexable blob that shoudn't be used when outputting results) --->
+<cfset attributes.body = reReplace(attributes.body,"&([A-Za-z]{1})(grave|acute|circ|tilde|uml|ring|cedil);","\1","all")>
+
+<!--- normalize accented characters in latin1 (ideally we'd just rely on the indexing engine to deal with this, but using postgres and tsearch is a pain in the tits for this, so it's just easier to do it here) --->
+<!--- TODO: replace all the accented characters in the list with calls to chr() function to avoid any issues with the encoding of this file being changed) --->
+<cfset attributes.body = replaceList(attributes.body,'À,Á,Â,Ã,Ä,Å,Ç,È,É,Ê,Ë,Ì,Í,Î,Ï,Ñ,Ò,Ó,Ô,Õ,Ö,Ù,Ú,Û,Ü,Ý,à,á,â,ã,ä,å,ç,è,é,ê,ë,ì,í,î,ï,ñ,ò,ó,ô,õ,ö,ù,ú,û,ü,ý,ÿ','A,A,A,A,A,A,C,E,E,E,E,I,I,I,I,N,O,O,O,O,O,U,U,U,U,Y,a,a,a,a,a,a,c,e,e,e,e,i,i,i,i,n,o,o,o,o,o,u,u,u,u,y,y')>
 
 <cfloop list="title,description,body" index="attribute">
 
