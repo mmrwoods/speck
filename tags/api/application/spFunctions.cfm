@@ -503,6 +503,9 @@ Licensed under the Academic Free License version 2.1
 		// tidy up any empty paragraphs (browsers are supposed to ignore them, but I'm taking no chances)
 		html = reReplace(html,"<p[^>]*>[[:space:]]*</p>","","all");
 		
+		// clean any trailing br tags from paragraphs (closing paragraph tags could have been added after a br)
+		html = reReplaceNoCase(html,"(<br[[:space:]]*/?>)([[:space:]]*)(</p>)","\3","all");
+		
 		// force content of blockquotes to be wrapped in paragraph tags...
 		html = reReplace(html,"(<blockquote>)[[:space:]]*([A-Za-z0-9]{1})","\1<p>\2","all");
 		html = reReplace(html,"(<blockquote>)[[:space:]]*(<[^p])","\1<p>\2","all");
