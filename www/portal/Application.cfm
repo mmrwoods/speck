@@ -9,7 +9,7 @@ Licensed under the Academic Free License version 2.1
 
 <cfinclude template="../Application.cfm">
 
-<cfif not request.speck.userHasPermission("spSuper,spLive") and 
+<cfif not request.speck.userHasPermission("spSuper,spUsers") and 
 	not ( cgi.script_name eq "/speck/portal/index_content.cfm" and cgi.remote_addr eq "127.0.0.1" )>
 	
 	<cfheader statuscode="403" statustext="Access Denied">
