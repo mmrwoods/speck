@@ -21,7 +21,7 @@ Licensed under the Academic Free License version 2.1
 		</cfif>
 		
 		<cfparam name="stPD.escapeHTML" type="boolean" default="true">
-		<cfparam name="stPD.convertUnicode" type="boolean" default="false">
+		<cfparam name="stPD.convertLatin1" type="boolean" default="false">
 		<cfparam name="stPD.safeText" type="boolean" default="true">
 		<cfparam name="stPD.tidyWordHTML" type="boolean" default="true">
 		<cfparam name="stPD.allowFont" type="boolean" default="false"> <!--- allow font tags? --->
@@ -54,6 +54,9 @@ Licensed under the Academic Free License version 2.1
 	<cf_spPropertyHandlerMethod method="readFormField">
 
 		<cfset newValue = trim(value)>
+		
+		<!--- new property definition attribute - this line can be removed once all apps have been refreshed --->
+		<cfparam name="stPD.convertLatin1" type="boolean" default="false">
 		
 		<!--- 
 		hack to deal with FCKeditor stupidity.
@@ -350,9 +353,10 @@ Licensed under the Academic Free License version 2.1
 				<cfscript>	
 					function escapeHTML(inHTML) {
 					
-						// returns input with all non us-ascii characters html escaped
-						// code points 128-159 inclusive are assumed to be Windows 1252
-						// code points above 255 only escaped if CF version gte 6
+						// * Returns input with all non-latin1 characters html escaped, 
+						//   or all non-ascii characters if second argument is true.
+						// * Code points 128-159 inclusive are assumed to be Windows 1252.
+						// * Code points above 255 only escaped if CF version gte 6.
 						
 						var lFind = "";
 						var lReplace = "";
@@ -360,16 +364,21 @@ Licensed under the Academic Free License version 2.1
 						var outHTML = "";
 						var x = 1; 
 						var y = 1;
+						var convertLatin1 = ( arrayLen(arguments) gt 1 and isBoolean(arguments[2]) and arguments[2] );
 						
 						// convert windows 1252 chars to nearest equivalent html entity
 						lFind = "#chr(128)#,#chr(130)#,#chr(131)#,#chr(132)#,#chr(133)#,#chr(134)#,#chr(135)#,#chr(136)#,#chr(137)#,#chr(138)#,#chr(139)#,#chr(140)#,#chr(142)#,#chr(145)#,#chr(146)#,#chr(147)#,#chr(148)#,#chr(149)#,#chr(150)#,#chr(151)#,#chr(152)#,#chr(153)#,#chr(154)#,#chr(155)#,#chr(156)#,#chr(158)#,#chr(159)#";
 						lReplace = "&euro;,&sbquo;,&fnof;,&bdquo;,&hellip;,&dagger;,&Dagger;,&circ;,&permil;,&Scaron;,&lsaquo;,&OElig;,&##381;,&lsquo;,&rsquo;,&ldquo;,&rdquo;,&bull;,&ndash;,&mdash;,#chr(126)#,&trade;,&scaron;,&rsaquo;,&oelig;,&##382;,&Yuml;";
 						inHTML = replaceList(inHTML, lFind, lReplace);
 						
-						// replace latin1 chars not in ascii with matching html entities (latin1 code points are same as unicode)		
-						lFind = "#chr(160)#,#chr(161)#,#chr(162)#,#chr(163)#,#chr(164)#,#chr(165)#,#chr(166)#,#chr(167)#,#chr(168)#,#chr(169)#,#chr(170)#,#chr(171)#,#chr(172)#,#chr(173)#,#chr(174)#,#chr(175)#,#chr(176)#,#chr(177)#,#chr(178)#,#chr(179)#,#chr(180)#,#chr(181)#,#chr(182)#,#chr(183)#,#chr(184)#,#chr(185)#,#chr(186)#,#chr(187)#,#chr(188)#,#chr(189)#,#chr(190)#,#chr(191)#,#chr(192)#,#chr(193)#,#chr(194)#,#chr(195)#,#chr(196)#,#chr(197)#,#chr(198)#,#chr(199)#,#chr(200)#,#chr(201)#,#chr(202)#,#chr(203)#,#chr(204)#,#chr(205)#,#chr(206)#,#chr(207)#,#chr(208)#,#chr(209)#,#chr(210)#,#chr(211)#,#chr(212)#,#chr(213)#,#chr(214)#,#chr(215)#,#chr(216)#,#chr(217)#,#chr(218)#,#chr(219)#,#chr(220)#,#chr(221)#,#chr(222)#,#chr(223)#,#chr(224)#,#chr(225)#,#chr(226)#,#chr(227)#,#chr(228)#,#chr(229)#,#chr(230)#,#chr(231)#,#chr(232)#,#chr(233)#,#chr(234)#,#chr(235)#,#chr(236)#,#chr(237)#,#chr(238)#,#chr(239)#,#chr(240)#,#chr(241)#,#chr(242)#,#chr(243)#,#chr(244)#,#chr(245)#,#chr(246)#,#chr(247)#,#chr(248)#,#chr(249)#,#chr(250)#,#chr(251)#,#chr(252)#,#chr(253)#,#chr(254)#,#chr(255)#";			
-						lReplace = "&nbsp;,&iexcl;,&cent;,&pound;,&curren;,&yen;,&brvbar;,&sect;,&uml;,&copy;,&ordf;,&laquo;,&not;,&shy;,&reg;,&macr;,&deg;,&plusmn;,&sup2;,&sup3;,&acute;,&micro;,&para;,&middot;,&cedil;,&sup1;,&ordm;,&raquo;,&frac14;,&frac12;,&frac34;,&iquest;,&Agrave;,&Aacute;,&Acirc;,&Atilde;,&Auml;,&Aring;,&AElig;,&Ccedil;,&Egrave;,&Eacute;,&Ecirc;,&Euml;,&Igrave;,&Iacute;,&Icirc;,&Iuml;,&ETH;,&Ntilde;,&Ograve;,&Oacute;,&Ocirc;,&Otilde;,&Ouml;,&times;,&Oslash;,&Ugrave;,&Uacute;,&Ucirc;,&Uuml;,&Yacute;,&THORN;,&szlig;,&agrave;,&aacute;,&acirc;,&atilde;,&auml;,&aring;,&aelig;,&ccedil;,&egrave;,&eacute;,&ecirc;,&euml;,&igrave;,&iacute;,&icirc;,&iuml;,&eth;,&ntilde;,&ograve;,&oacute;,&ocirc;,&otilde;,&ouml;,&divide;,&oslash;,&ugrave;,&uacute;,&ucirc;,&uuml;,&yacute;,&thorn;,&yuml";
-						inHTML = replaceList(inHTML, lFind, lReplace);
+						if ( convertLatin1 ) {
+							
+							// replace latin1 chars not in ascii with matching html entities (latin1 code points are same as unicode)		
+							lFind = "#chr(160)#,#chr(161)#,#chr(162)#,#chr(163)#,#chr(164)#,#chr(165)#,#chr(166)#,#chr(167)#,#chr(168)#,#chr(169)#,#chr(170)#,#chr(171)#,#chr(172)#,#chr(173)#,#chr(174)#,#chr(175)#,#chr(176)#,#chr(177)#,#chr(178)#,#chr(179)#,#chr(180)#,#chr(181)#,#chr(182)#,#chr(183)#,#chr(184)#,#chr(185)#,#chr(186)#,#chr(187)#,#chr(188)#,#chr(189)#,#chr(190)#,#chr(191)#,#chr(192)#,#chr(193)#,#chr(194)#,#chr(195)#,#chr(196)#,#chr(197)#,#chr(198)#,#chr(199)#,#chr(200)#,#chr(201)#,#chr(202)#,#chr(203)#,#chr(204)#,#chr(205)#,#chr(206)#,#chr(207)#,#chr(208)#,#chr(209)#,#chr(210)#,#chr(211)#,#chr(212)#,#chr(213)#,#chr(214)#,#chr(215)#,#chr(216)#,#chr(217)#,#chr(218)#,#chr(219)#,#chr(220)#,#chr(221)#,#chr(222)#,#chr(223)#,#chr(224)#,#chr(225)#,#chr(226)#,#chr(227)#,#chr(228)#,#chr(229)#,#chr(230)#,#chr(231)#,#chr(232)#,#chr(233)#,#chr(234)#,#chr(235)#,#chr(236)#,#chr(237)#,#chr(238)#,#chr(239)#,#chr(240)#,#chr(241)#,#chr(242)#,#chr(243)#,#chr(244)#,#chr(245)#,#chr(246)#,#chr(247)#,#chr(248)#,#chr(249)#,#chr(250)#,#chr(251)#,#chr(252)#,#chr(253)#,#chr(254)#,#chr(255)#";			
+							lReplace = "&nbsp;,&iexcl;,&cent;,&pound;,&curren;,&yen;,&brvbar;,&sect;,&uml;,&copy;,&ordf;,&laquo;,&not;,&shy;,&reg;,&macr;,&deg;,&plusmn;,&sup2;,&sup3;,&acute;,&micro;,&para;,&middot;,&cedil;,&sup1;,&ordm;,&raquo;,&frac14;,&frac12;,&frac34;,&iquest;,&Agrave;,&Aacute;,&Acirc;,&Atilde;,&Auml;,&Aring;,&AElig;,&Ccedil;,&Egrave;,&Eacute;,&Ecirc;,&Euml;,&Igrave;,&Iacute;,&Icirc;,&Iuml;,&ETH;,&Ntilde;,&Ograve;,&Oacute;,&Ocirc;,&Otilde;,&Ouml;,&times;,&Oslash;,&Ugrave;,&Uacute;,&Ucirc;,&Uuml;,&Yacute;,&THORN;,&szlig;,&agrave;,&aacute;,&acirc;,&atilde;,&auml;,&aring;,&aelig;,&ccedil;,&egrave;,&eacute;,&ecirc;,&euml;,&igrave;,&iacute;,&icirc;,&iuml;,&eth;,&ntilde;,&ograve;,&oacute;,&ocirc;,&otilde;,&ouml;,&divide;,&oslash;,&ugrave;,&uacute;,&ucirc;,&uuml;,&yacute;,&thorn;,&yuml";
+							inHTML = replaceList(inHTML, lFind, lReplace);
+						
+						}
 						
 						if ( listFirst(request.speck.cfVersion) gte 6 ) {
 						
@@ -382,29 +391,21 @@ Licensed under the Academic Free License version 2.1
 							lFind = "#chr(402)#,#chr(913)#,#chr(914)#,#chr(915)#,#chr(916)#,#chr(917)#,#chr(918)#,#chr(919)#,#chr(920)#,#chr(921)#,#chr(922)#,#chr(923)#,#chr(924)#,#chr(925)#,#chr(926)#,#chr(927)#,#chr(928)#,#chr(929)#,#chr(931)#,#chr(932)#,#chr(933)#,#chr(934)#,#chr(935)#,#chr(936)#,#chr(937)#,#chr(945)#,#chr(946)#,#chr(947)#,#chr(948)#,#chr(949)#,#chr(950)#,#chr(951)#,#chr(952)#,#chr(953)#,#chr(954)#,#chr(955)#,#chr(956)#,#chr(957)#,#chr(958)#,#chr(959)#,#chr(960)#,#chr(961)#,#chr(962)#,#chr(963)#,#chr(964)#,#chr(965)#,#chr(966)#,#chr(967)#,#chr(968)#,#chr(969)#,#chr(977)#,#chr(978)#,#chr(982)#,#chr(8226)#,#chr(8230)#,#chr(8242)#,#chr(8243)#,#chr(8254)#,#chr(8260)#,#chr(8472)#,#chr(8465)#,#chr(8476)#,#chr(8482)#,#chr(8501)#,#chr(8592)#,#chr(8593)#,#chr(8594)#,#chr(8595)#,#chr(8596)#,#chr(8629)#,#chr(8656)#,#chr(8657)#,#chr(8658)#,#chr(8659)#,#chr(8660)#,#chr(8704)#,#chr(8706)#,#chr(8707)#,#chr(8709)#,#chr(8711)#,#chr(8712)#,#chr(8713)#,#chr(8715)#,#chr(8719)#,#chr(8721)#,#chr(8722)#,#chr(8727)#,#chr(8730)#,#chr(8733)#,#chr(8734)#,#chr(8736)#,#chr(8743)#,#chr(8744)#,#chr(8745)#,#chr(8746)#,#chr(8747)#,#chr(8756)#,#chr(8764)#,#chr(8773)#,#chr(8776)#,#chr(8800)#,#chr(8801)#,#chr(8804)#,#chr(8805)#,#chr(8834)#,#chr(8835)#,#chr(8836)#,#chr(8838)#,#chr(8839)#,#chr(8853)#,#chr(8855)#,#chr(8869)#,#chr(8901)#,#chr(8968)#,#chr(8969)#,#chr(8970)#,#chr(8971)#,#chr(9001)#,#chr(9002)#,#chr(9674)#,#chr(9824)#,#chr(9827)#,#chr(9829)#,#chr(9830)#";
 							lReplace = "&fnof;,&Alpha;,&Beta;,&Gamma;,&Delta;,&Epsilon;,&Zeta;,&Eta;,&Theta;,&Iota;,&Kappa;,&Lambda;,&Mu;,&Nu;,&Xi;,&Omicron;,&Pi;,&Rho;,&Sigma;,&Tau;,&Upsilon;,&Phi;,&Chi;,&Psi;,&Omega;,&alpha;,&beta;,&gamma;,&delta;,&epsilon;,&zeta;,&eta;,&theta;,&iota;,&kappa;,&lambda;,&mu;,&nu;,&xi;,&omicron;,&pi;,&rho;,&sigmaf;,&sigma;,&tau;,&upsilon;,&phi;,&chi;,&psi;,&omega;,&thetasym;,&upsih;,&piv;,&bull;,&hellip;,&prime;,&Prime;,&oline;,&frasl;,&weierp;,&image;,&real;,&trade;,&alefsym;,&larr;,&uarr;,&rarr;,&darr;,&harr;,&crarr;,&lArr;,&uArr;,&rArr;,&dArr;,&hArr;,&forall;,&part;,&exist;,&empty;,&nabla;,&isin;,&notin;,&ni;,&prod;,&sum;,&minus;,&lowast;,&radic;,&prop;,&infin;,&ang;,&and;,&or;,&cap;,&cup;,&int;,&there4;,&sim;,&cong;,&asymp;,&ne;,&equiv;,&le;,&ge;,&sub;,&sup;,&nsub;,&sube;,&supe;,&oplus;,&otimes;,&perp;,&sdot;,&lceil;,&rceil;,&lfloor;,&rfloor;,&lang;,&rang;,&loz;,&spades;,&clubs;,&hearts;,&diams;";
 							inHTML = replaceList(inHTML, lFind, lReplace);
-						
-							if ( stPD.convertUnicode ) {
 
-								// catch all to replace other characters with numerical html character references as required...
-								x = reFind("[^#chr(1)#-#chr(255)#]",inHTML); // x marks the spot
-								if ( x eq 0 ) // nothing to escape
-									return inHTML;
-								while ( x neq 0 ) {	
-									outHTML = outHTML & mid(inHTML,y,x-y) & "&##" & asc(mid(inHTML,x,1)) & ";";
-									y = x + 1;
-									x = reFind("[^#chr(1)#-#chr(255)#]",inHTML,y);
-								}
-								// get the rest of the string if a special character wasn't found at the end of the string
-								if ( (len(inHTML)+1) neq y )
-									outHTML = outHTML & mid(inHTML,y,(len(inHTML)+1)-y);
-	
-								return outHTML;
-
-							} else {
-
+							// catch all to replace other characters with numerical html character references as required...
+							x = reFind("[^#chr(1)#-#chr(255)#]",inHTML); // x marks the spot
+							if ( x eq 0 ) // nothing to escape
 								return inHTML;
-
+							while ( x neq 0 ) {	
+								outHTML = outHTML & mid(inHTML,y,x-y) & "&##" & asc(mid(inHTML,x,1)) & ";";
+								y = x + 1;
+								x = reFind("[^#chr(1)#-#chr(255)#]",inHTML,y);
 							}
+							// get the rest of the string if a special character wasn't found at the end of the string
+							if ( (len(inHTML)+1) neq y )
+								outHTML = outHTML & mid(inHTML,y,(len(inHTML)+1)-y);
+
+							return outHTML;
 
 						} else {
 						
