@@ -49,7 +49,6 @@ Licensed under the Academic Free License version 2.1
 			
 		<cfelse>
 		
-			<!--- must have spSuper or spKeywords to add a top level keyword --->
 			<cfquery name="qCheckExists" datasource="#request.speck.codb#">
 				SELECT spId FROM spKeywords WHERE keyword = '#newValue#'
 			</cfquery>
