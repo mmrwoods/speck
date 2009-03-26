@@ -12,6 +12,8 @@ Licensed under the Academic Free License version 2.1
 
 	<cf_spPropertyHandlerMethod method="validateValue">
 		
+		
+		
 		<!--- check that keyword string is correctly formatted and is either at root level or has parent --->
 	
 		<cfif len(value) and not refind("^[A-Za-z][A-Za-z0-9_\.]+[A-Za-z0-9_]$",newValue)>
@@ -44,11 +46,20 @@ Licensed under the Academic Free License version 2.1
 				</cfif>
 
 			</cfif>
-
-		<cfelseif not request.speck.userHasPermission("spSuper") and not listFindNoCase(structKeyList(session.speck.roles),"spEdit")>
-
+			
+		<cfelse>
+		
 			<!--- must have spSuper or spKeywords to add a top level keyword --->
-			<cfset lErrors = replace(request.speck.buildString("P_KEYWORD_ADD_ACCESS_DENIED","#newValue#"),chr(44),"&##44;","all")>
+			<cfquery name="qCheckExists" datasource="#request.speck.codb#">
+				SELECT spId FROM spKeywords WHERE keyword = '#newValue#'
+			</cfquery>
+			
+			<cfif not qCheckExists.recordCount and not request.speck.userHasPermission("spSuper") and not listFindNoCase(structKeyList(session.speck.roles),"spEdit")>
+
+				<!--- must have spSuper or site-wide spEdit (and spKeywords) to a top level keyword --->
+				<cfset lErrors = replace(request.speck.buildString("P_KEYWORD_ADD_ACCESS_DENIED","#newValue#"),chr(44),"&##44;","all")>
+				
+			</cfif>
 		
 		</cfif>
 		
