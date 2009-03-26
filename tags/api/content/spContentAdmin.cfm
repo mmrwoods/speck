@@ -17,9 +17,9 @@ Licensed under the Academic Free License version 2.1
 	jsSafeCacheList = urlEncodedFormat(caller.caller.caller.lCacheNames);
 	
 	// content highlighting onmouseover/onmouseout
-	highlightOn = "parentNode.parentNode.className = 'spContentAdmin spContentHighlight';";
-	highlightOff = "parentNode.parentNode.className = 'spContentAdmin';";
-	highlightWarning = "parentNode.parentNode.className = 'spContentAdmin spContentWarning';";
+	highlightOn = "parentNode.parentNode.className = 'spContentAdmin spClearfix spContentHighlight';";
+	highlightOff = "parentNode.parentNode.className = 'spContentAdmin spClearfix';";
+	highlightWarning = "parentNode.parentNode.className = 'spContentAdmin spClearfix spContentWarning';";
 	
 	// stStrings references request.speck.spContent.strings, just makes the code a bit easier to read and maintain
 	stStrings = request.speck.spContent.strings;

@@ -1,5 +1,26 @@
 /* styles for the admin links etc. which are embedded into the output */
 
+/* float clearing for IE6 */
+* html .spClearfix{
+  height: 1%;
+  overflow: visible;
+}
+/* float clearing for IE7 */
+*+html .spClearfix{
+  min-height: 1%;
+}
+/* float clearing for everyone else */
+.spClearfix:after {
+	content: ".";
+	display: block;
+	font-size:0;
+	height: 0;
+	clear: both;
+	visibility: hidden;
+}
+/* required for safari */
+.spClearfix { display: block; }
+
 /* block surrounding each content item */
 .spContentAdmin {border:0;}
 .spContentAdmin.spContentHighlight {

@@ -165,12 +165,8 @@ Attributes:
 			
 		<cfelseif bRenderAdminLinks>
 		
-			<!--- always wrap content items inside a table cell when admin links are on (used for highlighting) --->
-			<cfif request.speck.enableContentAdminTable>
-				<cfoutput><table width="100%" cellpadding="0" cellspacing="0" class="spContentAdmin"><tr><td class="spContentAdmin"></cfoutput>
-			<cfelse>
-				<cfoutput><span style="display:block;" class="spContentAdmin"></cfoutput>
-			</cfif>
+			<!--- always wrap content in an admin span that we can use to hightlight the item(s) to be edited etc. --->
+			<cfoutput><span style="display:block;" class="spContentAdmin spClearfix"></cfoutput>
 		
 		</cfif>
 		
@@ -241,13 +237,9 @@ Attributes:
 			
 			<cfif bRenderAdminLinks>
 			
-				<!--- close table cell/row and open new row/cell if admin links are on --->
-				<cfif request.speck.enableContentAdminTable>
-					<cfoutput></td></tr><tr><td class="spContentAdmin"></cfoutput>
-				<cfelse>
-					<cfoutput><span style="display:block;<!--- clear:both; --->height:0;font:0/0;">&nbsp;</span></span></cfoutput>
-					<cfoutput><span style="display:block;" class="spContentAdmin"></cfoutput>
-				</cfif>				
+				<!--- close admin span and open new one if admin links are on --->
+				<cfoutput></span></cfoutput>
+				<cfoutput><span style="display:block;" class="spContentAdmin spClearfix"></cfoutput>			
 
 			</cfif>
 		
@@ -292,12 +284,8 @@ Attributes:
 			
 		<cfelseif bRenderAdminLinks>
 		
-			<!--- need to close table if admin links are on --->
-			<cfif request.speck.enableContentAdminTable>
-				<cfoutput></td></tr></table></cfoutput>
-			<cfelse>
-				<cfoutput><span style="display:block;<!--- clear:both; --->height:0;font:0/0;">&nbsp;</span></span></cfoutput>
-			</cfif>
+			<!--- close the admin span --->
+			<cfoutput></span></cfoutput>
 		
 		</cfif>
 		
