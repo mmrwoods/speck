@@ -55,9 +55,21 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 		--->
 		<cfset attributes.refresh = true>
 	</cfif>
+<cfelseif isDefined("application.speck.appInstallRoot") and fileExists("#application.speck.appInstallRoot#/tmp/refresh.txt")>
+	<!--- experimental idea nicked from passenger/mod_rails - if tmp/refresh.txt exists, refresh app and remove file once refreshed --->
+	<cftry>
+		<cffile action="delete" file="#application.speck.appInstallRoot#/tmp/refresh.txt">
+		<cfset bRefresh = true>
+		<cfset attributes.refresh = true>
+	<cfcatch>
+		<cflog type="warning" 
+			file="#attributes.name#" 
+			application="no"
+			text="CF_SPPORTAL: Could not delete tmp/refresh.txt - application was not refreshed.">
+	</cfcatch>
+	</cftry>
 </cfif>
 </cflock>
-
 
 <!--- allow users with spSuper role to refresh the application via the toolbar --->
 <cfif isDefined("url.refreshapp")>
