@@ -94,8 +94,19 @@ Licensed under the Academic Free License version 2.1
 		
 		<cfif stPD.convertWin1252 and not stPD.email and not stPD.httpurl and not stPD.password>
 			
-			<!--- replace some Windows 1252 chars with nearest ASCII equivalents --->
-			<cfset newValue = replaceList(newValue,"#chr(133)#,#chr(145)#,#chr(146)#,#chr(147)#,#chr(148)#,#chr(150)#,#chr(151)#,#chr(152)#","...,',',"","",-,-,~")>
+			<cfif request.speck.cfVersion eq 5>
+			
+				<!--- replace some Windows 1252 chars with nearest ASCII equivalents --->
+				<cfset newValue = replaceList(newValue,"#chr(133)#,#chr(145)#,#chr(146)#,#chr(147)#,#chr(148)#,#chr(150)#,#chr(151)#,#chr(152)#","...,',',"","",-,-,~")>
+				
+			<cfelse>
+			
+				<!--- convert to equivalent unicode code point --->
+				<cfset lFind = "#chr(128)#,#chr(130)#,#chr(131)#,#chr(132)#,#chr(133)#,#chr(134)#,#chr(135)#,#chr(136)#,#chr(137)#,#chr(138)#,#chr(139)#,#chr(140)#,#chr(142)#,#chr(145)#,#chr(146)#,#chr(147)#,#chr(148)#,#chr(149)#,#chr(150)#,#chr(151)#,#chr(152)#,#chr(153)#,#chr(154)#,#chr(155)#,#chr(156)#,#chr(158)#,#chr(159)#">
+				<cfset lReplace = "#chr(8364)#,#chr(8218)#,#chr(402)#,#chr(8222)#,#chr(8230)#,#chr(8224)#,#chr(8225)#,#chr(710)#,#chr(8240)#,#chr(352)#,#chr(8249)#,#chr(338)#,#chr(381)#,#chr(8216)#,#chr(8217)#,#chr(8220)#,#chr(8221)#,#chr(8226)#,#chr(8211)#,#chr(8212)#,#chr(732)#,#chr(8482)#,#chr(353)#,#chr(8250)#,#chr(339)#,#chr(382)#,#chr(376)#">
+				<cfset newValue = replaceList(newValue,lFind,lReplace)>
+			
+			</cfif>
 		
 		</cfif>
 		

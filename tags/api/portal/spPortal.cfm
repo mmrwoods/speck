@@ -798,6 +798,10 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 					INSERT INTO spUsersGroups (username, groupname) 
 					VALUES ('admin', 'admins')
 				</cfquery>
+				
+				<!--- set form variables so spApp will automatically log the user on --->
+				<cfset form.spLogonUser = "admin">
+				<cfset form.spLogonPassword = "#generatedPassword#">
 			
 			</cftransaction>
 			
@@ -805,7 +809,7 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 			<script type="text/javascript">
 				<!--
 				//<![CDATA[		
-				alert("NOTE: User database tables created.\n\nYou can log in as user 'admin', password '#generatedPassword#'.");
+				alert("User database tables created. You will be logged in as user 'admin'.\n\nNOTE: Auto-generated password for admin user is '#generatedPassword#'.\n\nTAKE NOTE OF YOUR PASSWORD OR CHANGE IT IMMEDIATELY.");
 				//]]>
 				//-->
 			</script>
