@@ -245,7 +245,7 @@ Attributes:
 				<cfif request.speck.enableContentAdminTable>
 					<cfoutput></td></tr><tr><td class="spContentAdmin"></cfoutput>
 				<cfelse>
-					<cfoutput><span style="display:block;clear:both;height:0;font:0/0;">&nbsp;</span></span></cfoutput>
+					<cfoutput><span style="display:block;<!--- clear:both; --->height:0;font:0/0;">&nbsp;</span></span></cfoutput>
 					<cfoutput><span style="display:block;" class="spContentAdmin"></cfoutput>
 				</cfif>				
 
@@ -296,7 +296,7 @@ Attributes:
 			<cfif request.speck.enableContentAdminTable>
 				<cfoutput></td></tr></table></cfoutput>
 			<cfelse>
-				<cfoutput><span style="display:block;clear:both;height:0;font:0/0;">&nbsp;</span></span></cfoutput>
+				<cfoutput><span style="display:block;<!--- clear:both; --->height:0;font:0/0;">&nbsp;</span></span></cfoutput>
 			</cfif>
 		
 		</cfif>

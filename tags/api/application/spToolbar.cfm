@@ -286,7 +286,7 @@ Renders toolbar allowing editors and reviewers (i.e. spEdit or spReview permissi
 		<a class="spToolbar spResetCache" href="#resetCacheURL#" title="#stStrings.resetCacheTooltip#">#stStrings.resetCache#</a>
 		</cfoutput>
 	</cfif>
-	<cfif attributes.manageKeywords and findNoCase("spKeywords",request.speck.keywordsSources)>
+	<cfif attributes.manageKeywords and findNoCase("spKeywords",request.speck.keywordsSources) and request.speck.userHasPermission("spSuper,spKeywords")>
 	
 		<cfif isDefined("request.speck.portal.keyword") and ( request.speck.userHasPermission("spSuper,spEdit") or ( len(request.speck.portal.qKeyword.roles) and request.speck.userHasPermission(request.speck.portal.qKeyword.roles) ) )>
 		
@@ -298,28 +298,24 @@ Renders toolbar allowing editors and reviewers (i.e. spEdit or spReview permissi
 		
 		</cfif>
 		
-		<cfif request.speck.userHasPermission("spSuper,spKeywords")>
-		
-			<cfif isDefined("request.speck.portal")>
-				<cfset windowWidth = 725>
-			<cfelse>
-				<cfset windowWidth = 650>
-			</cfif>
-			<cfoutput>
-			<script type="text/javascript">
-				<!--
-				//<![CDATA[
-				function launch_keywords() {
-					var keywordsWin = window.open("/speck/admin/keywords.cfm?app=#request.speck.appname#", "manage_keywords", "menubar=no,scrollbars=yes,resizable=yes,width=#windowWidth#,height=500,screenX=125,screenY=25,left=125,top=25");
-					keywordsWin.focus();
-				}
-				//]]>
-				//-->
-			</script>
-			<a class="spToolbar spManageKeywords" href="javascript:launch_keywords();" title="#stStrings.manageKeywordsTooltip#">#stStrings.manageKeywords#</a>
-			</cfoutput>
-			
+		<cfif isDefined("request.speck.portal")>
+			<cfset windowWidth = 725>
+		<cfelse>
+			<cfset windowWidth = 650>
 		</cfif>
+		<cfoutput>
+		<script type="text/javascript">
+			<!--
+			//<![CDATA[
+			function launch_keywords() {
+				var keywordsWin = window.open("/speck/admin/keywords.cfm?app=#request.speck.appname#", "manage_keywords", "menubar=no,scrollbars=yes,resizable=yes,width=#windowWidth#,height=500,screenX=125,screenY=25,left=125,top=25");
+				keywordsWin.focus();
+			}
+			//]]>
+			//-->
+		</script>
+		<a class="spToolbar spManageKeywords" href="javascript:launch_keywords();" title="#stStrings.manageKeywordsTooltip#">#stStrings.manageKeywords#</a>
+		</cfoutput>
 		
 	</cfif>
 	
