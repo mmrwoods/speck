@@ -16,23 +16,27 @@ Licensed under the Academic Free License version 2.1
 		caption="Articles"
 		type="Picker"
 		contentType="Article"
-		required="yes"
+		required="no"
 		maxSelect="25"
 		dependent="#attributes.context.getConfigString("types","article_container","articles_dependent","no")#"
 		showSort="yes">
 		
 	<cf_spHandler method="display">
 	
-		<!--- we don't want to pass the caller attributes to spContentGet, so call it separately --->
-		<cf_spContentGet type="Article" id="#content.articles#" orderByIds="yes" r_qContent="qContent">
-
-		<!--- render the query results using spContent --->
-		<cf_spContent 
-			type="Article" 
-			qContent="#qContent#" 
-			method="summary"
-			enableAdminLinks="no"
-			attributeCollection="#caller.attributes#">				
+		<cfif len(content.articles)>
+	
+			<!--- we don't want to pass the caller attributes to spContentGet, so call it separately --->
+			<cf_spContentGet type="Article" id="#content.articles#" orderByIds="yes" r_qContent="qContent">
+	
+			<!--- render the query results using spContent --->
+			<cf_spContent 
+				type="Article" 
+				qContent="#qContent#" 
+				method="summary"
+				enableAdminLinks="no"
+				attributeCollection="#caller.attributes#">
+				
+		</cfif>		
 	
 	</cf_spHandler>
 	

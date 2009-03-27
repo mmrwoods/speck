@@ -9,6 +9,13 @@ Licensed under the Academic Free License version 2.1
 
 <!--- builds a web page, rendering content passed as an attribute or generated using a template inside a layout --->
 
+<cfif not isDefined("request.speck.portal.qKeyword")> 
+	
+	<cfthrow message="CF_SPPAGE: missing data required to build page." 
+		detail="This error probably means cf_spPortal has not been called as part of this request.">
+	
+</cfif>
+
 <cfparam name="attributes.content" default=""> <!--- use this attribute to render already generated content --->
 
 <cfparam name="request.speck.language" default="en">

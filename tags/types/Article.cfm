@@ -594,6 +594,7 @@ Licensed under the Academic Free License version 2.1
 		</cfif>
 		
 		<cfoutput>
+		<div class="article_summary_text">
 		<#attributes.titleElement# class="article_summary_title"><a href="#fullArticleURL#" title="#fullArticleTooltip#">#content.title#</a></#attributes.titleElement#>
 		<p class="article_summary_summary">
 		</cfoutput>
@@ -608,6 +609,7 @@ Licensed under the Academic Free License version 2.1
 		</cfoutput>
 		
 		<cfoutput>
+		</div>
 		<span style='display:block;clear:both;height:0;font:0/0;'>&nbsp;</span>
 		</div>
 		</cfoutput>
