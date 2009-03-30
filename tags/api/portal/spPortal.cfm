@@ -1260,6 +1260,16 @@ note: the spPage tag is responsible for checking if a keyword/page was found
 </cfquery>
 
 <!--- now set various portal settings for the current request --->
+<!--- 
+possible TODO: copy these request variables to request.speck.page,
+rather than request.speck.portal and update code that uses them.
+May need to write something in to make this change backwards 
+compatible - new code should use request.speck.page, but spPage 
+chould also check if the values of any of the old request specific 
+variables in request.speck.portal are changed between the calls 
+to spPortal and their use in spPage and if so, copy those changes 
+automatically to request.speck.page. Should work for old code then.
+--->
 <cfscript>
 request.speck.portal.keyword = qKeyword.keyword;
 request.speck.portal.qKeyword = duplicate(qKeyword);

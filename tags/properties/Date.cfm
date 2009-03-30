@@ -210,9 +210,9 @@ Licensed under the Academic Free License version 2.1
 			<option value="">Month</option>
 			</cfoutput>
 			<cfloop from="1" to="12" index="i">
-			
+				
 				<cfoutput>
-				<option value="#numberFormat(i,"0_")#"<cfif i eq currentMonth> selected="yes"</cfif>>#lsMonthAsString(i)#</option>
+				<option value="#numberFormat(i,"0_")#"<cfif numberFormat(i,"0_") eq currentMonth> selected="yes"</cfif>>#lsMonthAsString(i)#</option>
 				</cfoutput>
 			
 			</cfloop>

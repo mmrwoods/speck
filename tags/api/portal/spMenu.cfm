@@ -14,7 +14,6 @@ Licensed under the Academic Free License version 2.1
 <cfparam name="request.speck.maxKeywordLevels" default="2">
 
 <cfparam name="attributes.separator" default="">
-<cfparam name="attributes.parent" default="">
 
 <cfparam name="attributes.layouts" default=""> <!--- if not empty string, only output links to locations using one of the listed layouts --->
 
@@ -73,11 +72,26 @@ Licensed under the Academic Free License version 2.1
 	
 </cfif>
 
-<cfif len(attributes.parent)>
+<cfif isDefined("attributes.parent")>
 
-	<cfquery name="qKeywords" dbtype="query">
-		SELECT * FROM request.speck.qKeywords WHERE keyword LIKE '#attributes.parent#.%'
-	</cfquery>
+	<cfif len(attributes.parent)>
+	
+		<cfquery name="qKeywords" dbtype="query">
+			SELECT * FROM request.speck.qKeywords WHERE keyword LIKE '#attributes.parent#.%'
+		</cfquery>
+		
+	<cfelse>
+	
+		<!--- oops, we can't generate a submenu without a parent --->
+		<cfif len(attributes.r_menu)>
+			
+			<cfset "caller.#attributes.r_menu#" = "">
+			
+		</cfif>
+		
+		<cfexit method="exittag">
+		
+	</cfif>
 
 <cfelse>
 
@@ -86,7 +100,11 @@ Licensed under the Academic Free License version 2.1
 </cfif>
 
 <cfscript>
-	topLevel = listLen(attributes.parent,".") + 1;
+	if ( isDefined("attributes.parent") ) {
+		topLevel = listLen(attributes.parent,".") + 1;
+	} else {
+		topLevel = 1;
+	}
 		
 	// new line sequence
 	nl = chr(13) & chr(10);	

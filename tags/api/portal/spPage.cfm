@@ -135,7 +135,7 @@ Licensed under the Academic Free License version 2.1
 			</cfquery>
 			
 			<cfscript>
-			request.speck.portal.keyword = qKeyword.keyword;
+			// request.speck.portal.keyword = qKeyword.keyword;
 			request.speck.portal.qKeyword = duplicate(qKeyword);
 			request.speck.portal.qKeyword.title[1] = "Not Found";
 			

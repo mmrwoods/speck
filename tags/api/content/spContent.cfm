@@ -8,7 +8,7 @@ Licensed under the Academic Free License version 2.1
 --->
 
 <cfparam name="attributes.method" default="display">
-<cfparam name="attributes.separator" default="<br />">
+<cfparam name="attributes.separator" default="">
 <cfparam name="attributes.columns" default="1">
 <cfparam name="request.speck.session.showAdminLinks" type="boolean" default="no">
 <cfparam name="attributes.enableAdminLinks" default=#request.speck.session.showAdminLinks#>

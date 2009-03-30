@@ -29,7 +29,7 @@ Licensed under the Academic Free License version 2.1
 		required="yes"
 		maxlength="250"
 		displaySize="70"
-		unique="yes"
+		unique="#attributes.context.getConfigString("types","article","title_unique","yes")#"
 		finder="yes">
 	
  	<cf_spProperty
@@ -132,7 +132,7 @@ Licensed under the Academic Free License version 2.1
 				
  	<cf_spProperty
 		name="documents"
-		caption="Related Documents"
+		caption="Attached Documents"
 		type="Picker"
 		contentType="Document"
 		required="no"
@@ -494,8 +494,10 @@ Licensed under the Academic Free License version 2.1
 		<cfparam name="attributes.fullArticleTooltip" default="view article">
 		<cfparam name="attributes.dynamicTooltip" default="yes" type="boolean">
 		<cfparam name="attributes.replaceKeywordInUrl" default="no">
-		<cfparam name="attributes.labelIdentifier" default="no" type="boolean">
-		<cfparam name="attributes.sequenceIdUrlPrefix" default="no" type="boolean">
+		<!--- use label as identifier when generating url to view full article (default to value of seoUrls portal setting if exists, otherwise default false) --->
+		<cfparam name="attributes.labelIdentifier" default="#request.speck.getConfigString("portal","settings","seoUrls",false)#" type="boolean">
+		<!--- prefix article id/label in url with sequence id (only required for google news, and defaults to google_news_urls setting if exists in article section of types.cfg) --->
+		<cfparam name="attributes.sequenceIdUrlPrefix" default="#request.speck.getConfigString("types","article","google_news_urls",false)#" type="boolean">
 		
 		<cfset fullArticleTooltip = attributes.fullArticleTooltip>
 		
@@ -577,7 +579,7 @@ Licensed under the Academic Free License version 2.1
 					<cfoutput><a href="#fullArticleURL#" title="#fullArticleTooltip#"></cfoutput>
 				</cfif>
 				
-				<cfoutput><img src="#content.thumbnailImage#" class="article_summary_image" #imagedimensions# alt="Image for article titled '#content.title#'" border="0" /></cfoutput>
+				<cfoutput><img src="#content.thumbnailImage#" class="article_summary_image" #imagedimensions# alt="'#content.title#' image" border="0" /></cfoutput>
 				
 				<cfif attributes.linkImage>
 					<cfoutput></a></cfoutput>
@@ -630,7 +632,7 @@ Licensed under the Academic Free License version 2.1
 		<cfparam name="attributes.showImage" default="yes" type="boolean">
 		<cfparam name="attributes.showDate" default="yes" type="boolean">
 		<cfparam name="attributes.titleElement" default="h3">
-		<cfparam name="attributes.relatedDocumentsCaption" default="Related Documents">
+		<cfparam name="attributes.relatedDocumentsCaption" default="Attached Documents">
 		<cfparam name="attributes.relatedDocumentsElement" default="h4">
 		<cfparam name="attributes.insertContent" default=""> <!--- use to insert into content after paragraph numbered below --->
 		<cfparam name="attributes.insertAfterParagraph" default="3">
