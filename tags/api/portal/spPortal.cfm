@@ -162,6 +162,8 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 
 	<cfparam name="stPortal.clearfix" type="boolean" default="no"> <!--- define a clearfix class selector which can be used to clear floats within block level elements (it's a hack Jim, but a necessary one to make the new FCKeditor config "just work" --->
 	
+	<cfparam name="stPortal.seoIdentifiers" type="boolean" default="no"> <!--- if true, templates should try to avoid using UUIDs in URLs and instead use labels or some other search engine optimized/friendly identifiers in URLs (typically the label) --->
+	
 	<!--- search engine optimised urls --->
 	<cfparam name="stPortal.sesSuffix" default=".html"> <!--- dummy suffix appended to the end of urls --->
 	<cfparam name="stPortal.rewriteEngine" default="no" type="boolean"> <!--- external url rewriting engine enabled (see below) --->

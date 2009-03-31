@@ -108,36 +108,16 @@
 
 <cfsavecontent variable="forgotPasswordHtml">
 
-	<cfif not isDefined("request.speck.portal.passwordEncryption") or len(request.speck.portal.passwordEncryption)>
+	<!--- if forogt password template is found, link to it --->
+	<cfquery name="qForgotPasswordKeyword" dbtype="query">
+		SELECT * FROM request.speck.qKeywords WHERE template = 'forgot_password'
+	</cfquery>
 	
-		<!--- encrypted passwords, look for reset password template --->
-		<cfquery name="qResetPasswordKeyword" dbtype="query">
-			SELECT * FROM request.speck.qKeywords WHERE template = 'reset_password'
-		</cfquery>
-		
-		<cfif qResetPasswordKeyword.recordCount>
-		
-			<cfoutput>
-			<a href="#cgi.script_name#?spKey=#qResetPasswordKeyword.keyword#&redirect_to=#urlEncodedFormat(cgi.script_name & "?" & queryString)#">Forgot Password?</a>
-			</cfoutput>
-		
-		</cfif>
-		
-		
-	<cfelse>
+	<cfif qSendPasswordKeyword.recordCount>
 	
-		<!--- plain text passwords, look for send password template --->
-		<cfquery name="qSendPasswordKeyword" dbtype="query">
-			SELECT * FROM request.speck.qKeywords WHERE template = 'send_password'
-		</cfquery>
-		
-		<cfif qSendPasswordKeyword.recordCount>
-		
-			<cfoutput>
-			<a href="#cgi.script_name#?spKey=#qSendPasswordKeyword.keyword#&redirect_to=#urlEncodedFormat(cgi.script_name & "?" & queryString)#">Forgot Password?</a>
-			</cfoutput>
-		
-		</cfif>
+		<cfoutput>
+		<a href="#cgi.script_name#?spKey=#qForgotPasswordKeyword.keyword#&redirect_to=#urlEncodedFormat(cgi.script_name & "?" & queryString)#">Forgot Password?</a>
+		</cfoutput>
 	
 	</cfif>
 
