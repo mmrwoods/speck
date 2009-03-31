@@ -56,7 +56,7 @@ function QueryToCsv(query){
 </cfscript>
 
 <cfheader name="content-disposition" value="attachment; filename=newsletter_export.csv">
-<cfcontent type="text/comma-separated-values">
+<cfcontent type="text/comma-separated-values; charset=UTF-8">
 
 <cfset lColumns = "fullname,email">
 <cfset lHeaders = "Full Name,Email">
