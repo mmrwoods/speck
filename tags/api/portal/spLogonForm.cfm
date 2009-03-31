@@ -113,7 +113,7 @@
 		SELECT * FROM request.speck.qKeywords WHERE template = 'forgot_password'
 	</cfquery>
 	
-	<cfif qSendPasswordKeyword.recordCount>
+	<cfif qForgotPasswordKeyword.recordCount>
 	
 		<cfoutput>
 		<a href="#cgi.script_name#?spKey=#qForgotPasswordKeyword.keyword#&redirect_to=#urlEncodedFormat(cgi.script_name & "?" & queryString)#">Forgot Password?</a>
