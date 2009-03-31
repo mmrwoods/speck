@@ -123,7 +123,7 @@ Licensed under the Academic Free License version 2.1
 				
  	<cf_spProperty
 		name="documents"
-		caption="Attached Documents"
+		caption="#attributes.context.getConfigString("types","article","documents_caption","Attached Documents")#"
 		type="Picker"
 		contentType="Document"
 		required="no"
