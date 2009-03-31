@@ -942,7 +942,7 @@ Licensed under the Academic Free License version 2.1
 		<cfif structKeyExists(request.speck,"portal")>
 		
 			<!--- delete from content index --->
-			<cfquery name="qDelete"datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
+			<cfquery name="qDelete" datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
 				DELETE FROM spContentIndex WHERE id = '#content.spId#'
 			</cfquery>
 			
