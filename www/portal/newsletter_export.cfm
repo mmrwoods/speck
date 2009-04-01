@@ -1,11 +1,8 @@
-<cfsetting enablecfoutputonly="yes">
+<cfsetting enablecfoutputonly="yes" showdebugoutput="no">
 
 <cfquery name="qSubscribers" datasource="#request.speck.codb#">
 	SELECT fullname, email
-	FROM spUsers
-	WHERE newsletter = 1
-		AND registered IS NOT NULL 
-		AND suspended IS NULL
+	FROM spNewsletterSubscribers
 </cfquery>
 
 <cfscript>

@@ -90,7 +90,7 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 	* call cf_spApp 
 	* save portal configuration to application.speck.portal
 	--->
-	
+
 	<cfscript>
 		speckInstallRoot = getCurrentTemplatePath();	
 		
@@ -261,7 +261,7 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 		<cfelse>
 		
 			<!--- cannot find portal configuration file --->
-			<cfthrow message="portal configuration file not found">
+			<cfthrow message="Portal configuration file not found" detail="This probably means that the app name was not passed as an attribute and the code to detect the web document root and app name failed (the cf_spPortal tag was probably called from a script running in a virtual directory).">
 			
 		</cfif>
 	
@@ -507,12 +507,8 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 	
 	<cfif find("portal",stPortal.securityZones)>
 
-		<!--- 
-		create user database tables for portal security zone if required
-		note: we do the table check even if spportal is not included in the 
-		list of security zones for the application 'cos it's a handy way of 
-		catching potential datasource problems prior to calling spApp.
-		--->
+		<!--- create user database tables for portal security zone if required --->
+
 		<cfset bCreateUserTables=false>
 	
 		<cftry>
@@ -834,9 +830,87 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 				file="#attributes.name#" 
 				application="no"
 				text="CF_SPPORTAL: User database tables created. Auto-generated admin password is '#generatedPassword#'.">
-			
+
 		</cfif>
 	
+		<!--- create new newsetter subscribers table? --->
+		<cftry>
+			
+			<cfquery name="qCheckExists" datasource="#stPortal.codb#">
+				SELECT * FROM spNewsletterSubscribers
+				WHERE email = 'noSuchEmail'
+			</cfquery>
+			
+		<cfcatch type="database">
+		
+			<cfif cfcatch.sqlstate eq "S0002" or dbTableNotFound(cfcatch.detail)>
+			
+				<!--- note: this is really, really simple and doesn't allow for multiple newsletters on the one application --->
+				<cfquery name="qCreateTable" datasource="#stPortal.codb#">
+					CREATE TABLE spNewsletterSubscribers (
+						fullname #textDDLString(100)#,
+						email #textDDLString(100)# NOT NULL,
+						PRIMARY KEY (email)
+					)
+				</cfquery>
+				
+				<!--- create indexes (note: this might look like overkill, but by putting both columns into both indexes, the dbms can return all the data from the index, without having to access the table itself) --->
+				<cftry>
+				
+					<cfquery name="qAddIndex" datasource="#stPortal.codb#">
+						CREATE INDEX spNewsletterSubscribers_email
+						ON spNewsletterSubscribers (email, fullname)
+					</cfquery>
+					
+					<cfquery name="qAddIndex" datasource="#stPortal.codb#">
+						CREATE INDEX spNewsletterSubscribers_fullname
+						ON spNewsletterSubscribers (fullname, email)
+					</cfquery>
+					
+				<cfcatch type="database">
+				
+					<!--- do nothing, index name is too long or db does not allow composite indexes - either way, it's a rubbish dbms so who cares --->
+				
+				</cfcatch>
+				</cftry>
+				
+			<cfelse>
+			
+				<cfrethrow>
+			
+			</cfif>
+			
+			<!--- attempt to insert users into newsletter subscribers table (this should work fine with Postgres, MySQL, Orable and SQL Server, not sure beyond that) --->
+			<cftry>
+			
+				<cfquery name="qInsertNewsletterSubscribers" datasource="#stPortal.codb#">
+					INSERT INTO spNewsletterSubscribers (fullname, email) 
+					SELECT fullname, email FROM spUsers WHERE email IS NOT NULL AND newsletter = 1 AND registered IS NOT NULL AND suspended IS NULL
+				</cfquery>
+
+			<cfcatch type="database">
+				
+				<!--- the first insert might have failed due to a primary key constraint violation (the email column of the spUsers table is not unique - most of the code enforces uniqueness, but there's no guarantee) --->
+				<cftry>
+				
+					<cfquery name="qInsertNewsletterSubscribers" datasource="#stPortal.codb#">
+						INSERT INTO spNewsletterSubscribers (email) 
+						SELECT DISTINCT(email) FROM spUsers WHERE email IS NOT NULL AND newsletter = 1 AND registered IS NOT NULL AND suspended IS NULL
+					</cfquery>
+					
+				<cfcatch type="database">
+				
+					<!--- do nothing, insert into select doesn't seem to work on this dbms --->
+				
+				</cfcatch>
+				</cftry>
+			
+			</cfcatch>
+			</cftry>
+			
+		</cfcatch>
+		</cftry>
+		
 	</cfif>
 
 	<!--- load speck application --->
@@ -1318,13 +1392,13 @@ request.speck.portal.cacheKeyword = replace(request.speck.portal.keyword,".","_"
 	}
 	breadcrumbs = arrayNew(1);
 	
-	function appendBreadcrumb(urlId,caption) {
+	function appendBreadcrumb(href,caption) {
 		var title = caption;
 		if ( arrayLen(arguments) gt 2 ) { title = arguments[3]; }
 		stBreadcrumb = structNew();
 		stBreadcrumb.caption = caption;
 		stBreadcrumb.title = title;
-		stBreadcrumb.href = request.speck.getDisplayMethodUrl(urlId,title);
+		stBreadcrumb.href = href;
 		arrayAppend(request.speck.portal.breadcrumbs,stBreadcrumb);
 	}
 			

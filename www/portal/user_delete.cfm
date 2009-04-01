@@ -38,9 +38,6 @@ Licensed under the Academic Free License version 2.1
 	</cfquery>
 	
 	<!--- delete from users table --->
-	<!--- <cfquery name="qDelete" datasource="#request.speck.codb#">
-		DELETE FROM spUsers WHERE username = '#trim(url.username)#'
-	</cfquery> --->
 	<cf_spDelete type="spUsers" id="#qUser.spId#">
 	
 	<cflog application="no" file="#request.speck.appName#" type="information" text="User '#qUser.username#', id '#qUser.spId#', deleted from spUsers and spUsersGroups tables.">

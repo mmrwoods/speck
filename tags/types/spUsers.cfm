@@ -7,7 +7,7 @@ work with permission of the copyright owners.
 Licensed under the Academic Free License version 2.1
 --->
 
-<!--- 
+<!---
 Base content type for portal application users - can be extended to add extra properties per application.
 This is a work in progress - it's not pretty and is subject to change.
 --->
@@ -88,14 +88,52 @@ This is a work in progress - it's not pretty and is subject to change.
 	
 	<cf_spHandler method="contentPut">
 	
-		<!--- do stuff when putting a user --->
+		<!--- update newsletter subscribers table (note: we have a newsletter subscribers table to allow non-users subscribe) --->
+		
+		<!--- always start by removing any existing subscription with either the email address of this user before or after update --->
+		
+		<cfset lDeleteSubscribers = content.email>
+		
+		<!--- get user before update - note: contentPut method always called before actual update/insert happens in spContentPut --->
+		<cfquery name="qUserBeforePut" datasource="#request.speck.codb#">
+			SELECT email FROM spUsers WHERE spId = '#content.spId#'
+		</cfquery>
+		
+		<cfif qUserBeforePut.recordCount and qUserBeforePut.email neq content.email>
+			<cfset lDeleteSubscribers = listAppend(lDeleteSubscribers,qUserBeforePut.email)>
+		</cfif>
+		
+		<cfif len(lDeleteSubscribers)>
+	
+			<!--- delete existing email address from newsletter subscribers table --->
+			<cfquery name="qDeleteNewsletterSubscriber" datasource="#request.speck.codb#">
+				DELETE FROM spNewsletterSubscribers WHERE email IN (#listQualify(lDeleteSubscribers,"'")#)
+			</cfquery>
+			
+		</cfif>
+		
+		<cfif content.newsletter and len(content.email)>
+		
+			<!--- subscribe user to newsletter --->
+			<cfquery name="qInsertNewsletterSubscriber" datasource="#request.speck.codb#">
+				INSERT INTO spNewsletterSubscribers (fullname, email) VALUES ('#content.fullname#','#content.email#')
+			</cfquery>
+			
+		</cfif>
 	
 	</cf_spHandler>
 	
 	
 	<cf_spHandler method="delete">
 	
-		<!--- do stuff when deleting a user --->
+		<cfif len(content.email)>
+		
+			<!--- delete from newsletter subscribers table --->
+			<cfquery name="qDeleteNewsletterSubscriber" datasource="#request.speck.codb#">
+				DELETE FROM spNewsletterSubscribers WHERE email = '#content.email#'
+			</cfquery>
+		
+		</cfif>
 	
 	</cf_spHandler>
 	

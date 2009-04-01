@@ -414,8 +414,6 @@ I'm sure this all used to be necessary in CF5
 			<!--- look for stylesheets in this sub-directory of speck/www/stylesheets/ --->
 			<cfparam name="stApp.stylesheets" default="custom">
 			
-			<!--- TODO: move system stylesheets to system directory --->
-			
 			<cfscript>
 				// if default stylesheets location not set, look in custom sub-directory
 				if ( not len(stApp.stylesheets) ) {
