@@ -310,7 +310,7 @@ Licensed under the Academic Free License version 2.1
 		
 			<cfif trim(form.email_to) eq "">
 			
-				<cfset void = arrayAppend(aErrors,"You did not enter your #attributes.noun#'s email address.")>
+				<cfset void = arrayAppend(aErrors,"Your #attributes.noun#'s email address is a required field.")>
 			
 			<cfelseif not isEmail(form.email_to)>
 			
@@ -320,7 +320,7 @@ Licensed under the Academic Free License version 2.1
 			
 			<cfif trim(form.email_from) eq "">
 			
-				<cfset void = arrayAppend(aErrors,"You did not enter your email address.")>
+				<cfset void = arrayAppend(aErrors,"Your email address is a required field.")>
 			
 			<cfelseif not isEmail(form.email_from)>
 			
@@ -334,17 +334,14 @@ Licensed under the Academic Free License version 2.1
 				<cfset nl = chr(13) & chr(10)>
 				
 				<cfset subject = content.title>
-				<cfset message = nl & "This message has been sent to you from " & form.email_from & nl>
+				<cfset message = nl & "This article has been sent to you by " & form.email_from & nl>
 				<cfif trim(form.personal_message) neq "">
 					<cfset message = message & nl & "Message from sender:" & nl & form.personal_message & nl>
 				</cfif>
 				<cfset message = message & nl & content.title & nl & content.summary & nl>
 				<cfset message = message & nl & "Read the full article at:" & nl & form.articleUrl & nl>
 				
-				<cfset domain = lCase(reReplaceNoCase(cgi.HTTP_HOST,"^(www|dev|test)\.",""))>
-				<cfif listLen(domain,".") gt 2 and not reFind("\.[a-z]{2,3}\.[a-z]{2}$",domain)>
-					<cfset domain = listDeleteAt(domain,1,".")>
-				</cfif>
+				<cfset domain = request.speck.getDomainFromHostName()>
 				
 				<cfmail to="#form.email_to#" from="#form.email_from#" failto="bounce@#domain#" subject="#subject#" spoolenable="no">#message#</cfmail>
 				
@@ -403,8 +400,7 @@ Licensed under the Academic Free License version 2.1
 				
 					<cfoutput>
 					<p style="color:red;">
-					Oops, one or more errors occured while trying to send the story to your #attributes.noun#.<br />
-					Please correct the errors listed below and try again.
+					Sorry, the article could not be sent due to the following issues...
 					</p>
 					<ul style="color:red;">
 					</cfoutput>
@@ -422,21 +418,21 @@ Licensed under the Academic Free License version 2.1
 				</cfif>
 				
 				<cfoutput>
-				<table cellpadding="0" cellspacing="0" border="0">
+				<table cellpadding="3" cellspacing="0" border="0">
 					<tr>
 						<td colspan="2">Enter your #attributes.noun#'s email address, your email address and, optionally, a personal message, then click "Send".</td>
 					</tr>
 					<tr>
 						<td nowrap="yes"><label for="email_to"><strong>Your #attributes.noun#'s email address:<span style="color:red;">*</span></strong></label></td>
-						<td><input type="text" name="email_to" id="email_to" value="#form.email_to#" size="35" maxlength="100" /></td>
+						<td><input type="text" name="email_to" id="email_to" value="#form.email_to#" size="35" maxlength="100" style="width:350px;" /></td>
 					</tr>
 					<tr>
 						<td nowrap="yes"><label for="personal_message"><strong>Add a personal message:</strong></label></td>
-						<td><textarea name="personal_message" id="personal_message" wrap="virtual" rows="3" cols="27">#form.personal_message#</textarea></td>
+						<td><textarea name="personal_message" id="personal_message" wrap="virtual" rows="3" cols="27" style="width:350px;">#form.personal_message#</textarea></td>
 					</tr>
 					<tr>
 						<td nowrap="yes"><label for="email_from"><strong>Your email address:<span style="color:red;">*</span></strong></label></td>
-						<td><input type="text" name="email_from" id="email_from" value="#form.email_from#" size="35" maxlength="100" /></td>
+						<td><input type="text" name="email_from" id="email_from" value="#form.email_from#" size="35" maxlength="100" style="width:350px;" /></td>
 					</tr>
 					<tr>
 						<td colspan="2">
@@ -790,8 +786,8 @@ Licensed under the Academic Free License version 2.1
 		<!--- end of related documents --->	
 		
 		<!--- TODO: re-write article cache stuff to a generic meta cache which is generic enough to apply to content items of any type --->
-		<!--- TODO2: need to decide what to do when the output is pulled from a persistent cache after 
-				a CF restart - in that case the meta cache will have gone from application scope --->
+		<!--- Note: when caching the output of this method, set persistent="no" - if the application is refreshed due to a cfserver restart, caches are rebuilt from the persistent cache, but this meta cache won't be rebuilt --->
+		<!--- TODO2: some kind of standard meta cache tag and storage area --->
 		<cfscript>
 			// cache meta data about this content in application scope (can be then used to write 
 			// to html head even when output from this method has been cached using spCacheThis)

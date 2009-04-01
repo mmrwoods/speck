@@ -179,7 +179,7 @@ Licensed under the Academic Free License version 2.1
 		</cfoutput>	
 	
 		<cfparam name="attributes.showImage" default="yes" type="boolean">
-		<cfparam name="attributes.titleElement" default="h3">
+		<cfparam name="attributes.titleElement" default="h1">
 	
 		<cfscript>
 			// get dates as dates (stored as ISO-8601 date string in db, i.e. YYYY-MM-DD)
@@ -190,16 +190,25 @@ Licensed under the Academic Free License version 2.1
 
 		<cfoutput>
 		<#attributes.titleElement# class="event_print_title">#content.title#</#attributes.titleElement#>
-		<div class="event_print_dates">#dateFormat(startDate,"DD MMMM YYYY")#<cfif len(content.endDate)> - #dateFormat(endDate,"DD MMMM YYYY")#</cfif></div>
+		</cfoutput>
+			
+		<!--- use paragraph tags for dates, times and venue in print version to pick up some default styles - should normally mean these items are well spaced out without any additional styling required --->
+		
+		<cfoutput>
+		<p class="event_display_dates"><strong>Date<cfif len(content.endDate)>s</cfif>:</strong> #dateFormat(startDate,"DD MMMM YYYY")#<cfif len(content.endDate)> - #dateFormat(endDate,"DD MMMM YYYY")#</cfif></p>
 		</cfoutput>
 		
 		<cfif len(content.times)>
 			
 			<cfoutput>
-			<div class="event_print_times">#content.times#</div>
+			<p class="event_display_times"><strong>Time(s):</strong> #content.times#</p>
 			</cfoutput>
 		
 		</cfif>
+		
+		<cfoutput>
+		<p class="event_display_venue"><strong>Venue:</strong> #content.venue#</p>
+		</cfoutput>
 		
 		<cfif attributes.showImage and len(trim(content.mainImage))>
 			<cfscript>
@@ -222,6 +231,222 @@ Licensed under the Academic Free License version 2.1
 		</cfoutput>
 	
 	</cf_spHandler> <!--- end of print method --->
+	
+	
+	<cf_spHandler method="email">
+
+		<cfparam name="attributes.header" default="">
+		<cfparam name="attributes.footer" default="">
+		<cfparam name="attributes.stylesheet" default="">
+		<cfparam name="attributes.noun" default="friend">
+
+		<cfparam name="form.email_to" default="">
+		<cfparam name="form.personal_message" default="">
+		<cfparam name="form.email_from" default="">
+		
+		<cfparam name="form.eventUrl" default="#cgi.http_referer#">
+	
+		<cfoutput>
+		<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+		<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+		<meta name="robots" content="noindex, nofollow">
+		<head>
+		<title>#content.title#</title>
+		</cfoutput>
+		
+		<cfif len(attributes.stylesheet)>
+		
+			<cfoutput><link rel="stylesheet" type="text/css" href="#attributes.stylesheet#" /></cfoutput>
+		
+		</cfif>
+
+		<cfoutput>
+		</head>
+		<body>
+		<div class="event_email_header">#attributes.header#</div>
+		<div style="clear:both;"></div>
+		<div class="event_email">
+		<h3>#content.title#</h3>
+		<p>#content.summary#</p>
+		</cfoutput>
+		
+		<cfset bSent = false>
+		<cfset aErrors = arrayNew(1)>
+		
+		<cfif cgi.request_method eq "post">
+		
+			<cfscript>
+			function isEmail(str) {
+				if ( not refind("^([a-zA-Z0-9][-a-zA-Z0-9_%\.']*)?[a-zA-Z0-9]@[a-zA-Z0-9][-a-zA-Z0-9%\>.]*\.[a-zA-Z]{2,}$", str) ) 
+					return false;
+				else 
+					return true;
+			}
+			</cfscript>
+		
+			<cfif trim(form.email_to) eq "">
+			
+				<cfset void = arrayAppend(aErrors,"Your #attributes.noun#'s email address is a required field.")>
+			
+			<cfelseif not isEmail(form.email_to)>
+			
+				<cfset void = arrayAppend(aErrors,"Your #attributes.noun#'s email address does not appear to be a valid email address.")>
+			
+			</cfif>
+			
+			<cfif trim(form.email_from) eq "">
+			
+				<cfset void = arrayAppend(aErrors,"Your email address is a required field.")>
+			
+			<cfelseif not isEmail(form.email_from)>
+			
+				<cfset void = arrayAppend(aErrors,"Your email address does not appear to be a valid email address.")>
+			
+			</cfif>
+			
+			<cfif arrayIsEmpty(aErrors)>
+			
+				<!--- no errors, send the story --->
+				<cfset nl = chr(13) & chr(10)>
+				
+				<cfset subject = content.title>
+		
+				<cfset message = nl & "This event has been sent to you by " & form.email_from & nl>
+				<cfif trim(form.personal_message) neq "">
+					<cfset message = message & nl & "Message from sender:" & nl & form.personal_message & nl>
+				</cfif>
+				<cfset message = message & nl & content.title & nl & dateFormat(content.startDate,"DD MMMM YYYY")>
+				<cfif len(content.endDate)>
+					<cfset message = message & " - " & dateFormat(content.endDate,"DD MMMM YYYY") & nl>
+				</cfif>
+				<cfif len(content.venue)>
+					<cfset message = message & ", " & content.venue>
+				</cfif>
+				<cfif len(content.times)>
+					<cfset message = message & ", " & content.times>
+				</cfif>
+				<cfset message = message & nl & nl & "View the full event details at:" & nl & form.eventUrl & nl>
+				
+				<cfset domain = request.speck.getDomainFromHostName()>
+				
+				<cfmail to="#form.email_to#" from="#form.email_from#" failto="bounce@#domain#" subject="#subject#" spoolenable="no">#message#</cfmail>
+				
+				<cfset bSent = true>
+				
+			</cfif>
+		
+		</cfif>
+		
+		<cfif bSent>
+		
+			<cfoutput>
+			<script type="text/javascript">
+				window.onload = function () {
+										if ( window.opener ) {
+											document.getElementById("exitlink").onclick = function () { window.close();return false; };
+											document.getElementById("exitlink").innerHTML = "Close window";
+										}
+									}
+			</script>
+			<div align="center">
+			<p style="color:red;"><strong>Event has been sent</strong></p>
+			<p style="font-weight:bold;">
+			<a id="exitlink" href="#form.eventUrl#">Return to event</a>
+			</p>
+			</div>
+			</cfoutput>
+		
+		<cfelse>
+		
+			<cfoutput>
+			<script type="text/javascript">
+				window.onload = function () {
+										if ( window.opener ) {
+											document.getElementById("exitbutton").onclick = function () { window.close();return false; };
+										}
+									}
+			</script>
+			<form action="#cgi.script_name#?#cgi.query_string#" method="post">
+				<input type="hidden" name="eventUrl" value="#form.eventUrl#" />
+				<script type="text/javascript">
+					<!--
+					//<![CDATA[
+					if ( window.opener ) {
+						document.forms[0].eventUrl.value = window.opener.location.href;
+					}
+					//]]>
+					//-->
+				</script>
+				
+				<fieldset>
+				<legend>Send this event to a #attributes.noun#</legend>
+				</cfoutput>
+				
+				<cfif not arrayIsEmpty(aErrors)>
+				
+					<cfoutput>
+					<p style="color:red;">
+					Sorry, the event could not be sent due to the following issues...
+					</p>
+					<ul style="color:red;">
+					</cfoutput>
+					
+					<cfloop from="1" to="#arrayLen(aErrors)#" index="i">
+						
+						<cfoutput><li>#aErrors[i]#</li></cfoutput>
+						
+					</cfloop>
+					
+					<cfoutput>
+					</ul>
+					</cfoutput>
+				
+				</cfif>
+				
+				<cfoutput>
+				<table cellpadding="3" cellspacing="0" border="0">
+					<tr>
+						<td colspan="2">Enter your #attributes.noun#'s email address, your email address and, optionally, a personal message, then click "Send".</td>
+					</tr>
+					<tr>
+						<td nowrap="yes"><label for="email_to"><strong>Your #attributes.noun#'s email address:<span style="color:red;">*</span></strong></label></td>
+						<td><input type="text" name="email_to" id="email_to" value="#form.email_to#" size="35" maxlength="100" style="width:350px;" /></td>
+					</tr>
+					<tr>
+						<td nowrap="yes"><label for="personal_message"><strong>Add a personal message:</strong></label></td>
+						<td><textarea name="personal_message" id="personal_message" wrap="virtual" rows="3" cols="27" style="width:350px;">#form.personal_message#</textarea></td>
+					</tr>
+					<tr>
+						<td nowrap="yes"><label for="email_from"><strong>Your email address:<span style="color:red;">*</span></strong></label></td>
+						<td><input type="text" name="email_from" id="email_from" value="#form.email_from#" size="35" maxlength="100" style="width:350px;" /></td>
+					</tr>
+					<tr>
+						<td colspan="2">
+						<span style="color:red;">Note:</span> Your email address is <em>only</em> used to let the recipient know who sent the mail.
+						Neither your address or your #attributes.noun#'s address will be used for any other purpose.
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2" align="center">
+						<input type="submit" value=" Send " />
+						<input type="button" value=" Cancel " id="exitbutton" onclick="window.location.href='#form.eventUrl#';" />
+						</td>
+					</tr>
+				</table>
+				</fieldset>
+			</form>
+			</cfoutput>
+			
+		</cfif>
+
+		<cfoutput>
+		</div> <!--- class="event_email" --->
+		<div class="event_email_footer">#attributes.footer#</div>
+		</body>
+		</html>
+		</cfoutput>
+	
+	</cf_spHandler> <!--- end of email method --->
 	
 	
 	<cf_spHandler method="summary">
@@ -286,7 +511,7 @@ Licensed under the Academic Free License version 2.1
 				
 				<cfif len(lValidKeywords) and not listFind(lValidKeywords,viewEventKeyword) and listLen(content.spKeywords) gt 1>
 				
-					<!--- first keyword in spKeywords doesn't look like it can display an article, try and find the first one that can --->
+					<!--- first keyword in spKeywords doesn't look like it can display an event, try and find the first one that can --->
 					<cfloop list="#listRest(content.spKeywords)#" index="keyword">
 						
 						<cfif listFind(lValidKeywords,keyword)>
@@ -393,13 +618,73 @@ Licensed under the Academic Free License version 2.1
 		<cfparam name="attributes.titleElement" default="h3">
 		<cfparam name="attributes.relatedDocumentsCaption" default="Attached Documents">
 		<cfparam name="attributes.relatedDocumentsElement" default="h4">
-		<cfparam name="attributes.insertContent" default=""> <!--- use to insert into content after paragraph numbered below --->
-		<cfparam name="attributes.insertAfterParagraph" default="3">
-		
+
 		<cfif attributes.showTitle>
 
 			<cfoutput>
 			<#attributes.titleElement# class="event_display_title">#content.title#</#attributes.titleElement#>
+			</cfoutput>
+		
+		</cfif>
+		
+		<cfsavecontent variable="widgets">
+		
+			<cfif len(attributes.printCaption)>
+			
+				<cfif not isDefined("request.speck.spHandlerEventPrintPopup")> <!--- only write out the JS function once --->
+					<cfoutput><script type="text/javascript">
+						<!--
+						//<![CDATA[
+						function event_print_popup(id) {
+							var printWindow = window.open("#attributes.printUrl#?app=#request.speck.appName#&id=" + id,"event_print","menubar=yes,resizable=yes,scrollbars=yes,toolbar=yes,status=yes,width=650,height=450,screenX=50,screenY=50,left=50,top=50");
+							printWindow.focus();
+						}
+						//]]>
+						//-->
+					</script></cfoutput>
+					<cfset request.speck.spHandlerEventPrintPopup = true>
+				</cfif>		
+				
+				<cfoutput>
+				<span class="event_display_print">
+				<a href="#attributes.printUrl#?app=#request.speck.appName#&id=#content.spId#" title="printer friendly version (opens in new window)" onclick="event_print_popup('#content.spId#');return false;">#attributes.printCaption#</a>
+				</span>
+				</cfoutput>
+					
+			</cfif>
+	
+			<cfif len(attributes.emailCaption)>
+			
+				<cfif not isDefined("request.speck.spHandlerEmailPrintPopup")> <!--- only write out the JS function once --->
+					<cfoutput><script type="text/javascript">
+						<!--
+						//<![CDATA[
+						function event_email_popup(id,url) {
+							var emailWindow = window.open("#attributes.emailUrl#?app=#request.speck.appName#&id=" + id + "&noun=#attributes.emailNoun#","event_email","menubar=yes,resizable=yes,scrollbars=yes,toolbar=yes,status=yes,width=650,height=450,screenX=50,screenY=50,left=50,top=50");
+							emailWindow.focus();
+						}
+						//]]>
+						//-->
+					</script></cfoutput>
+					<cfset request.speck.spHandlerEmailPrintPopup = true>
+				</cfif>		
+				
+				<cfoutput>
+				<span class="event_display_email">
+				<a href="#attributes.emailUrl#?app=#request.speck.appName#&id=#content.spId#" title="email event to a #attributes.emailNoun# (opens in new window)" onclick="event_email_popup('#content.spId#');return false;">#attributes.emailCaption#</a>
+				</span>
+				</cfoutput>
+					
+			</cfif>
+		
+		</cfsavecontent>
+		
+		<cfif len(trim(widgets))>
+		
+			<cfoutput>
+			<div class="event_display_widgets">
+			#widgets#
+			</div>
 			</cfoutput>
 		
 		</cfif>
@@ -434,24 +719,8 @@ Licensed under the Academic Free License version 2.1
 				else
 					imageDimensions = "";						
 			</cfscript>
-			<cfoutput><img src="#content.mainImage#" class="article_display_image" #imagedimensions# alt="Image for article titled '#content.title#'" /></cfoutput>
+			<cfoutput><img src="#content.mainImage#" class="event_display_image" #imagedimensions# alt="Image for event '#content.title#'" /></cfoutput>
 		</cfif>
-
-		<cfscript>
-			if ( len(attributes.insertContent) ) {
-				currentParagraph = 0;
-				stringPosition = 1;
-				nl = chr(13) & chr(10);
-				do {
-					insertPosition = stringPosition - 1;
-					stringPosition = find("</p>", content.content, stringPosition + 1);
-					currentParagraph = currentParagraph + 1;
-				} while ( stringPosition gt 0 and currentParagraph lte attributes.insertAfterParagraph);
-				if ( insertPosition neq 0 ) {
-					content.content = insert(nl & attributes.insertContent & nl,content.content,insertPosition+4);
-				}
-			}
-		</cfscript>
 		
 		<cfoutput>
 		<div class="event_display_description">
@@ -482,9 +751,9 @@ Licensed under the Academic Free License version 2.1
 		</cfif>	
 		<!--- end of related documents --->	
 		
-		<!--- TODO: re-write article cache stuff to a generic meta cache which is generic enough to apply to content items of any type --->
-		<!--- TODO2: need to decide what to do when the output is pulled from a persistent cache after 
-				a CF restart - in that case the meta cache will have gone from application scope --->
+		<!--- TODO: re-write cache stuff to a generic meta cache which is generic enough to apply to content items of any type --->
+		<!--- Note: when caching the output of this method, set persistent="no" - if the application is refreshed due to a cfserver restart, caches are rebuilt from the persistent cache, but this meta cache won't be rebuilt --->
+		<!--- TODO2: some kind of standard meta cache tag and storage area --->
 		<cfscript>
 			// cache meta data about this content in application scope (can be then used to write 
 			// to html head even when output from this method has been cached using spCacheThis)

@@ -22,12 +22,12 @@ Licensed under the Academic Free License version 2.1
 		}
 	</cfscript>
 	
-	<cf_spContentGet type="Article" id="#url.id#" properties="spKeywords" r_qContent="qArticle" cachedwithin="#cacheTimeSpan#">
+	<cf_spContentGet type="Event" id="#url.id#" properties="spKeywords" r_qContent="qEvent" cachedwithin="#cacheTimeSpan#">
 
-	<cfif len(qArticle.spKeywords)>
+	<cfif len(qEvent.spKeywords)>
 		
 		<cfquery name="qKeywords" dbtype="query">
-			SELECT groups FROM request.speck.qKeywords WHERE keyword IN (#quotedValueList(qArticle.spKeywords)#)
+			SELECT groups FROM request.speck.qKeywords WHERE keyword IN (#quotedValueList(qEvent.spKeywords)#)
 		</cfquery>
 		
 		<cfscript>

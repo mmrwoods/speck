@@ -25,19 +25,19 @@ Licensed under the Academic Free License version 2.1
 		}
 	</cfscript>
 	
-	<cfparam name="request.speck.config.types.article.email_stylesheet" default="#defaultStylesheet#">
-	<cfparam name="request.speck.config.types.article.email_header" default="">
-	<cfparam name="request.speck.config.types.article.email_footer" default="">
+	<cfparam name="request.speck.config.types.event.email_stylesheet" default="#defaultStylesheet#">
+	<cfparam name="request.speck.config.types.event.email_header" default="">
+	<cfparam name="request.speck.config.types.event.email_footer" default="">
 	
 	
 	<cf_spContent 
-		type="Article" 
+		type="Event" 
 		method="email" 
 		id="#url.id#" 
 		enableAdminLinks="no" 
-		stylesheet="#request.speck.config.types.article.email_stylesheet#"
-		header="#request.speck.config.types.article.email_header#"
-		footer="#request.speck.config.types.article.email_footer#"
+		stylesheet="#request.speck.config.types.event.email_stylesheet#"
+		header="#request.speck.config.types.event.email_header#"
+		footer="#request.speck.config.types.event.email_footer#"
 		noun="#url.noun#">
 
 </cfif>

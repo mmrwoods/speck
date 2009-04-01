@@ -124,3 +124,9 @@ once defined (probably with some additional cf_spType attributes).
 
 </cfcatch>
 </cftry>
+
+<!--- always do a clean up of the content index in case some deleted content has been left in the index unintentionally (note: this only works when revisioning is off at the moment) --->
+<cfquery name="qDelete" datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
+	DELETE FROM spContentIndex WHERE contentType = '#lCase(attributes.type)#' AND id NOT IN (SELECT DISTINCT(spId) FROM #lCase(attributes.type)#)
+</cfquery>
+
