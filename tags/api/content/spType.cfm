@@ -445,9 +445,26 @@ Attributes:
 						
 					</cfloop>
 					
-					<cfquery name="qInsert" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
-						INSERT INTO spSequences (contentType, sequenceId) VALUES ('#uCase(a.name)#',#sequenceId#)
+					<!--- check for content type in spsequences table --->
+					<cfquery name="qCheckExists" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
+						SELECT * FROM spSequences WHERE contentType = '#uCase(a.name)#'
 					</cfquery>
+					
+					<cfif qCheckExists.recordCount>
+						
+						<cfquery name="qUpdate" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
+							UPDATE spSequences 
+							SET sequenceId = #sequenceId#
+							WHERE contentType = '#uCase(a.name)#'
+						</cfquery>
+					
+					<cfelse>
+					
+						<cfquery name="qInsert" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
+							INSERT INTO spSequences (contentType, sequenceId) VALUES ('#uCase(a.name)#',#sequenceId#)
+						</cfquery>
+					
+					</cfif>
 				
 				</cftransaction>
 				

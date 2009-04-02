@@ -1173,16 +1173,9 @@ I'm sure this all used to be necessary in CF5
 					CREATE TABLE spSequences (
 						contentType #stApp.textDDLString(45,stApp)# NOT NULL,
 						sequenceId INTEGER NOT NULL,
-						PRIMARY KEY (contentType,sequenceId)
+						PRIMARY KEY (contentType)
 					)
 					
-				</cfquery>
-				
-			<cfelseif stApp.dbtype neq "access">
-				
-				<!--- temporary code to upper case all type names in spSequences table - I forgot that the case won't always match on windows, oops --->
-				<cfquery  name="qUpdateSequences" datasource=#stApp.codb# username=#stApp.database.username# password=#stApp.database.password#>
-					UPDATE spSequences SET contentType = UPPER(contentType)
 				</cfquery>
 				
 			</cfif>	

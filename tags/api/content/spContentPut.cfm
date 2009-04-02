@@ -482,9 +482,25 @@ Attributes:
 			
 			<cfset sequenceId = qSequence.sequenceId + 1>
 			
-			<cfquery name="qUpdateSequence" datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
-				UPDATE spSequences SET sequenceId = #sequenceId# WHERE contentType = '#uCase(attributes.type)#'
-			</cfquery> 
+			<cfif qSequence.recordCount gt 1>
+			
+				<!--- an old bug in spType meant that it was possible to have more than one row if the table was dropped by a database administrator and then re-created by spType --->
+				
+				<cfquery name="qDeleteSequences" datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
+					DELETE FROM spSequences WHERE contentType = '#uCase(attributes.type)#'
+				</cfquery> 
+				
+				<cfquery name="qInsertSequence" datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
+					INSERT INTO spSequences (contentType, sequenceId) VALUES ('#uCase(attributes.type)#',#sequenceId#)
+				</cfquery>
+								
+			<cfelse>
+				
+				<cfquery name="qUpdateSequence" datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
+					UPDATE spSequences SET sequenceId = #sequenceId# WHERE contentType = '#uCase(attributes.type)#'
+				</cfquery> 
+				
+			</cfif>
 			
 		</cftransaction>
 		

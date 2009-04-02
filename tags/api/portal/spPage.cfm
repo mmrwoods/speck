@@ -77,19 +77,16 @@ Licensed under the Academic Free License version 2.1
 				
 				<cfheader statuscode="403" statustext="Forbidden">
 				
-				<cfquery name="qKeyword" dbtype="query" maxrows="1">
-					SELECT * 
-					FROM request.speck.qKeywords
-				</cfquery>
-				
+				<!--- override the page title and so on - no information about the page shouldn't be visible --->
+				<!--- note: this does not prevent the layout from showing the menu and breadcrumbs (we are not changing request.speck.portal.keyword here) --->
 				<cfscript>
-				request.speck.portal.keyword = qKeyword.keyword;
-				request.speck.portal.qKeyword = duplicate(qKeyword);
-				request.speck.portal.qKeyword.title[1] = "Access Denied";
-				
-				request.speck.portal.title = "Access Denied";
-				request.speck.portal.description = "";
-				request.speck.portal.keywords = "";
+					request.speck.portal.qKeyword.name[1] = "Access Denied";
+					request.speck.portal.qKeyword.title[1] = "Access Denied";
+					request.speck.portal.qKeyword.description[1] = "";
+					request.speck.portal.qKeyword.keywords[1] = "";
+					request.speck.portal.title = "Access Denied";
+					request.speck.portal.description = "";
+					request.speck.portal.keywords = "";
 				</cfscript>
 	
 				<cftry>
@@ -127,21 +124,11 @@ Licensed under the Academic Free License version 2.1
 		
 			<!--- keyword not found --->
 			<cfheader statuscode="404" statustext="Not Found">
-			
-			<cfquery name="qKeyword" dbtype="query" maxrows="1">
-				SELECT * 
-				FROM request.speck.qKeywords
-				WHERE keyword = 'noSuchKeyword'
-			</cfquery>
-			
+
 			<cfscript>
-			// request.speck.portal.keyword = qKeyword.keyword;
-			request.speck.portal.qKeyword = duplicate(qKeyword);
-			request.speck.portal.qKeyword.title[1] = "Not Found";
-			
-			request.speck.portal.title = "Not Found";	
-			request.speck.portal.description = "";
-			request.speck.portal.keywords = "";
+				request.speck.portal.title = "Not Found";	
+				request.speck.portal.description = "";
+				request.speck.portal.keywords = "";
 			</cfscript>
 
 			<cftry>
