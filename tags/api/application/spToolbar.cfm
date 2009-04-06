@@ -299,16 +299,18 @@ Renders toolbar allowing editors and reviewers (i.e. spEdit or spReview permissi
 		</cfif>
 		
 		<cfif isDefined("request.speck.portal")>
-			<cfset windowWidth = 725>
+			<cfset windowWidth = 800>
+			<cfset windowHeight = 600>
 		<cfelse>
 			<cfset windowWidth = 650>
+			<cfset windowHeight = 500>
 		</cfif>
 		<cfoutput>
 		<script type="text/javascript">
 			<!--
 			//<![CDATA[
 			function launch_keywords() {
-				var keywordsWin = window.open("/speck/admin/keywords.cfm?app=#request.speck.appname#", "manage_keywords", "menubar=no,scrollbars=yes,resizable=yes,width=#windowWidth#,height=500,screenX=125,screenY=25,left=125,top=25");
+				var keywordsWin = window.open("/speck/admin/keywords.cfm?app=#request.speck.appname#", "manage_keywords", "menubar=no,scrollbars=yes,resizable=yes,width=#windowWidth#,height=#windowHeight#,screenX=125,screenY=25,left=125,top=25");
 				keywordsWin.focus();
 			}
 			//]]>
@@ -326,13 +328,42 @@ Renders toolbar allowing editors and reviewers (i.e. spEdit or spReview permissi
 			<!--
 			//<![CDATA[
 			function launch_users() {
-				var usersWin = window.open("/speck/portal/users.cfm?app=#request.speck.appname#", "manage_users", "menubar=no,scrollbars=yes,resizable=yes,width=725,height=500,screenX=125,screenY=25,left=125,top=25");
+				var usersWin = window.open("/speck/portal/users.cfm?app=#request.speck.appname#", "manage_users", "menubar=no,scrollbars=yes,resizable=yes,width=800,height=600,screenX=125,screenY=25,left=125,top=25");
 				usersWin.focus();
 			}
 			//]]>
 			//-->
 		</script>
 		<a href="javascript:launch_users();" class="spToolbar spManageUsers" title="Manage users, groups and roles">Users</a>
+		</cfoutput>
+		
+	</cfif>
+	
+	<!--- experimental code to for CF file manager integration --->
+	<cfparam name="request.speck.portal.fileManager" default="false" type="boolean">
+	<cfparam name="request.speck.portal.fileManagerUsers" default="">
+	<cfparam name="request.speck.portal.fileManagerIps" default="">
+	<cfset request.speck.portal.fileManagerIps = reReplace(request.speck.portal.fileManagerIps,"[[:space:]]+","","all")>
+	
+	<!--- To use the file manager, must have spSuper role AND be in the list of file manager users or be accessing from list of allowed ips --->
+	<!--- probable TODO: add a new spDeveloper role and require that role rather than spSuper --->
+		
+	<cfif request.speck.portal.fileManager 
+		and request.speck.userHasPermission("spSuper") 
+		and ( listFindNoCase(request.speck.portal.fileManagerUsers,request.speck.session.user) or listFindNoCase(request.speck.portal.fileManagerIps,cgi.REMOTE_ADDR) )>
+		
+		<cfoutput>
+		<script type="text/javascript">
+		<!--
+		//<![CDATA[
+		function launch_filemanager() {
+		        var fileManagerWin = window.open("/speck/filemanager/index.cfm?app=#request.speck.appName#", "file_manager", "menubar=no,scrollbars=yes,resizable=yes,width=800,height=600,screenX=125,screenY=25,left=125,top=25");
+		        fileManagerWin.focus();
+		}
+		//]]>
+		//-->
+		</script>
+		<a class="spToolbar spFileManager" href="javascript:launch_filemanager();">File Manager</a>
 		</cfoutput>
 		
 	</cfif>

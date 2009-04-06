@@ -7,14 +7,21 @@ work with permission of the copyright owners.
 Licensed under the Academic Free License version 2.1
 --->
 
-<cfif not isDefined("url.app")>
+<cfif isDefined("url.app")>
+
+	<cf_spApp name="#url.app#" refresh="No">
+	<cfcookie name="spAppName" value="#request.speck.appName#">
+
+<cfelseif isDefined("cookie.spAppName")>
+
+	<cf_spApp name="#cookie.spAppName#" refresh="No">
+	
+<cfelse>
 
 	<cfoutput><h1>Speck: Required parameter "app" missing from URL</h1></cfoutput>
 	<cfabort>
 	
 </cfif>
-
-<cf_spApp name="#url.app#" refresh="No">
 
 <cfparam name="request.speck.language" default="en">
 

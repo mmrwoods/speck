@@ -217,7 +217,7 @@ Licensed under the Academic Free License version 2.1
 				else
 					imageDimensions = "";						
 			</cfscript>
-			<cfoutput><img src="#content.mainImage#" class="event_print_image" #imagedimensions# alt="Image for event titled '#content.title#'" /></cfoutput>
+			<cfoutput><img src="#content.mainImage#" class="event_print_image" #imagedimensions# alt="'#content.title#' image" /></cfoutput>
 		</cfif>
 		
 		<cfoutput>
@@ -719,7 +719,7 @@ Licensed under the Academic Free License version 2.1
 				else
 					imageDimensions = "";						
 			</cfscript>
-			<cfoutput><img src="#content.mainImage#" class="event_display_image" #imagedimensions# alt="Image for event '#content.title#'" /></cfoutput>
+			<cfoutput><img src="#content.mainImage#" class="event_display_image" #imagedimensions# alt="'#content.title#' image" /></cfoutput>
 		</cfif>
 		
 		<cfoutput>

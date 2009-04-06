@@ -34,7 +34,7 @@ Licensed under the Academic Free License version 2.1
 <!--- call spToolbar before running any code that generates content - spToolbar switches admin links etc. on and off --->
 
 <cfsavecontent variable="toolbar">
-	
+
 	<cf_spToolbar>
 
 </cfsavecontent>

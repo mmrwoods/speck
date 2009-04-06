@@ -239,7 +239,7 @@ Licensed under the Academic Free License version 2.1
 				else
 					imageDimensions = "";						
 			</cfscript>
-			<cfoutput><img src="#content.mainImage#" class="article_print_image" #imagedimensions# alt="Image for article titled '#content.title#'" /></cfoutput>
+			<cfoutput><img src="#content.mainImage#" class="article_print_image" #imagedimensions# alt="'#content.title#' image" /></cfoutput>
 		</cfif>
 		
 		<cfoutput>
@@ -737,7 +737,7 @@ Licensed under the Academic Free License version 2.1
 				else
 					imageDimensions = "";						
 			</cfscript>
-			<cfoutput><img src="#content.mainImage#" class="article_display_image" #imagedimensions# alt="Image for article titled '#content.title#'" /></cfoutput>
+			<cfoutput><img src="#content.mainImage#" class="article_display_image" #imagedimensions# alt="'#content.title#' image" /></cfoutput>
 		</cfif>
 
 		<cfscript>
