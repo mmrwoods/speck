@@ -244,6 +244,10 @@ Licensed under the Academic Free License version 2.1
 <cfinclude template="action_errors.cfm">
 
 <cfoutput>
+<style type="text/css">
+	// quick hack to limit the max width on input fields so they fit on the screen (really only added for FF on Linux - it was bugging me)
+	input {max-width:220px;}
+</style>
 <form name="speditform" id="spUserForm" action="#cgi.script_name#?app=#url.app#&username=#url.username#&return_to=#urlEncodedFormat(return_to)#" autocomplete="off" onsubmit="selectAllOptions(document.speditform.groups)" method="post">
 <input type="hidden" name="groups_expiration" value='#form.groups_expiration#' /> <!--- note: json strings are double-quoted --->
 <fieldset>

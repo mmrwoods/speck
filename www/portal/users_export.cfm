@@ -103,7 +103,7 @@ function QueryToCsv(query){
 </cfscript>
 
 <cfheader name="content-disposition" value="attachment; filename=users_export.csv">
-<cfcontent type="text/comma-separated-values">
+<cfcontent type="text/comma-separated-values; charset=UTF-8">
 
 <cfset lColumns = "username,fullname,email,groups,phone">
 <cfset lHeaders = "Username,Full Name,Email,Groups,Phone">
