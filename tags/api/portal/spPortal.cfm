@@ -1034,11 +1034,117 @@ update: I found it, a logout script wasn't deleting the speck key from session s
 
 <cfif request.speck.session.securityZone eq "portal">
 
-	<cfif isDefined("form.spLogonUser") and isDefined("form.spLogonPassword") and not isDefined("request.speck.failedLogon")>
-		
-		<!--- only allow logon for users who have completed registration and account has not expired or been suspended --->
+	<cfif isDefined("form.spLogonUser") and isDefined("form.spLogonPassword")>
+	
+		<!--- check if logon is blocked due too many recent authentication failures --->
+
+		<!--- this is pretty crude at the moment, with hard-coded thresholds and lumping of logons from IPs and users together --->
+		<!--- 
+		TODO: 
+		* configuration options for thresholds
+		* ability to set whitelist IPs or get around this using a captcha
+		* separately check for failed logons from IPs and failed logons for particular users
+		--->
 		<cftry>
+			
+			<cfquery name="qRecentLogonFailures" datasource="#request.speck.codb#">
+				SELECT COUNT(*) AS total
+				FROM spLogonFailures
+				WHERE ts > <cfqueryparam cfsqltype="cf_sql_timestamp" value="#dateAdd("n",-5,now())#"> 
+					AND ( 
+						username = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lCase(request.speck.session.user)#"> 
+						OR 
+						ip_address = <cfqueryparam cfsqltype="cf_sql_varchar" value="#cgi.REMOTE_ADDR#"> 
+					)
+			</cfquery>
+			
+		<cfcatch type="database">
 		
+			<cfif request.speck.dbTableNotFound(cfcatch.detail)>
+			
+				<!--- create a dummy query and let the code to log the logon failures create the table --->
+				<cfscript>
+					qRecentLogonFailures = queryNew("total");
+					queryAddRow(qRecentLogonFailures);
+					querySetCell(qRecentLogonFailures,"total",0);
+				</cfscript>
+					
+			<cfelse>
+			
+				<cfrethrow>
+				
+			</cfif>
+			
+		</cfcatch>			
+		</cftry>
+		
+		<cfif qRecentLogonFailures.total gte 5>
+		
+			<!--- too many recent authentication failures --->
+			<cfset session.speck.auth = "none">
+			<cfset request.speck.session.auth = "none">
+			<cfset request.speck.failedLogon = true>
+			<cfset request.speck.failedLogonMessage = "Too many recent authentication failures, try again in 5 minutes.">
+			
+			<cflog type="warning" 
+				file="#request.speck.appName#" 
+				application="no"
+				text="CF_SPPORTAL: Too many recent authentication failures. Logon denied to user '#request.speck.session.user#' from IP '#cgi.REMOTE_ADDR#'.">	
+	
+		<cfelseif request.speck.session.auth neq "logon">
+		
+			<!--- log authentication failures --->
+			<cftry>
+				
+				<cfquery name="qInsertLogonFailure" datasource="#request.speck.codb#">
+					INSERT INTO spLogonFailures (
+						username, 
+						ip_address, 
+						ts
+					) VALUES (
+						<cfqueryparam cfsqltype="cf_sql_varchar" value="#lCase(request.speck.session.user)#">,
+						<cfqueryparam cfsqltype="cf_sql_varchar" value="#cgi.REMOTE_ADDR#">,
+						<cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#">
+					)
+				</cfquery>
+				
+				<!--- clean up the logon failures table --->
+				<cfquery name="qDeleteLogonFailures" datasource="#request.speck.codb#">
+					DELETE FROM spLogonFailures 
+					WHERE ts < <cfqueryparam cfsqltype="cf_sql_timestamp" value="#dateAdd("d",-1,now())#"> 
+				</cfquery>
+			
+			<cfcatch type="database">
+			
+				<cfif cfcatch.sqlstate eq "S0002" or request.speck.dbTableNotFound(cfcatch.detail)>
+				
+					<!--- note: no primary key (Speck doesn't know how to create serial/auto-increment columns for all dbmss and we can't guarantee username, ip and time stamp to be unique) --->
+					<cfquery name="qCreateTable" datasource="#request.speck.codb#">
+						CREATE TABLE spLogonFailures (
+							username #request.speck.textDDLString(100)#,
+							ip_address #request.speck.textDDLString(100)#,
+							ts #request.speck.database.tsDDLString# NOT NULL
+						)
+					</cfquery>
+					
+					<!--- just add one index, this table could get hammered --->
+					<cfquery name="qAddIndex" datasource="#request.speck.codb#">
+						CREATE INDEX spLogonFailures_ts
+						ON spLogonFailures (ts)
+					</cfquery>
+	
+				<cfelse>
+				
+					<cfrethrow>
+				
+				</cfif>
+	
+			</cfcatch>
+			</cftry>
+		
+		<cfelse>
+
+			<!--- authentication successful - check that user has completed registration and account has not expired or been suspended --->
 			<cfquery name="qCheckUser" datasource="#request.speck.codb#">
 				SELECT registered, suspended, expires
 				FROM spUsers 
@@ -1085,103 +1191,100 @@ update: I found it, a logout script wasn't deleting the speck key from session s
 					text="CF_SPPORTAL: User account '#request.speck.session.user#' has expired. Setting auth level to 'none' and failedLogon flag to true.">
 			
 			</cfif>
-		
-		<cfcatch type="database">
-			
-			<!--- do nothing, registered, suspended and expired columns may not exist --->
-			
-		</cfcatch>
-		</cftry>
-		
-		<cfif request.speck.session.auth eq "logon">
-	
-			<cftry>
-				
-				<cfquery name="qUpdateLastLogon" datasource="#request.speck.codb#">
-					UPDATE spUsers 
-					SET lastLogon = <cfqueryparam cfsqltype="cf_sql_timestamp" value="#createODBCDateTime(now())#"> 
-					WHERE username = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lCase(request.speck.session.user)#">
-				</cfquery>
-			
-			<cfcatch>
-			
-				<cfquery name="qTableCheck" datasource="#request.speck.codb#">
-					SELECT * FROM spUsers WHERE spId = 'noSuchId'
-				</cfquery>
-				
-				<cfif not listFindNoCase(qTableCheck.columnList, "lastLogon")>
-		
-					<cfquery name="qAlterUsers" datasource="#request.speck.codb#">
-						ALTER TABLE spUsers ADD lastLogon #request.speck.database.tsDDLString#
-					</cfquery>
-					
-					<cfquery name="qAddIndex" datasource="#request.speck.codb#">
-						CREATE INDEX spUsers_lastLogon
-						ON spUsers (lastLogon)
-					</cfquery>
 
+			<cfif request.speck.session.auth eq "logon">
+			
+				<!--- user remains logged on after various checks, updated last logon and last active timestamps --->
+		
+				<cftry>
 					
-				<cfelse>
+					<cfquery name="qUpdateLastLogon" datasource="#request.speck.codb#">
+						UPDATE spUsers 
+						SET lastLogon = <cfqueryparam cfsqltype="cf_sql_timestamp" value="#createODBCDateTime(now())#"> 
+						WHERE username = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lCase(request.speck.session.user)#">
+					</cfquery>
 				
-					<cfrethrow>
-					
-				</cfif>
-										
-			</cfcatch>
-			</cftry>
-			
-		</cfif>
-		
-	</cfif>
-	
-	<!--- track user activity - note: only update the db every 90 seconds --->
-	<cfparam name="request.speck.portal.trackUserActivity" type="boolean" default="false">
-	<cfif request.speck.portal.trackUserActivity and request.speck.session.auth eq "logon">
-	
-		<cfif not structKeyExists(request.speck.session,"lastActive") or 
-			( structKeyExists(request.speck.session,"lastActive") and dateDiff("s",request.speck.session.lastActive,now()) gt 90 )>
-		
-			<cftry>
-			
-				<cfquery name="qUpdateLastActive" datasource="#request.speck.codb#">
-					UPDATE spUsers 
-					SET lastActive = <cfqueryparam cfsqltype="cf_sql_timestamp" value="#createODBCDateTime(now())#">
-					WHERE username = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lCase(request.speck.session.user)#">
-				</cfquery>
+				<cfcatch>
 				
-			<cfcatch>
-			
-				<cfquery name="qTableCheck" datasource="#request.speck.codb#">
-					SELECT * FROM spUsers WHERE spId = 'noSuchId'
-				</cfquery>
-				
-				<cfif not listFindNoCase(qTableCheck.columnList, "lastActive")>
-		
-					<!--- note: frequently updated column, do not index! --->
-					<cfquery name="qAlterUsers" datasource="#request.speck.codb#">
-						ALTER TABLE spUsers ADD lastActive #request.speck.database.tsDDLString#
+					<cfquery name="qTableCheck" datasource="#request.speck.codb#">
+						SELECT * FROM spUsers WHERE spId = 'noSuchId'
 					</cfquery>
 					
-				<cfelse>
-				
-					<cfrethrow>
-					
-				</cfif>
+					<cfif not listFindNoCase(qTableCheck.columnList, "lastLogon")>
+			
+						<cfquery name="qAlterUsers" datasource="#request.speck.codb#">
+							ALTER TABLE spUsers ADD lastLogon #request.speck.database.tsDDLString#
+						</cfquery>
 						
-			</cfcatch>
-			</cftry>
-			
-			<cflock scope="session" type="exclusive" timeout="3">
-			<cfif structKeyExists(session,"speck") and isStruct(session.speck) and not structIsEmpty(session.speck)>
-				<cfset session.speck.lastActive = now()>
-			</cfif>
-			</cflock>
-			
-		</cfif>
+						<cfquery name="qAddIndex" datasource="#request.speck.codb#">
+							CREATE INDEX spUsers_lastLogon
+							ON spUsers (lastLogon)
+						</cfquery>
+	
+						
+					<cfelse>
+					
+						<cfrethrow>
+						
+					</cfif>
+											
+				</cfcatch>
+				</cftry>
 				
-	</cfif>
+				<!--- track user activity --->
+				<cfif request.speck.portal.trackUserActivity>
+				
+					<!--- note: only update the db every 90 seconds --->
+					<cfif not structKeyExists(request.speck.session,"lastActive") or 
+						( structKeyExists(request.speck.session,"lastActive") and dateDiff("s",request.speck.session.lastActive,now()) gt 90 )>
+					
+						<cftry>
+						
+							<cfquery name="qUpdateLastActive" datasource="#request.speck.codb#">
+								UPDATE spUsers 
+								SET lastActive = <cfqueryparam cfsqltype="cf_sql_timestamp" value="#createODBCDateTime(now())#">
+								WHERE username = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lCase(request.speck.session.user)#">
+							</cfquery>
+							
+						<cfcatch>
+						
+							<cfquery name="qTableCheck" datasource="#request.speck.codb#">
+								SELECT * FROM spUsers WHERE spId = 'noSuchId'
+							</cfquery>
+							
+							<cfif not listFindNoCase(qTableCheck.columnList, "lastActive")>
+					
+								<!--- note: frequently updated column, do not index! --->
+								<cfquery name="qAlterUsers" datasource="#request.speck.codb#">
+									ALTER TABLE spUsers ADD lastActive #request.speck.database.tsDDLString#
+								</cfquery>
+								
+							<cfelse>
+							
+								<cfrethrow>
+								
+							</cfif>
+									
+						</cfcatch>
+						</cftry>
+						
+						<cflock scope="session" type="exclusive" timeout="3">
+						<cfif structKeyExists(session,"speck") and isStruct(session.speck) and not structIsEmpty(session.speck)>
+							<cfset session.speck.lastActive = now()>
+						</cfif>
+						</cflock>
+						
+					</cfif>
+				
+				</cfif>						
+				
+			</cfif> <!--- end code to update last logon and last active --->
+			
+		</cfif> <!--- check if logon succeeded --->
+			
+	</cfif> <!--- check if logon form posted  --->
 
-</cfif>
+</cfif> <!--- check for portal security zone --->
 
 <!--- Search Engine Safe URL stuff - taken wholesale from SESConverter tag by the people at fusium.com --->
 <!--- TODO: contact the people at fusium and ask for permission to do this before we distribute anything --->
