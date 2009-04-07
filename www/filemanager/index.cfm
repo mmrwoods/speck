@@ -22,7 +22,7 @@
 <cfsetting enablecfoutputonly="yes">
 
 <!---
-	CFFM 1.15
+	CFFM 1.16
 	Written by Rick Root (rick@webworksllc.com)
 	See LICENSE.TXT for copyright and redistribution restrictions.	
 
@@ -46,7 +46,10 @@
 --->
 <cffunction name="cffmdump">
 	<cfargument name="arg1" type="any" required="yes">
-	<cfdump var="#arg1#"><cfabort>
+	<cfoutput>
+	<cfdump var="#arguments#">
+	</cfoutput>
+	<cfabort>
 </cffunction>
 <cfset cffm = createObject("component","cffm")>
 <cfinvoke component="#cffm#" method="init">
@@ -66,7 +69,7 @@
 	--->
 	<cfinvokeargument name="allowedExtensions" value="jpg,gif,png,css,cfg,html,htm,txt,js">
 	<!--- editableExtensions:  specifies what kind of files can be edited with the simple text editor --->
-	<cfinvokeargument name="editableExtensions" value="css,cfg,html,txt,js">
+	<cfinvokeargument name="editableExtensions" value="css,cfg,html,txt,js">	
 	<!---
 	// overwriteDefault = 
 	// There are several places where a checkbox appears to overwrite
@@ -88,8 +91,7 @@
 	<cfinvokeargument name="readOnly" value="No">
 	<Cfinvokeargument name="allowUnzip" value="No">
 	<cfinvokeargument name="allowCreateDirectory" value="Yes">
-	<cfinvokeargument name="allowMultipleUploads" value="No">
-	
+	<cfinvokeargument name="allowMultipleUploads" value="No">	
 </cfinvoke>
 <!--- place the resource kit in the cffm object --->
 <cfset cffm.resourceKit = variables.resourceKit>
@@ -311,7 +313,7 @@
 		FatalError(cffm.resourceKit.errorMsg.t1);
 	}
 
-	variables = cffm.createVariables(variables, form, url, "action,subdir,deleteFilename,renameOldFilename,renameNewFilename,editFilename,viewFilename,editFileContent,createNewFilename,createNewFileType,unzipFilename,moveToSubdir,moveFilename,unzipToSubdir,overWrite,rotateDegrees,resizeWidthValue,resizeHeightValue,preserveAspect,showTotalUsage");
+	variables = cffm.createVariables(variables, form, url, "action,subdir,deleteFilename,renameOldFilename,renameNewFilename,editFilename,viewFilename,editFileContent,createNewFilename,createNewFileType,unzipFilename,moveToSubdir,moveFilename,unzipToSubdir,overWrite,rotateDegrees,resizeWidthValue,resizeHeightValue,cropStartX,cropStartY,cropWidthValue,cropHeightValue,preserveAspect,cropToExact,showTotalUsage");
 	if (variables.action eq "") { 
 		variables.action = "list"; 
 	}
@@ -322,7 +324,7 @@
 </cfscript>
 <cfscript>
 	// some vars are being passed to java methods and MUST be cast to double using javacast
-	variables = cffm.forceNumeric(variables, "resizeWidthValue,resizeHeightValue,preserveAspect,rotateDegrees");
+	variables = cffm.forceNumeric(variables, "resizeWidthValue,resizeHeightValue,cropStartX,cropStartY,cropWidthValue,cropHeightValue,preserveAspect,cropToExact,rotateDegrees");
 
 	/* strip leading and trailing slashes first */
 	variables.subdir = trim(REReplace(variables.subdir,"[\\\/]*(.*?)[\\\/]*$","\1","ONE"));
@@ -365,10 +367,11 @@
 	}
 </cfscript>
 <cfif variables.action eq "download">
-        <!--- <cfheader name="Content-disposition" value="attachment;filename=#downloadFilename#"> --->
-		<cfheader name="Content-disposition" value="inline;filename=#downloadFilename#">
-        <cfcontent type="#cffm.getMimeType(downloadFilename)#" file="#variables.workingDirectory##dirsep##downloadFilename#">
-        <cfabort>
+	<!--- note: this action is now being used to view files so viewing files works for files outside the publicly accessible web root --->
+	<!--- <cfheader name="Content-disposition" value="attachment;filename=#downloadFilename#"> --->		
+	<cfheader name="Content-disposition" value="inline;filename=#downloadFilename#">
+	<cfcontent type="#cffm.getMimeType(downloadFilename)#" file="#variables.workingDirectory##dirsep##downloadFilename#">
+	<cfabort>
 </cfif>
 
 <cfscript>
@@ -519,7 +522,7 @@
 			}
 		}
 		variables.action = "list";
-	} else if (listFind("flip,flop,resize,rotate,manipulateForm",action) gt 0) {
+	} else if (listFind("flip,flop,resize,crop,rotate,manipulateForm,commitChanges,undoChanges",action) gt 0) {
 		if (variables.editFilename contains "/" or variables.editFilename contains "\") {
 			variables.errorMessage = variables.errorMessage & "<li>#cffm.resourceKit.errorMsg.t5#</li>#Chr(10)#";
 			action = "list";
@@ -539,7 +542,7 @@
 			{
 				variables.errorMessage = variables.errorMessage & "<li>#cffm.resourceKit.errorMsg.t9#</li>#Chr(10)#";
 				variables.action = "list";
-			} else if (listFindNoCase("flip,flop,rotate,resize",variables.action)) {
+			} else if (listFindNoCase("flip,flop,rotate,resize,crop",variables.action)) {
 				try {
 					if (variables.action eq "flip") {
 						variables.image.flipVertical();
@@ -548,18 +551,20 @@
 					} else if (variables.action eq "rotate") {
 						variables.image.rotate(variables.rotateDegrees);
 					} else if (variables.action eq "resize") {
-						variables.image.resize(variables.resizeWidthValue, variables.resizeHeightValue, yesNoFormat(variables.preserveAspect));
+						variables.image.resize(variables.resizeWidthValue, variables.resizeHeightValue, yesNoFormat(variables.preserveAspect), yesNoFormat(variables.cropToExact));
+					} else if (variables.action eq "crop") {
+						variables.image.crop(variables.cropStartX, variables.cropStartY, variables.cropWidthValue, variables.cropHeightValue);
 					}
 					DebugOutput("Writing image");
 					variables.image.save(variables.imagePath,95);
 					imageWritten = true;
 				} catch(Any e) {
-					cffmdump(e);
+					// cffmdump(e);
+					variables.errorMessage = variables.errorMessage & "<li>#e.detail#.</li>#Chr(10)#";
 					imageWritten = false;
 				}
 				if (not imageWritten)
 				{
-					variables.errorMessage = variables.errorMessage & "<li>The image file was not written.  Either the format is unsupported or the original image was corrupt.</li>#Chr(10)#";
 					variables.action = "list";
 				} else {
 					relocate(cffm.cffmFilename & "?action=manipulateForm&subdir=" & urlEncodedFormat(variables.subdir) & "&editFilename=" & urlEncodedFormat(variables.editFilename));
@@ -578,11 +583,13 @@
 	<CFINCLUDE TEMPLATE="#cffm.templateWrapperAbove#">
 	<cfsetting enablecfoutputonly="yes">
 <cfelse>
+	<!--- <cfoutput><HTML><HEAD><TITLE>CFFM File Manager version <CFOUTPUT>#cffm.version#</CFOUTPUT></TITLE></HEAD><BODY></cfoutput>
+	<cfhtmlhead text="<link rel=stylesheet type=text/css href=cffmDefault.css>"> --->
 	<cfoutput>
-	<HTML><HEAD><TITLE>CFFM File Manager version #cffm.version#</TITLE></HEAD>
+	<html><head><title>CFFM File Manager version #cffm.version#</title></head>
 	<link rel="stylesheet" type="text/css" href="cffmSpeck.css">
 	<body>
-	</cfoutput>
+	</cfoutput>	
 </cfif>
 
 <cfif variables.editorType eq "fck">
@@ -678,7 +685,7 @@
 			<cfset syntax = fileExt>
 		</cfif>
 		<cfoutput>
-			<script language="javascript" type="text/javascript" src="/filemanager/editarea/edit_area/edit_area_full.js"></script>
+			<script language="javascript" type="text/javascript" src="/speck/filemanager/editarea/edit_area/edit_area_full.js"></script>
 			<script language="javascript" type="text/javascript">
 			editAreaLoader.init({
 				id : "cffm_edit_area"				// textarea id
@@ -700,15 +707,44 @@
 	</cfif>
 	<input type="button" class="button" value="<cfoutput>#cffm.resourceKit.buttonText.t2#</cfoutput>" onClick="javascript:history.go(-1);">
 	</form>
+<cfelseif action eq "commitChanges">
+	<cffile action="COPY" source="#variables.workingDirectory#/#variables.editFilename#" destination="#variables.workingDirectory#/#reReplace(variables.editFilename,"^\_\_TEMP\_\_","","ALL")#">
+	<cffile action="DELETE" file="#variables.workingDirectory#/#variables.editFilename#">
+	<cfoutput>
+		<p>#cffm.ResourceKit.Msg.t66#</p>
+		<p><a href="#cffm.cffmFilename#?subdir=#urlEncodedFormat(variables.subdir)#"><b>#cffm.ResourceKit.Msg.t14#</b></A></p>
+	</cfoutput>
+<cfelseif action eq "undoChanges">
+	<cffile action="DELETE" file="#variables.workingDirectory#/#variables.editFilename#">
+	<cfoutput>
+		<p>#cffm.ResourceKit.Msg.t66#</p>
+		<p><a href="#cffm.cffmFilename#?subdir=#urlEncodedFormat(variables.subdir)#"><b>#cffm.ResourceKit.Msg.t14#</b></A></p>
+	</cfoutput>
 <cfelseif action eq "manipulateForm">
+	<!--- make a "working copy" --->
+	<cfset variables.workingCopy = "No">
+	<cfif Find("__TEMP__",variables.editFilename) is 1>
+		<cfset variables.workingCopy = "Yes">
+	<cfelse>
+		<cffile action="COPY" source="#variables.workingDirectory#/#variables.editFilename#" destination="#variables.workingDirectory#/__TEMP__#variables.editFilename#">
+		<cfset variables.editFilename = "__TEMP__" & variables.editFilename>
+		<cfset variables.workingCopy = "Yes">
+	</cfif>
 	<!--- variables.image was created earlier --->
 	<cfset variables.imageHeight = variables.image.getImageInfo().height>
 	<cfset variables.imageWidth = variables.image.getImageInfo().width>
 	<cfoutput>
-	<a href="#cffm.cffmFilename#?subdir=#urlEncodedFormat(variables.subdir)#"><b>#cffm.ResourceKit.Msg.t14#</b></A>
-	<p>
-	Actual Image Size:  #variables.imageWidth# x #variables.imageHeight#
-	<p>
+	<cfif NOT variables.workingCopy>
+		<p>#cffm.ResourceKit.Msg.t61#</p>
+		<p><a href="#cffm.cffmFilename#?subdir=#urlEncodedFormat(variables.subdir)#"><b>#cffm.ResourceKit.Msg.t14#</b></A></p>
+	<cfelse>
+		<p>Changes are being made to a temporary copy of your original image.  
+			<a href="#cffm.cffmFilename#?subdir=#urlEncodedFormat(variables.subdir)#&editFilename=#urlEncodedFormat(variables.editFilename)#&action=commitChanges" id="commitChanges"><b>#cffm.ResourceKit.Msg.t64#</b></A>
+			<a href="#cffm.cffmFilename#?subdir=#urlEncodedFormat(variables.subdir)#&editFilename=#urlEncodedFormat(variables.editFilename)#&action=undoChanges" id="undoChanges"><b>#cffm.ResourceKit.Msg.t65#</b></A>
+		</p>
+	</cfif>
+	<p>#cffm.ResourceKit.Msg.t62#:  #variables.imageWidth# x #variables.imageHeight#</p>
+
 	<script language="javascript">
 	function rotate(degrees)
 	{
@@ -716,15 +752,14 @@
 		document.frmRotate.submit();
 	}
 	</script>
-	<p>
 	<ul>
-	<li>Flip / Rotate: 
+	<li>#cffm.ResourceKit.Msg.t63#: 
 	<a href="javascript:document.frmFlipVertical.submit()"><img align="absmiddle" border=1 src="#cffm.iconPath#/imgFlipVertical.gif" BORDER=0 ALT="Flip image vertically"></a>&nbsp;
 	<a href="javascript:document.frmFlipHorizontal.submit()"><img align="absmiddle" border=1 src="#cffm.iconPath#/imgFlipHorizontal.gif" BORDER=0 ALT="Flip image horizontally"></a>&nbsp;
 	<a href="javascript:rotate(90)"><img align="absmiddle" border=1 src="#cffm.iconPath#/imgRotate90.gif" BORDER=0 ALT="Rotate 90 degrees clockwise"></a>&nbsp;
 	<a href="javascript:rotate(180)"><img align="absmiddle" border=1 src="#cffm.iconPath#/imgRotate180.gif" BORDER=0 ALT="Rotate 180 degrees"></a>&nbsp;
 	<a href="javascript:rotate(270)"><img align="absmiddle" border=1 src="#cffm.iconPath#/imgRotate270.gif" BORDER=0 ALT="Rotate 90 degrees counter-clockwise"></a>
-	<p>
+
 	<form name="frmFlipVertical" method="post" action="#cffm.cffmFilename#">
 	<input type="hidden" name="subdir" value="#variables.subdir#">
 	<input type="hidden" name="editFilename" value="#variables.editFilename#">
@@ -772,11 +807,28 @@
 	<input type="text" size="4" maxlength="4" name="resizeWidthValue" value="0"> #cffm.resourceKit.Msg.t7#
 	<input type="text" size="4" maxlength="4" name="resizeHeightValue" value="0"> #cffm.resourceKit.Msg.t8#.
 	<input type="submit" class="button" value="#cffm.resourceKit.buttonText.t3#"><br>
-	<input type="checkbox" name="preserveAspect" value="1">
+	<input type="checkbox" name="preserveAspect" value="1" onclick="if(this.checked){document.getElementById('cropToExact').style.display='inline'}else{document.getElementById('cropToExact').style.display='none'}">
 	#cffm.resourceKit.Msg.t57#
+	<span id="cropToExact" style="display: none;">
+	<input type="checkbox" name="cropToExact" value="1">
+	#cffm.resourceKit.Msg.t58#</span>
 	</form>
+
+	<form name="frmCrop" method="post" action="#cffm.cffmFilename#">
+	<input type="hidden" name="subdir" value="#variables.subdir#">
+	<input type="hidden" name="editFilename" value="#variables.editFilename#">
+	<input type="hidden" name="action" value="crop">
+	<li>#cffm.resourceKit.Msg.t59#
+	<input type="text" size="4" maxlength="4" name="cropStartX" value="0"> x
+	<input type="text" size="4" maxlength="4" name="cropStartY" value="0">.<br/>
+	#cffm.resourceKit.Msg.t60#
+	<input type="text" size="4" maxlength="4" name="cropWidthValue" value="0"> x
+	<input type="text" size="4" maxlength="4" name="cropHeightValue" value="0">.
+	<input type="submit" class="button" value="#cffm.resourceKit.buttonText.t3#">
+	</form>
+
 	</ul>
-	<p>
+
 	<cfif variables.imageWidth gt 400>
 		<cfset variables.scale = 400 / variables.imageWidth>
 		<cfset variables.displaywidth = 400>
@@ -787,10 +839,9 @@
 		<cfset variables.displayHeight = variables.imageHeight>
 	</cfif>
 	<cfif variables.scale lt 1>
-		#cffm.resourceKit.Msg.t11# #NumberFormat(variables.scale*100,"__")# #cffm.resourceKit.Msg.t12#.  <a target="_blank" href="#variables.workingDirectoryWeb#/#variables.editFilename#">#cffm.resourceKit.Msg.t13#.</a>
-		<p>
+		<p>#cffm.resourceKit.Msg.t11# #NumberFormat(variables.scale*100,"__")# #cffm.resourceKit.Msg.t12#.  <a target="_blank" href="#variables.workingDirectoryWeb#/#variables.editFilename#">#cffm.resourceKit.Msg.t13#.</a></p>
 	</cfif>
-	<img src="#variables.workingDirectoryWeb#/#editFilename#?x=#RandRange(1,50000)#" borer=5 width="#variables.displayWidth#" height="#variables.displayHeight#">
+	<p><img src="#variables.workingDirectoryWeb#/#editFilename#?x=#RandRange(1,50000)#" borer=5 width="#variables.displayWidth#" height="#variables.displayHeight#"></p>
 	</cfoutput>
 
 <cfelseif action eq "renameForm">
@@ -1064,8 +1115,18 @@ if (type eq "dir") {
 			if (NOT isDefined("variables.image")) {
 				variables.image = createObject("component","ImageObject");
 			}
-			variables.image.init(cffm.createServerPath(variables.subdir,name));
-			variables.dimensions = variables.image.getImageInfo().width & "x" & variables.image.getImageInfo().height;
+			try
+			{
+				variables.image.init(cffm.createServerPath(variables.subdir,name));
+				variables.dimensions = variables.image.getImageInfo().width & "x" & variables.image.getImageInfo().height;
+			} catch(Any e) {
+				// next line is for debugging 
+				// cffmdump(e);
+				// image won't be editable, but for now
+				// let's leave the manipulate link.  To remove
+				// it, uncomment the following line:
+				// variables.editableImage = 0;
+			}
 		}
 	}
 	variables.previewTarget = "_blank";
@@ -1093,8 +1154,7 @@ if (type eq "dir") {
 			variables.linkToFile = "javascript:OpenFile('#variables.linkToFile#');";
 		}
 	}
-}
-</cfscript>
+}</cfscript>
 </cfsilent>
 <tr <cfif currentRow mod 2>class="alternateRow"</cfif>>
 <td><a href="#variables.linkToFile#" target="#variables.linkTarget#"><img src="#cffm.iconPath#/#variables.fileIcon#" border="0"></a></td>
@@ -1104,26 +1164,26 @@ if (type eq "dir") {
 		<a href="#cffm.cffmFilename#?action=download&subdir=#urlEncodedFormat(subdir)#&downloadFilename=#urlEncodedFormat(name)#">#name#</a>
 	<cfelse>
 		<a href="#variables.linkToFile#" target="#variables.linkTarget#">#name#</a>
-	</cfif>	
+	</cfif>
 </td>
 <td><cfif size lt 10000>#size#&nbsp;bytes<cfelseif size lt 1000000>#round(size/1024)#&nbsp;KB<cfelse>#round(size/1024/1024)#&nbsp;MB</cfif><cfif variables.dimensions neq ""><br>#variables.dimensions#</cfif></td>
 <td nowrap>#replace(dateFormat(dateLastModified,"yyyy-mm-dd") & " " & TimeFormat(dateLastModified,"HH:mm:00")," ","&nbsp;","ALL")#</td>
 <td class="actionLinks" nowrap>
 	<cfif not cffm.readOnly><a href="javascript:if(confirm('Delete #cffm.getPathType(cffm.createServerPath(variables.subdir,name))# \'#replace(name,"'","\'","ALL")#\'?')){window.location.href='#cffm.cffmFilename#?action=delete&subdir=' + escape('#replace(variables.subdir,"'","\'","ALL")#') +'&deleteFilename=' + escape('#replace(name,"'","\'","ALL")#');}">#cffm.resourceKit.Msg.t50#</a>&nbsp;
-<a href="#cffm.cffmFilename#?action=renameForm&subdir=#urlEncodedFormat(variables.subdir)#&editFilename=#urlEncodedFormat(name)#">#cffm.resourceKit.Msg.t51#</a>&nbsp;
-<a href="#cffm.cffmFilename#?action=copymoveForm&subdir=#UrlEncodedFormat(variables.subdir)#&editFilename=#urlEncodedFormat(name)#">#cffm.resourceKit.Msg.t52#</a>&nbsp;
-<cfif variables.editable eq 1><a href="#cffm.cffmFilename#?action=edit&subdir=#urlEncodedFormat(variables.subdir)#&editFilename=#urlEncodedFormat(name)#">#cffm.resourceKit.Msg.t53#</a>&nbsp;</cfif></cfif>
-<cfif variables.viewSource><a href="#cffm.cffmFilename#?action=viewSource&subdir=#urlEncodedFormat(variables.subdir)#&editFilename=#urlEncodedFormat(name)#">#cffm.resourceKit.Msg.t54#</a>&nbsp;</cfif>
-<cfif not cffm.readOnly and cffm.allowUnzip and variables.zipfile eq 1><a href="#cffm.cffmFilename#?action=viewzip&subdir=#urlEncodedFormat(variables.subdir)#&editFilename=#urlEncodedFormat(name)#">#cffm.resourceKit.Msg.t55#</a>&nbsp;</cfif>
-<!--- DISABLE IMAGE EDITING, TODO: CONFIG OPTION TO SWITCH THIS ON, BUT DEFAULT IT OFF --->
-<!--- <cfif not cffm.readOnly and variables.editableImage><a href="#cffm.cffmFilename#?action=manipulateForm&subdir=#urlEncodedFormat(variables.subdir)#&editFilename=#urlEncodedFormat(name)#">#cffm.resourceKit.Msg.t56#</a>&nbsp;</cfif> --->
+	<a href="#cffm.cffmFilename#?action=renameForm&subdir=#urlEncodedFormat(variables.subdir)#&editFilename=#urlEncodedFormat(name)#">#cffm.resourceKit.Msg.t51#</a>&nbsp;
+	<a href="#cffm.cffmFilename#?action=copymoveForm&subdir=#UrlEncodedFormat(variables.subdir)#&editFilename=#urlEncodedFormat(name)#">#cffm.resourceKit.Msg.t52#</a>&nbsp;
+	<cfif variables.editable eq 1><a href="#cffm.cffmFilename#?action=edit&subdir=#urlEncodedFormat(variables.subdir)#&editFilename=#urlEncodedFormat(name)#">#cffm.resourceKit.Msg.t53#</a>&nbsp;</cfif></cfif>
+	<cfif variables.viewSource><a href="#cffm.cffmFilename#?action=viewSource&subdir=#urlEncodedFormat(variables.subdir)#&editFilename=#urlEncodedFormat(name)#">#cffm.resourceKit.Msg.t54#</a>&nbsp;</cfif>
+	<cfif not cffm.readOnly and cffm.allowUnzip and variables.zipfile eq 1><a href="#cffm.cffmFilename#?action=viewzip&subdir=#urlEncodedFormat(variables.subdir)#&editFilename=#urlEncodedFormat(name)#">#cffm.resourceKit.Msg.t55#</a>&nbsp;</cfif>
+	<!--- DISABLE IMAGE EDITING, TODO: CONFIG OPTION TO SWITCH THIS ON, BUT DEFAULT IT OFF --->
+	<!--- <cfif not cffm.readOnly and variables.editableImage><a href="#cffm.cffmFilename#?action=manipulateForm&subdir=#urlEncodedFormat(variables.subdir)#&editFilename=#urlEncodedFormat(name)#">#cffm.resourceKit.Msg.t56#</a>&nbsp;</cfif> --->
 </td>
 </tr>
 </cfoutput>
 </table>
 <cfsetting enablecfoutputonly="yes">
-
-<!--- <cfoutput>
+<!--- 
+<cfoutput>
 #cffm.resourceKit.Msg.t33# #variables.totalDirectories# <cfif variables.totalDirectories IS 1>#cffm.resourceKit.Msg.t34#<cfelse>#cffm.resourceKit.Msg.t35#</cfif> 
 #cffm.resourceKit.Msg.t36# #variables.totalFiles# <cfif variables.totalFiles eq 1>#cffm.resourceKit.Msg.t37#<cfelse>#cffm.resourceKit.Msg.t38#</cfif>.<br>
 #cffm.resourceKit.Msg.t39# #NumberFormat(variables.totalSize,"_,___")# bytes.
@@ -1145,5 +1205,5 @@ if (type eq "dir") {
 	<cfsetting enablecfoutputonly="no">
 	<CFINCLUDE TEMPLATE="#cffm.templateWrapperBelow#">
 <cfelse>
-	<cfoutput></BODY></HTML></cfoutput>
+	<cfoutput></body></html></cfoutput>
 </cfif>
