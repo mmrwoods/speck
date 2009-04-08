@@ -37,8 +37,8 @@ Licensed under the Academic Free License version 2.1
 		maxlength="500"
 		richEdit="yes"
 		fckToolbarSet="Basic"
-		safeText="#attributes.context.getConfigString("types","article","content_safe_text","yes")#"
-		replaceParagraphs="#attributes.context.getConfigString("types","article","content_force_paragraphs","yes")#">	
+		safeText="#attributes.context.getConfigString("types","document","description_safe_text","yes")#"
+		replaceParagraphs="#attributes.context.getConfigString("types","document","description_replace_paragraphs","yes")#">	
 		
 	<cf_spProperty
 		name="document"
