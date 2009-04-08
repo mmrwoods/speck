@@ -1037,39 +1037,31 @@ update: I found it, a logout script wasn't deleting the speck key from session s
 	<cfif isDefined("form.spLogonUser") and isDefined("form.spLogonPassword")>
 	
 		<!--- check if logon is blocked due too many recent authentication failures --->
-
-		<!--- this is pretty crude at the moment, with hard-coded thresholds and lumping of logons from IPs and users together --->
 		<!--- 
-		TODO: 
-		* configuration options for thresholds
-		* ability to set whitelist IPs or get around this using a captcha
-		* separately check for failed logons from IPs and failed logons for particular users
+		Some possible TODOs: 
+		* configuration options for thresholds, at the moment it's hard-coded as 5 failures within 5 minutes
+		* ability to set whitelist IPs or immediately reset failure count to 0 after completing a captcha
+		* separately check for failed logons from IPs and failed logons for particular users and have different thresholds for each?
 		--->
+		<cfset recentLogonFailureCount = 0>
+		
 		<cftry>
 			
 			<cfquery name="qRecentLogonFailures" datasource="#request.speck.codb#">
 				SELECT COUNT(*) AS total
 				FROM spLogonFailures
 				WHERE ts > <cfqueryparam cfsqltype="cf_sql_timestamp" value="#dateAdd("n",-5,now())#"> 
-					AND ( 
-						username = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lCase(request.speck.session.user)#"> 
-						OR 
-						ip_address = <cfqueryparam cfsqltype="cf_sql_varchar" value="#cgi.REMOTE_ADDR#"> 
-					)
+					AND username = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lCase(request.speck.session.user)#"> 
+					AND ip_address = <cfqueryparam cfsqltype="cf_sql_varchar" value="#cgi.REMOTE_ADDR#">
 			</cfquery>
+			
+			<cfset recentLogonFailureCount = qRecentLogonFailures.total>
 			
 		<cfcatch type="database">
 		
-			<cfif request.speck.dbTableNotFound(cfcatch.detail)>
+			<!--- let the code to log the logon failures create the table, rethrow any non table not found errors --->
 			
-				<!--- create a dummy query and let the code to log the logon failures create the table --->
-				<cfscript>
-					qRecentLogonFailures = queryNew("total");
-					queryAddRow(qRecentLogonFailures);
-					querySetCell(qRecentLogonFailures,"total",0);
-				</cfscript>
-					
-			<cfelse>
+			<cfif not request.speck.dbTableNotFound(cfcatch.detail)>	
 			
 				<cfrethrow>
 				
@@ -1078,13 +1070,13 @@ update: I found it, a logout script wasn't deleting the speck key from session s
 		</cfcatch>			
 		</cftry>
 		
-		<cfif qRecentLogonFailures.total gte 5>
+		<cfif recentLogonFailureCount gte 5>
 		
 			<!--- too many recent authentication failures --->
 			<cfset session.speck.auth = "none">
 			<cfset request.speck.session.auth = "none">
 			<cfset request.speck.failedLogon = true>
-			<cfset request.speck.failedLogonMessage = "Too many recent authentication failures, try again in 5 minutes.">
+			<cfset request.speck.failedLogonMessage = "Too many recent authentication failures, your account has temporarily been locked. Try again in 5 minutes.">
 			
 			<cflog type="warning" 
 				file="#request.speck.appName#" 
