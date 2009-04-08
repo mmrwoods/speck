@@ -11,8 +11,7 @@ Licensed under the Academic Free License version 2.1
 
 	<cfoutput>
 	<p class="notsaved">
-	Sorry, one or more errors was found in your form submission,
-	please correct these errors and re-submit the form.
+	Sorry, the action could not be completed due to the following issues...
 	</p>
 	<ul class="notsaved">
 	</cfoutput>

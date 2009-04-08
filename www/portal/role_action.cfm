@@ -54,16 +54,31 @@ Licensed under the Academic Free License version 2.1
 			<cfif qCheckRole.recordCount>
 			
 				<cfset void = actionError("Role name '#form.rolename#' is already in use, please choose another name.")>
+				
+			<cfelseif form.create_group>
+			
+				<!--- check that group name is also not already in use --->
+				<cfquery name="qCheckGroup" datasource="#request.speck.codb#">
+					SELECT groupname 
+					FROM spGroups 
+					WHERE UPPER(groupname) = '#uCase(form.rolename)#'
+				</cfquery>
+				
+				<cfif qCheckGroup.recordCount>
+				
+					<cfset void = actionError("Group name '#form.rolename#' is already in use, please choose another name.")>
+					
+				</cfif>
+					
 			
 			</cfif>
 			
 		</cfif>
-		
+				
 		<cfif not isDefined("actionErrors")>
 			
-			<!--- insert user --->
+			<!--- insert role --->
 			<cfquery name="qInsert" datasource="#request.speck.codb#">
-
 				INSERT INTO spRoles (
 					rolename, 
 					description
@@ -72,8 +87,36 @@ Licensed under the Academic Free License version 2.1
 					'#form.rolename#',
 					<cfif len(form.description)>'#form.description#'<cfelse>NULL</cfif>
 				)
-			
 			</cfquery>
+			
+			<cfif form.create_group>
+			
+				<!--- insert group and connect group to role --->
+				<cfquery name="qInsert" datasource="#request.speck.codb#">
+					INSERT INTO spGroups (
+						groupname, 
+						description
+					) 
+					VALUES (
+						'#form.rolename#',
+						<cfif len(form.description)>'#form.description#'<cfelse>NULL</cfif>
+					)
+				</cfquery>
+				<cfquery name="qDelete" datasource="#request.speck.codb#">
+					DELETE FROM spRolesAccessors WHERE accessor = '#form.rolename#'
+				</cfquery>
+				<cfquery name="qInsert" datasource="#request.speck.codb#">
+					INSERT INTO spRolesAccessors (
+						rolename, 
+						accessor
+					) 
+					VALUES (
+						'#form.rolename#',
+						'#form.rolename#'
+					)
+				</cfquery>				
+			
+			</cfif>
 			
 			<cfset message = "Role '#form.rolename#' added">
 

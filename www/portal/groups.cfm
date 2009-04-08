@@ -12,25 +12,25 @@ Licensed under the Academic Free License version 2.1
 <cfquery name="qGroups" datasource="#request.speck.codb#">
 	
 	SELECT x.groupname AS groupname, x.description AS description, 
-		1 AS hasSpeckRole, 
+		1 AS hasCMSRole, 
 		UPPER(groupname) AS ordergroup
 	FROM spGroups x
 	WHERE EXISTS (
 		SELECT accessor 
 		FROM spRolesAccessors y 
-		WHERE y.rolename IN ('spSuper','spEdit','spLive','spKeywords','spUsers')
-			AND x.groupname = y.accessor
+		WHERE <!--- y.rolename IN ('spSuper','spEdit','spLive','spKeywords','spUsers')
+			AND  --->x.groupname = y.accessor
 	)
 	UNION 
 	SELECT x.groupname AS groupname, x.description AS description, 
-		0 AS hasSpeckRole,
+		0 AS hasCMSRole,
 		UPPER(groupname) AS ordergroup
 	FROM spGroups x
 	WHERE NOT EXISTS (
 		SELECT accessor 
 		FROM spRolesAccessors y 
-		WHERE y.rolename IN ('spSuper','spEdit','spLive','spKeywords','spUsers') 
-			AND x.groupname = y.accessor
+		WHERE <!--- y.rolename IN ('spSuper','spEdit','spLive','spKeywords','spUsers') 
+			AND  --->x.groupname = y.accessor
 	)
 	ORDER BY ordergroup
 	
@@ -74,7 +74,7 @@ Licensed under the Academic Free License version 2.1
 			<tr <cfif currentRow mod 2 eq 1>class="alternateRow"</cfif>>
 				<td nowrap="yes">#groupname#</td>
 				<td>#description#</td>
-				<td nowrap="yes" style="text-align:center">#yesNoFormat(hasSpeckRole)#</td>
+				<td nowrap="yes" style="text-align:center">#yesNoFormat(hasCMSRole)#</td>
 				<td style="text-align:center"><a href="group.cfm?app=#url.app#&groupname=#groupname#">edit</a></td>
 				<td style="text-align:center"><a href="group_delete.cfm?app=#url.app#&groupname=#groupname#" onclick="return confirm('Delete group \'#groupname#\'.\n\nAre you sure?');">delete</a></td>
 			</tr>

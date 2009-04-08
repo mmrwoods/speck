@@ -25,6 +25,7 @@ Licensed under the Academic Free License version 2.1
 	
 	<cfparam name="form.rolename" default="">
 	<cfparam name="form.description" default="">
+	<cfparam name="form.create_group" default="0">
 
 </cfif>
 
@@ -54,6 +55,40 @@ Licensed under the Academic Free License version 2.1
 	<td style="vertical-align:middle"><label for="description">Description</label></td>
 	<td><input type="text" name="description" id="description" value="#form.description#" size="80" maxlength="100" /></td>
 	</tr>
+	<cfif not len(url.rolename)>
+		<!--- <cfsavecontent variable="hint">
+		<cfoutput>
+			Roles are used to grant users access to various elements of the content management system (CMS).
+			Users can only be connected to roles via groups, and some default groups (e.g. managers) have 
+			multiple roles in the CMS. Typically, the only reason you'll need to create a new role is to grant 
+			edit permissions to a number of sections of the site to certain users, without giving those users 
+			edit permissions for the entire site. If you are doing this, you'll probably want to use the option
+			to create a group with the same name as the role and place users into that group.
+		</cfoutput>
+		</cfsavecontent>
+		<cfset hint = jsStringFormat(reReplace(hint,"[[:space:]]+"," ","all"))> --->
+		<tr>
+		<td style="vertical-align:middle;whitespace:no-wrap;" nowrap="yes"><label for="create_group">Create Group?</label><!--- &nbsp;<span class="hint" onmouseover="return escape('#hint#');"> </span>&nbsp; ---></td>
+		<td>
+		<input type="checkbox" name="create_group" id="create_group" value="1" <cfif form.create_group> checked="true"</cfif> />
+		Check the box to create a group which can be used to connect users to this role.
+		<a href="javascript:return false;" onclick="this.style.display='none';document.getElementById('create_group_info_text').style.display='block';">more info</a>
+		</td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td>
+			<div id="create_group_info_text" style="display:none;">
+			Roles are used to grant users access to various elements of the content management system (CMS).
+			Users can only be connected to roles via groups, and some default groups (e.g. managers) have 
+			multiple roles in the CMS. Typically, the only reason you'll need to create a new role is to grant 
+			edit permissions to a number of sections of the site to certain users, without giving those users 
+			edit permissions for the entire site. If you are doing this, you'll probably want to use the option
+			to create a group with the same name as the role and place users into that group.
+			</div>
+			</td>
+		</tr>
+	</cfif>
 </table>
 </fieldset>
 
