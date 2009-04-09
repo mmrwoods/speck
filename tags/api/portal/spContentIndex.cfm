@@ -1,5 +1,3 @@
-<cfprocessingdirective pageencoding="utf-8">
-
 <cfsetting enablecfoutputonly="true">
 <!---
 This collective work is Copyright (C) 2001-2007 by Robin Hilliard (robin@zeta.org.au) and Mark Woods (mark@thickpaddy.com), 
@@ -82,11 +80,29 @@ once defined (probably with some additional cf_spType attributes).
 
 </cfloop>
 
-<!--- can't check if any rows are affected by query in CF, so try insert, if fails, update --->
-<cftry>
+<!--- check if we need to insert or update (CF prior to version 8 does not have a simple way of obtaining the number of rows affected by an update)  --->
+<cfquery name="qCheckExists"datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
+	SELECT id FROM spContentIndex WHERE id = '#uCase(attributes.id)#'
+</cfquery>
 
+<cfif qCheckExists.recordCount>
+
+	<!--- update content index --->
+	<cfquery name="qUpdate" datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
+		UPDATE spContentIndex
+		SET contentType = '#lCase(attributes.type)#',
+			keyword = <cfif len(attributes.keyword)>'#left(lCase(attributes.keyword),250)#'<cfelse>NULL</cfif>,
+			title = '#left(attributes.title,250)#',
+			description = '#left(attributes.description,500)#',
+			body = <cfqueryparam value="#left(attributes.body,64000)#" cfsqltype="CF_SQL_LONGVARCHAR" maxlength="64000">,
+			ts = #createODBCDateTime(attributes.date)#
+		WHERE id = '#uCase(attributes.id)#'
+	</cfquery>	
+
+<cfelse>
+
+	<!--- insert into content index --->
 	<cfquery name="qInsert" datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
-	
 		INSERT INTO spContentIndex (
 			contentType,
 			id,
@@ -104,26 +120,9 @@ once defined (probably with some additional cf_spType attributes).
 			<cfqueryparam value="#left(attributes.body,64000)#" cfsqltype="CF_SQL_LONGVARCHAR" maxlength="64000">,
 			#createODBCDateTime(attributes.date)#
 		)
-	
 	</cfquery>
 
-<cfcatch>
-
-	<cfquery name="qUpdate" datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
-	
-		UPDATE spContentIndex
-		SET contentType = '#lCase(attributes.type)#',
-			keyword = <cfif len(attributes.keyword)>'#left(lCase(attributes.keyword),250)#'<cfelse>NULL</cfif>,
-			title = '#left(attributes.title,250)#',
-			description = '#left(attributes.description,500)#',
-			body = <cfqueryparam value="#left(attributes.body,64000)#" cfsqltype="CF_SQL_LONGVARCHAR" maxlength="64000">,
-			ts = #createODBCDateTime(attributes.date)#
-		WHERE id = '#uCase(attributes.id)#'
-	
-	</cfquery>
-
-</cfcatch>
-</cftry>
+</cfif>
 
 <!--- always do a clean up of the content index in case some deleted content has been left in the index unintentionally (note: this only works when revisioning is off at the moment) --->
 <cfquery name="qDelete" datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
