@@ -85,9 +85,6 @@ Attributes:
 	<!--- Only execute if spType method eq attributes.method --->
 	<cfparam name="attributes.method" default="">
 	
-	<!--- use tables as highlightable container for content blocks in admin mode (if false, spans are used with display:block) --->
-	<cfparam name="request.speck.enableContentAdminTable" default="false" type="boolean">
-	
 	<cfif caller.attributes.method eq "spTypeDefinition">
 		
 		<!--- associate method info with content type --->
@@ -107,6 +104,22 @@ Attributes:
 	
 		<!--- request.speck doesn't exist, set up the context for the method... --->
 		<cfset caller.context = caller.attributes.context>
+		
+	<cfelseif attributes.method eq "validate">
+	
+		<!--- validate method should be passed a single content item --->
+		<cfif not isdefined("caller.attributes.content")>
+		
+			<cf_spError error="ATTR_REQ" lParams="content">	<!--- Missing attribute --->
+			
+		</cfif>
+		
+		<!--- make the content available to the method body --->
+		<cfset caller.content = caller.attributes.content>
+		
+		<!--- create an empty errors list, code in validate method should append to this list --->
+		<!--- TODO: replace these lists of errors with arrays (in spDefault and all properties types too!) --->
+		<cfset caller.lErrors = "">
 	
 	<cfelse>
 	
@@ -185,6 +198,16 @@ Attributes:
 	<!--- close tag --->
 	<cfif attributes.method eq "refresh">
 	
+		<cfexit method="exittag">
+		
+	<cfelseif attributes.method eq "validate">
+
+		<cfif isDefined("caller.attributes.r_lErrors")>
+	
+			<cfset "caller.caller.#caller.attributes.r_lErrors#" = caller.lErrors>
+	
+		</cfif>
+		
 		<cfexit method="exittag">
 	
 	</cfif>

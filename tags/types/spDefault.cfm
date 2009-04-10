@@ -172,16 +172,6 @@ Licensed under the Academic Free License version 2.1
 
 				<cfset stPD = stType.props[iProp]>
 				
-				<!--- <cfif isDefined("form.#stPD.name#") and stPD.type neq "Asset">
-				
-					<cfset value = evaluate("form.#stPD.name#")>
-				
-				<cfelse>
-					
-					<cfset value = content[stPD.name]>
-					
-				</cfif> --->
-				
 				<cfparam name="form.#stPD.name#" default="">
 				
 				<cfif stPD.type eq "Asset">
@@ -291,6 +281,20 @@ Licensed under the Academic Free License version 2.1
 					lFormErrors = listAppend(lFormErrors, request.speck.buildString("A_PROPERTY_REQUIRED",stStrings.keywords));		
 			</cfscript>
 			
+			<!--- check if content type has a validate method and call it if necessary --->
+			<cfif structKeyExists(stType,"methods") and structKeyExists(stType.methods,"validate")>
+				
+				<!--- do custom validation for content type --->
+				<cfmodule template="#stType.methods.validate#"
+					content="#content#"
+					type="#stType.name#"
+					method="validate"
+					r_lErrors="lErrors">
+							
+				<cfset lFormErrors = listAppend(lFormErrors, lErrors)>
+						
+			</cfif>
+		
 			<!--- If no errors, save new values and reload from database --->
 			
 			<cfif len(lFormErrors)>
