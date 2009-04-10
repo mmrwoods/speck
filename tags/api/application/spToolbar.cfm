@@ -288,12 +288,12 @@ Renders toolbar allowing editors and reviewers (i.e. spEdit or spReview permissi
 	</cfif>
 	<cfif attributes.manageKeywords and findNoCase("spKeywords",request.speck.keywordsSources) and request.speck.userHasPermission("spSuper,spKeywords")>
 	
-		<cfif isDefined("request.speck.portal.qKeyword") and ( request.speck.userHasPermission("spSuper,spEdit") or ( len(request.speck.portal.qKeyword.roles) and request.speck.userHasPermission(request.speck.portal.qKeyword.roles) ) )>
+		<cfif isDefined("request.speck.portal.qKeyword") and request.speck.portal.qKeyword.recordCount and ( request.speck.userHasPermission("spSuper,spEdit") or ( len(request.speck.portal.qKeyword.roles) and request.speck.userHasPermission(request.speck.portal.qKeyword.roles) ) )>
 		
 			<!--- force spContent to output all the admin functions, but without returning any content or outputting any links --->
 			<cf_spContent type="spKeywords" enableAdminLinks="yes" enableAddLink="no" maxRows="0">
 			<cfoutput>
-			<a class="spToolbar spEditKeyword" href="javascript:javascript:launch_edit('spKeywords','#request.speck.portal.qKeyword.spId#', '', '','Navigation Section');" title="Edit configuration for current page">Page Config</a>
+			<a class="spToolbar spEditKeyword" href="javascript:launch_edit('spKeywords','#request.speck.portal.qKeyword.spId#', '', '','Navigation Section');" title="Edit configuration for current page">Page Config</a>
 			</cfoutput>
 		
 		</cfif>

@@ -42,6 +42,12 @@ Licensed under the Academic Free License version 2.1
 		
 	</cfif>
 	
+	<cfif action eq "edit" and trim(id) eq "">
+	
+		<cfthrow message="Cannot find content item to edit">
+		
+	</cfif>
+	
 	<cfif url.keywords neq "" and REFind("([[:alpha:].]+[, ]+)*", url.keywords) neq 1>
 	
 		<cfthrow message="Keywords '#url.keywords#' must be in format key1,key2,...">
