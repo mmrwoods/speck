@@ -23,6 +23,10 @@ The editor can be customised per application in a number of ways:
 Note that the ImageBrowserURL and SpellerPagesServerScript settings cannot be customised.
 */
 
+// load the paste clean plugin - at the moment this overrides the paste text command (that's likely to change)
+FCKConfig.PluginsPath = FCKConfig.BasePath.substr(0, FCKConfig.BasePath.length - 7) + 'speckplugins/';
+FCKConfig.Plugins.Add('pasteclean');
+
 FCKConfig.ToolbarSets["Default"] = [
 	['Paste','PasteText','PasteWord','-','SpellCheck','-','Table','Link','Unlink','Anchor','Image','-','OrderedList','UnorderedList','-','SpecialChar','-','Rule','-','ShowBlocks','Source'],
 	['FontFormat','Style','RemoveFormat','Bold','Italic','Underline','StrikeThrough','Blockquote']

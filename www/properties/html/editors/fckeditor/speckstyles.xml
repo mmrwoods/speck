@@ -12,19 +12,19 @@
 	
 	<!-- Some standard styles used with yaml and some other css frameworks -->
 	<!--
-	<Style name="Note" element="div" >
+	<Style name="Note" element="p" >
 		<Attribute name="class" value="note" />
 	</Style>
-	<Style name="Important" element="div" >
+	<Style name="Important" element="p" >
 		<Attribute name="class" value="important" />
 	</Style>
-	<Style name="Warning" element="div" >
+	<Style name="Warning" element="p" >
 		<Attribute name="class" value="warning" />
 	</Style>
-	<Style name="Info" element="div" >
+	<Style name="Info" element="p" >
 		<Attribute name="class" value="info" />
 	</Style>
-	<Style name="Clearfix" element="div" >
+	<Style name="Clearfix" element="p" >
 		<Attribute name="class" value="clearfix" />
 	</Style>
 	<Style name="Highlight" element="span">
@@ -67,15 +67,13 @@
 
 	<!-- Object Styles -->
 
-	<!--<Style name="Image on Left" element="img">
-		<Attribute name="style" value="padding: 5px; margin-right: 5px" />
-		<Attribute name="border" value="2" />
+	<Style name="Image on Left" element="img">
+		<Attribute name="style" value="margin: 0 10px 10px 0" />
 		<Attribute name="align" value="left" />
 	</Style>
 	<Style name="Image on Right" element="img">
-		<Attribute name="style" value="padding: 5px; margin-left: 5px" />
-		<Attribute name="border" value="2" />
+		<Attribute name="style" value="margin: 0 0 10px 10px" />
 		<Attribute name="align" value="right" />
-	</Style>-->
+	</Style>
 	
 </Styles>
