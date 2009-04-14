@@ -57,16 +57,30 @@ Licensed under the Academic Free License version 2.1
 			lAccessGroups = request.speck.portal.qKeyword.groups; // groups with access
 			if ( lAccessGroups eq "" ) {
 				bAccess = true; // no access restrictions
-			} else if ( request.speck.userHasPermission("spSuper") ) {
-				bAccess = true; // super user can do anything, aaaaahahahahaha, cough
-			} else if ( request.speck.session.auth eq "logon" and isDefined("request.speck.session.groups") ) {
-				lUserGroups = structKeyList(request.speck.session.groups);
-				// loop over groups, if group found in users group list, set access to true
-				while (lAccessGroups neq "" and not bAccess) {
-					group = listFirst(lAccessGroups);
-					lAccessGroups = listRest(lAccessGroups);
-					if ( listFindNoCase(lUserGroups,group) )
-						bAccess = true;
+			} else if ( request.speck.userHasPermission("spSuper,spEdit,spLive") ) {
+				bAccess = true; // always allow users with admin access for the current page to view it too
+			} else if ( request.speck.session.auth eq "logon" ) {
+				// check if user has one of the access groups for this keyword
+				if ( isDefined("request.speck.session.groups") ) {
+					lUserGroups = structKeyList(request.speck.session.groups);
+					// loop over groups, if group found in users group list, set access to true
+					while (lAccessGroups neq "" and not bAccess) {
+						group = listFirst(lAccessGroups);
+						lAccessGroups = listRest(lAccessGroups);
+						if ( listFindNoCase(lUserGroups,group) )
+							bAccess = true;
+					}	
+				}
+				// finally, check if the user has been granted edit permission to the keyword
+				if ( not bAccess and isDefined("request.speck.session.roles") ) {
+					lKeywordRoles = request.speck.portal.qKeyword.roles;
+					lUserRoles = structKeyList(request.speck.session.roles);
+					while (lKeywordRoles neq "" and not bAccess) {
+						role = listFirst(lKeywordRoles);
+						lKeywordRoles = listRest(lKeywordRoles);
+						if ( listFindNoCase(lUserRoles,role) )
+							bAccess = true;
+					}	
 				}
 			}
 		</cfscript>
