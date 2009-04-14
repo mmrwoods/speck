@@ -5,15 +5,17 @@ table.spToolbar {
 	background: #ece9d8;
 	border: 1px solid #333300;
 	text-align: center;
-	padding: 3px 3px 3px 0;
+	padding: 0 0 0 0;
+	margin: 0 0 0 0;
 }
+td.spToolbar {padding:5px; margin:0;}
 tr.spToolbar, td.spToolbar, form.spToolbar,  span.spToolbar, a.spToolbar {
 	font: 10px Verdana, Arial, Helvetica, sans-serif;
 	vertical-align : middle;
 	text-align: center;
 }
 td.spToolbarPrefix {text-align:left;}
-td.spLogout {text-align:right;line-height:15px;padding-top:2px;}
+td.spLogout {text-align:right;}
 form.spLogout {text-align:right;}
 a.spToolbar, span.spToolbar {
 	margin-right:5px;
