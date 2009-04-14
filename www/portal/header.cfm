@@ -58,6 +58,25 @@ Licensed under the Academic Free License version 2.1
 		
 		table.data_table tbody tr:hover { background: ##F2F5A9; }
 	</style>
+	<script type="text/javascript">
+		if ( window.onload )
+			otherOnLoad = window.onload;
+		else
+			otherOnLoad = new Function;
+		window.onload = function() { 
+							otherOnLoad(); 
+							if ( document.forms.length > 0 ) {
+								var elements = document.forms[0].elements;
+								for (i = 0; i < elements.length; i++ ) {
+									var element = elements[i];
+									if(element.type == 'text' && !element.readOnly && !element.disabled) { 
+										element.focus()
+										break;
+									}
+								}
+							}
+						};
+	</script>
 </head>
 <body>
 </cfoutput>

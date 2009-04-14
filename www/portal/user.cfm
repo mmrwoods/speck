@@ -49,15 +49,15 @@ Licensed under the Academic Free License version 2.1
 	<cfparam name="form.notes" default="#qUser.notes#">
 	
 	<cfif isDefined("qUser.suspended") and isDate(qUser.suspended)>
-		<cfparam name="form.suspended" default="1">
+		<cfparam name="form.suspended" default="1" type="boolean">
 	<cfelse>
-		<cfparam name="form.suspended" default="0">
+		<cfparam name="form.suspended" default="0" type="boolean">
 	</cfif>
 	
 	<cfif isDefined("qUser.newsletter") and isBoolean(qUser.newsletter)>
 		<cfparam name="form.newsletter" default="#qUser.newsletter#">
 	<cfelse>
-		<cfparam name="form.newsletter" default="0">
+		<cfparam name="form.newsletter" default="0" type="boolean">
 	</cfif>
 	
 	<cfif cgi.request_method eq "post">
@@ -173,11 +173,13 @@ Licensed under the Academic Free License version 2.1
 	</cfif>
 	<cfparam name="form.email" default="">
 	<cfparam name="form.notes" default="">
-	<cfparam name="form.suspended" default="0">
-	<cfparam name="form.newsletter" default="0">
+	<cfparam name="form.suspended" default="0" type="boolean">
+	<cfparam name="form.newsletter" default="1" type="boolean">
 	<cfparam name="form.groups" default="">
 	<cfparam name="form.groups_expiration" default="">
 	<cfparam name="form.expires" default="">
+	
+	<cfparam name="form.send_welcome_email" default="1" type="boolean">
 	
 	<cfloop from="1" to="#arrayLen(stType.props)#" index="i">
 	
@@ -366,7 +368,7 @@ input {max-width:220px;}
 	<td><input tabindex="6" <cfif len(url.username)>type="password"<cfelse>type="text"</cfif> name="password" id="password" value="#form.password#" <cfif not len(request.speck.portal.passwordEncryption)>title="#form.password#"</cfif> size="35" maxlength="20" /></td>
 	</tr>
 	<tr>
-	<td style="vertical-align:middle" nowrap="yes"><label for="newsletter">Send Newsletter</label></td>
+	<td style="vertical-align:middle" nowrap="yes"><label for="newsletter">Send Newsletter</label>&nbsp;<span class="hint" onmouseover="return escape('Include the user\'s name and email address in the newsletter subscription list? You can export the list of subscribers and use it to send a newsletter.');"> </span></td>
 	<td style="vertical-align:middle">
 		<cfparam name="request.speck.portal.newsletter" default="false" type="boolean">
 		<cfset bNewsletterEnabled = request.speck.portal.newsletter>
@@ -384,8 +386,28 @@ input {max-width:220px;}
 		<input tabindex="4" type="radio" name="newsletter" value="0"<cfif not form.newsletter> checked="yes"</cfif><cfif not bNewsletterEnabled> disabled="yes"</cfif> />No
 	</td>
 	<td>&nbsp;</td>
-	<td style="vertical-align:middle"><span class="required">*</span><label for="password_confirm">Confirm Password</label></td>
-	<td><input tabindex="7" <cfif len(url.username)>type="password"<cfelse>type="text"</cfif> name="password_confirm" id="password_confirm" value="#form.password_confirm#" <cfif not len(request.speck.portal.passwordEncryption)>title="#form.password#"</cfif> size="35" maxlength="20" /></td>
+	</cfoutput>
+	
+	<cfif len(url.username)>
+	
+		<cfoutput>
+		<td style="vertical-align:middle"><span class="required">*</span><label for="password_confirm">Confirm Password</label></td>
+		<td><input tabindex="7" <cfif len(url.username)>type="password"<cfelse>type="text"</cfif> name="password_confirm" id="password_confirm" value="#form.password_confirm#" <cfif not len(request.speck.portal.passwordEncryption)>title="#form.password#"</cfif> size="35" maxlength="20" /></td>
+		</cfoutput>
+	
+	<cfelse>
+	
+		<cfoutput>
+		<td style="vertical-align:middle" nowrap="yes"><label for="send_welcome_email">Send Password</label>&nbsp;<span class="hint" onmouseover="return escape('Email the username and password to the user after creating the account (highly recommended!). Only works if you enter an email address for the user.');"> </span>&nbsp;</td>
+		<td style="vertical-align:middle">
+			<input type="radio" name="send_welcome_email" value="1"<cfif form.send_welcome_email> checked="yes"</cfif> />Yes
+			<input type="radio" name="send_welcome_email" value="0"<cfif not form.send_welcome_email> checked="yes"</cfif> />No
+		</td>
+		</cfoutput>
+
+	</cfif>
+	
+	<cfoutput>
 	</tr>
 	</cfoutput>
 
@@ -399,6 +421,9 @@ input {max-width:220px;}
 				stPD.required = false;
 				if ( stPD.type eq "Date" ) {
 					stPD.richEdit = true;
+				} else if ( stPD.type eq "Text" or stPD.type eq "Html" ) {
+					stPD.richEdit = false;
+					stPd.displaySize = 35;
 				}
 				displayValue = form[stPD.name];
 			</cfscript>
@@ -466,7 +491,7 @@ input {max-width:220px;}
 	<tr>
 	<td nowrap="yes"><label for="notes">Notes</label>&nbsp;<span class="hint" onmouseover="return escape('The notes field is only accessible from this window. Standard users cannot view or edit their own notes.');"> </span>&nbsp;</td>
 	<td colspan="4">
-		<textarea name="notes" id="notes" rows="3" cols="80">#form.notes#</textarea>
+		<textarea name="notes" id="notes" rows="3" cols="80" style="max-width:800px;width:600px">#form.notes#</textarea>
 	</td>
 	</tr>
 	</cfoutput>

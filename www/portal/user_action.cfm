@@ -95,7 +95,7 @@ Licensed under the Academic Free License version 2.1
 	
 		<!--- no errors with required fields, validate values --->
 
-		<cfif compare(form.password,form.password_confirm) neq 0>
+		<cfif len(url.username) and compare(form.password,form.password_confirm) neq 0> <!--- note: no need to confirm the password when adding a user - password text is not hidden and user will normally be emailed the username and password --->
 		
 			<cfset void = actionError("Password and confirm password fields do not match.")>
 		
@@ -452,7 +452,7 @@ Licensed under the Academic Free License version 2.1
 				<cfquery name="qUpdate" datasource="#request.speck.codb#">
 					UPDATE spUsers 
 					SET registered = #createODBCDateTime(now())# 
-					<cfif form.suspended>,suspended = #createODBCDateTime(now())#</cfif>
+					<!--- <cfif form.suspended>,suspended = #createODBCDateTime(now())#</cfif> --->
 					WHERE username = '#stContent.username#'
 				</cfquery>
 				
@@ -466,11 +466,33 @@ Licensed under the Academic Free License version 2.1
 				
 				</cfloop>
 				
-				<cfset message = "User '#form.username#' added">
+				<cfif len(stContent.email) and form.send_welcome_email>
+				
+					<cfset nl = chr(13) & chr(10)>
+					<cfset domain = request.speck.portal.domain>
+					<cfset mailFrom = "#request.speck.portal.name# <noreply@#domain#>">
+					<cfset subject = "Welcome to #request.speck.portal.name#">
+					<cfset message = "
+						This is a automatically generated email. Please do not reply to this email. If you have any questions, please email info@#domain#.
+						
+						You have been registered as a user on the #request.speck.portal.name# web site.
+						
+						To log in, you will need your username and password. Please make a note of these for future reference.
+			
+						Your username is: #lCase(form.username)#
+						Your password is: #form.password#
+			
+						Thank you and welcome to #request.speck.portal.name#.
+					">
+					<cfset message = replace(message,chr(9),"","all")>
+					<cfset message = replace(message,chr(10),chr(13) & chr(10),"all")>
+					<cfmail to="#stContent.email#" from="#mailFrom#" subject="#subject#">#message#</cfmail>
+				
+				</cfif>
 				
 				<cfif isDefined("url.return_to") and len(url.return_to)>
 				
-					<cflocation url="action_response.cfm?app=#url.app#&message=#urlEncodedFormat(message)#&location=#urlEncodedFormat(url.return_to)#" addToken="no">
+					<cflocation url="action_response.cfm?app=#url.app#&message=#urlEncodedFormat("User '#form.username#' added")#&location=#urlEncodedFormat(url.return_to)#" addToken="no">
 					
 				</cfif>
 
