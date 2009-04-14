@@ -1,3 +1,7 @@
+*.spToolbar {
+	margin:0;
+	padding:0;
+}
 table.spToolbar {
 	border-collapse: separate;
 	font: 10px Verdana, Arial, Helvetica, sans-serif; 
@@ -7,6 +11,7 @@ table.spToolbar {
 	text-align: center;
 	padding: 0 0 0 0;
 	margin: 0 0 0 0;
+	border-spacing:2px;
 }
 td.spToolbar {padding:5px; margin:0;}
 tr.spToolbar, td.spToolbar, form.spToolbar,  span.spToolbar, a.spToolbar {
@@ -16,6 +21,7 @@ tr.spToolbar, td.spToolbar, form.spToolbar,  span.spToolbar, a.spToolbar {
 }
 td.spToolbarPrefix {text-align:left;}
 td.spLogout {text-align:right;}
+form.spToolbar {margin:0;padding:0;}
 form.spLogout {text-align:right;}
 a.spToolbar, span.spToolbar {
 	margin-right:5px;

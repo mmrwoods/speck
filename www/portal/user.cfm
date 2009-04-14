@@ -355,17 +355,17 @@ input {max-width:220px;}
 <table cellpadding="2" cellspacing="2" border="0" width="100%">
 	<tr>
 	<td style="vertical-align:middle"><span class="required">*</span><label for="fullname">Full Name</label></td>
-	<td><input tabindex="1" type="text" onblur="generateUsername()" name="fullname" id="fullname" value="#form.fullname#" size="35" maxlength="100" /></td>
+	<td><input type="text" onblur="generateUsername()" name="fullname" id="fullname" value="#form.fullname#" size="35" maxlength="100" /></td>
 	<td>&nbsp;</td>
 	<td style="vertical-align:middle"><span class="required">*</span><label for="username">Username</label></td>
-	<td><input tabindex="5" <cfif len(url.username)>readonly="yes" class="readonly"</cfif> type="text" name="username" id="username" value="#form.username#" size="35" maxlength="20" /></td>
+	<td><input  <cfif len(url.username)>readonly="yes" class="readonly"</cfif> type="text" name="username" id="username" value="#form.username#" size="35" maxlength="20" /></td>
 	</tr>
 	<tr>
 	<td style="vertical-align:middle"><label for="email">Email Address</label></td>
-	<td><input tabindex="2" type="text" name="email" id="email" value="#form.email#" size="35" maxlength="100" /></td>
+	<td><input type="text" name="email" id="email" value="#form.email#" size="35" maxlength="100" /></td>
 	<td>&nbsp;</td>
 	<td style="vertical-align:middle"><span class="required">*</span><label for="password">Password</label></td>
-	<td><input tabindex="6" <cfif len(url.username)>type="password"<cfelse>type="text"</cfif> name="password" id="password" value="#form.password#" <cfif not len(request.speck.portal.passwordEncryption)>title="#form.password#"</cfif> size="35" maxlength="20" /></td>
+	<td><input <cfif len(url.username)>type="password"<cfelse>type="text"</cfif> name="password" id="password" value="#form.password#" <cfif not len(request.speck.portal.passwordEncryption)>title="#form.password#"</cfif> size="35" maxlength="20" /></td>
 	</tr>
 	<tr>
 	<td style="vertical-align:middle" nowrap="yes"><label for="newsletter">Send Newsletter</label>&nbsp;<span class="hint" onmouseover="return escape('Include the user\'s name and email address in the newsletter subscription list? You can export the list of subscribers and use it to send a newsletter.');"> </span></td>
@@ -382,8 +382,8 @@ input {max-width:220px;}
 				<cfset bNewsletterEnabled = true>
 			</cfif>
 		</cfif>
-		<input tabindex="3" type="radio" name="newsletter" value="1"<cfif form.newsletter> checked="yes"</cfif><cfif not bNewsletterEnabled> disabled="yes"</cfif> />Yes
-		<input tabindex="4" type="radio" name="newsletter" value="0"<cfif not form.newsletter> checked="yes"</cfif><cfif not bNewsletterEnabled> disabled="yes"</cfif> />No
+		<input type="radio" name="newsletter" value="1"<cfif form.newsletter> checked="yes"</cfif><cfif not bNewsletterEnabled> disabled="yes"</cfif> />Yes
+		<input type="radio" name="newsletter" value="0"<cfif not form.newsletter> checked="yes"</cfif><cfif not bNewsletterEnabled> disabled="yes"</cfif> />No
 	</td>
 	<td>&nbsp;</td>
 	</cfoutput>
@@ -392,7 +392,7 @@ input {max-width:220px;}
 	
 		<cfoutput>
 		<td style="vertical-align:middle"><span class="required">*</span><label for="password_confirm">Confirm Password</label></td>
-		<td><input tabindex="7" <cfif len(url.username)>type="password"<cfelse>type="text"</cfif> name="password_confirm" id="password_confirm" value="#form.password_confirm#" <cfif not len(request.speck.portal.passwordEncryption)>title="#form.password#"</cfif> size="35" maxlength="20" /></td>
+		<td><input <cfif len(url.username)>type="password"<cfelse>type="text"</cfif> name="password_confirm" id="password_confirm" value="#form.password_confirm#" <cfif not len(request.speck.portal.passwordEncryption)>title="#form.password#"</cfif> size="35" maxlength="20" /></td>
 		</cfoutput>
 	
 	<cfelse>
