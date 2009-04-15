@@ -11,7 +11,7 @@ Licensed under the Academic Free License version 2.1
 Produces an RSS 2.0 feed from Speck content
 
 example usage:
-<cf_spRdfExport
+<cf_spRssExport
 	type="article"
 	title="mySite.com"
 	description="All About Me"
@@ -20,9 +20,7 @@ example usage:
 	itemTitle="title"
 	itemDescription="summary"
 	itemImage="thumbnail"
-	updatePeriod="daily"
-	updateFrequency="1"
-	publisher="Mark Woods"
+	ttl="1440"
 	r_xml="xml">
 <cfoutput>#xml#</cfoutput>
 
@@ -68,7 +66,6 @@ out how to use it from the optional attributes and the code comments.
 <cfparam name="attributes.copyright" default=""> <!--- copyright notice --->
 <cfparam name="attributes.managingEditor" default="">
 <cfparam name="attributes.webMaster" default="">
-<cfparam name="attributes.language" default="en"> <!--- todo: default to jvm locale --->
 
 <!--- item related attributes - TODO: option to obtain pubDate from speck property rather than spCreated --->
 <cfparam name="attributes.itemBaseUrl" default="http://#cgi.http_host##cgi.script_name#?#cgi.query_string#&amp;id=">
@@ -124,7 +121,7 @@ out how to use it from the optional attributes and the code comments.
 		<description>#xmlFormat(attributes.description)#</description>
 		<link>#attributes.link#</link>
 		<generator>SpeckCMS</generator>
-		<language>#attributes.language#</language>
+		<language>#request.speck.language#</language>
 		<cfif len(attributes.copyright)><copyright>#xmlFormat(attributes.copyright)#</copyright>#nl#</cfif>
 		<cfif len(attributes.managingEditor)><managingEditor>#xmlFormat(attributes.managingEditor)#</managingEditor>#nl#</cfif>
 		<cfif len(attributes.webMaster)><webMaster>#xmlFormat(attributes.webMaster)#</webMaster>#nl#</cfif>

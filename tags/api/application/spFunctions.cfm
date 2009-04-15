@@ -176,10 +176,11 @@ Licensed under the Academic Free License version 2.1
 	function getTypeTemplate(type) {
 		// function to get correct template for type definition, required to handle application and server types
 		var fs = request.speck.fs;
-		if ( fileExists("#request.speck.appInstallRoot##fs#tags#fs#types#fs##type#.cfm") )			
-			return "/#request.speck.mapping#/types/#type#.cfm";
+		var stType = request.speck.types[type];
+		if ( fileExists("#request.speck.appInstallRoot##fs#tags#fs#types#fs##stType.name#.cfm") )			
+			return "/#request.speck.mapping#/types/#stType.name#.cfm";
 		else
-			return "/speck/types/#type#.cfm";		
+			return "/speck/types/#stType.name#.cfm";		
 	}
 	
 	function getHandlerTemplate(stType,method) {
