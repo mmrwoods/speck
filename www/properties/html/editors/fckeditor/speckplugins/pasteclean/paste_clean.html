@@ -143,6 +143,12 @@ function CleanHtml( oNode )
 	
 	// remove empty tags
 	html = html.replace( /<(\w+)>\s*<\/\1>/g, ' ' ) ;	
+	
+	// clean up mangled hrefs. There's a weird bug with FCKeditor and FF whereby 
+	// paths relative to the host name root get prepended with a load of double
+	// dots followed by slash, e.g. /go/news becomes ../../../../../../../go/news
+	html = html.replace( /href="(\.\.\/){1,}/gi, 'href="/') ;
+	alert(html);
 
 	return html ;
 }
