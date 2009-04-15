@@ -148,7 +148,6 @@ function CleanHtml( oNode )
 	// paths relative to the host name root get prepended with a load of double
 	// dots followed by slash, e.g. /go/news becomes ../../../../../../../go/news
 	html = html.replace( /href="(\.\.\/){1,}/gi, 'href="/') ;
-	alert(html);
 
 	return html ;
 }
