@@ -23,7 +23,7 @@ The editor can be customised per application in a number of ways:
 Note that the ImageBrowserURL and SpellerPagesServerScript settings cannot be customised.
 */
 
-// load the paste clean plugin - at the moment this overrides the paste text command (that's likely to change)
+// load the paste clean plugin - at the moment this overrides the paste word command (that's likely to change)
 FCKConfig.PluginsPath = FCKConfig.BasePath.substr(0, FCKConfig.BasePath.length - 7) + 'speckplugins/';
 FCKConfig.Plugins.Add('pasteclean');
 
@@ -33,11 +33,11 @@ FCKConfig.ToolbarSets["Default"] = [
 ] ;
 
 FCKConfig.ToolbarSets["Basic"] = [
-	['PasteText','-','SpellCheck','-','Bold','Italic','Underline','StrikeThrough','-','Subscript','Superscript','-','OrderedList','UnorderedList','-','Link','Unlink','Image','SpecialChar','-','Source']
+	['Paste','PasteText','PasteWord','-','SpellCheck','-','Bold','Italic','Underline','StrikeThrough','-','OrderedList','UnorderedList','-','Link','Unlink','Image','SpecialChar','-','Source']
 ] ;
 
 FCKConfig.ToolbarSets["Minimal"] = [
-	['PasteText','-','Bold','Italic','Underline','StrikeThrough','-','Subscript','Superscript','-','OrderedList','UnorderedList','-','Link','Unlink','-','SpecialChar']
+	['PasteText','-','Bold','Italic','Underline','StrikeThrough','-','OrderedList','UnorderedList','-','Link','Unlink','-','SpecialChar']
 ] ;
 
 // FCKConfig.ImageBrowser = false;
@@ -85,9 +85,9 @@ FCKConfig.Keystrokes = [
 	[ CTRL + 83 /*S*/, true ],
 	[ CTRL + 84 /*T*/, true ],
 	[ CTRL + 88 /*X*/, true ],
-	[ CTRL + 86 /*V*/, 'PasteText' ],
+	[ CTRL + 86 /*V*/, 'PasteWord' ],
 	[ CTRL + 45 /*INS*/, true ],
-	[ SHIFT + 45 /*INS*/, 'PasteText' ],
+	[ SHIFT + 45 /*INS*/, 'PasteWord' ],
 	[ CTRL + 88 /*X*/, 'Cut' ],
 	[ SHIFT + 46 /*DEL*/, 'Cut' ],
 	[ CTRL + 90 /*Z*/, 'Undo' ],

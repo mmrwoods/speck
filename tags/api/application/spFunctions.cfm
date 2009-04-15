@@ -257,7 +257,7 @@ Licensed under the Academic Free License version 2.1
 		
 		var bForceLower = true;
 		var minWordLength = 0; // minimum length of a word that should be capitalized, default 0, i.e. capitalize all words
-		var delimiters = " /.(),"; // note: two or more of the same delimiter character in sequence will be replaced by a single character
+		var delimiters = " /.(),'"""; // note: two or more of the same delimiter character in sequence will be replaced by a single character
 		var prependChar = "";
 		var appendChar = "";
 		var smallWords = "a,an,the,and,as,at,but,by,for,if,in,is,of,on,or,to,v,via,vs";
