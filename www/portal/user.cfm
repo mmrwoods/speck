@@ -364,7 +364,7 @@ input {max-width:220px;}
 	<td style="vertical-align:middle"><label for="email">Email Address</label></td>
 	<td><input type="text" name="email" id="email" value="#form.email#" size="35" maxlength="100" /></td>
 	<td>&nbsp;</td>
-	<td style="vertical-align:middle"><span class="required">*</span><label for="password">Password</label></td>
+	<td style="vertical-align:middle"><span class="required">*</span><label for="password">Password</label><cfif not len(request.speck.portal.passwordEncryption)>&nbsp;<span class="hint" onmouseover="return escape('The password is hidden for security purposes, but you can view it by moving the mouse over the password field.');"> </span>&nbsp;</cfif></td>
 	<td><input <cfif len(url.username)>type="password"<cfelse>type="text"</cfif> name="password" id="password" value="#form.password#" <cfif not len(request.speck.portal.passwordEncryption)>title="#form.password#"</cfif> size="35" maxlength="20" /></td>
 	</tr>
 	<tr>
