@@ -615,6 +615,11 @@ Licensed under the Academic Free License version 2.1
 	<script src="/speck/javascripts/prototype.js" type="text/javascript"></script>
 	<script src="/speck/javascripts/scriptaculous.js" type="text/javascript"></script>
 	<script type="text/javascript">
+		// keep session alive while user is in add/edit window
+		new PeriodicalExecuter( function() {
+		  new Ajax.Request("/speck/admin/session/keepalive.cfm?app=#request.speck.appName#", { method:'get' });
+		}, 300 );	
+		
 		function resizeWindow() {
 			var clientWidth = 0;
 			var windowWidth = 600;

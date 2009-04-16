@@ -185,7 +185,7 @@ Licensed under the Academic Free License version 2.1
 			stApp.applicationTimeout = evaluate(stApp.applicationTimeout);
 		}	
 	} else {
-		stApp.applicationTimeout = createTimeSpan(1, 0, 0, 0);
+		stApp.applicationTimeout = createTimeSpan(2, 0, 0, 0);
 	}
 </cfscript>
 
