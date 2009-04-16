@@ -203,35 +203,6 @@ Licensed under the Academic Free License version 2.1
 		<#attributes.titleElement# class="article_print_title">#content.title#</#attributes.titleElement#>
 		</cfoutput>
 		
-		<!---
-		<cfif len(content.pubdate)>
-		
-			<cfoutput><div class="article_print_pubdate"></cfoutput>
-			
-			<!--- get publication date as date (stored as ISO-8601 date string in db, i.e. YYYY-MM-DD) --->
-			<cfset pubdate = createDate(listFirst(content.pubdate,"-"),listGetAt(content.pubdate,2,"-"),listLast(content.pubdate,"-"))>
-		
-			<cfoutput>
-			#lsDateFormat(pubdate,"DD MMMM YYYY")#
-			</cfoutput>
-			
-			<cfif structKeyExists(content,"updatedDate") and len(content.updatedDate) and content.updatedDate gt content.pubdate>
-			
-				<cfset updatedDate = createDate(listFirst(content.updatedDate,"-"),listGetAt(content.updatedDate,2,"-"),listLast(content.updatedDate,"-"))>
-			
-				<cfoutput>
-				<em>(updated: #lsDateFormat(updatedDate,"DD MMMM YYYY")#)</em>
-				</cfoutput>
-				
-			</cfif>
-			
-			<cfoutput>
-			</div>
-			</cfoutput>
-			
-		</cfif>
-		--->
-		
 		<cfif attributes.showImage and len(trim(content.mainImage))>
 			<cfscript>
 				if ( listLen(content.mainImageDimensions) eq 2  )
@@ -646,7 +617,7 @@ Licensed under the Academic Free License version 2.1
 			<cfoutput><div class="article_display_pubdate"></cfoutput>
 			
 			<!--- get publication date as date (stored as ISO-8601 date string in db, i.e. YYYY-MM-DD) --->
-			<cfset pubdate = createDate(listFirst(content.pubdate,"-"),listGetAt(content.pubdate,2,"-"),listLast(content.pubdate,"-"))>
+			<cfset pubdate = lsParseDateTime(content.pubdate)>
 		
 			<cfoutput>
 			#lsDateFormat(pubdate,"DD MMMM YYYY")#
@@ -654,8 +625,8 @@ Licensed under the Academic Free License version 2.1
 			
 			<cfif structKeyExists(content,"updatedDate") and len(content.updatedDate) and content.updatedDate gt content.pubdate>
 			
-				<cfset updatedDate = createDate(listFirst(content.updatedDate,"-"),listGetAt(content.updatedDate,2,"-"),listLast(content.updatedDate,"-"))>
-			
+				<cfset updatedDate = lsParseDateTime(content.updatedDate)>
+				
 				<cfoutput>
 				<em>(updated: #lsDateFormat(updatedDate,"DD MMMM YYYY")#)</em>
 				</cfoutput>
@@ -849,7 +820,7 @@ Licensed under the Academic Free License version 2.1
 			<!--- update the content index --->
 			
 			<cfif len(content.pubdate)>
-				<cfset indexDate = createDate(listFirst(content.pubdate,"-"),listGetAt(content.pubdate,2,"-"),listLast(content.pubdate,"-"))>
+				<cfset indexDate = content.pubdate>
 			<cfelse>
 				<cfset indexDate = content.spCreated>
 			</cfif>
@@ -913,7 +884,7 @@ Licensed under the Academic Free License version 2.1
 				<!--- update the content index --->
 				
 				<cfif len(content.pubdate)>
-					<cfset indexDate = createDate(listFirst(content.pubdate,"-"),listGetAt(content.pubdate,2,"-"),listLast(content.pubdate,"-"))>
+					<cfset indexDate = content.pubdate>
 				<cfelse>
 					<cfset indexDate = content.spCreated>
 				</cfif>

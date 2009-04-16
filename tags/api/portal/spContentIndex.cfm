@@ -41,9 +41,13 @@ once defined (probably with some additional cf_spType attributes).
 
 </cfif>
 
-<cfif not isDate(attributes.date)>
+<cfif not lsIsDate(attributes.date)>
 
 	<cf_spError error="ATTR_INV" lParams="#attributes.date#,date"> <!--- Invalid attribute --->
+	
+<cfelse>
+
+	<cfset ts = lsParseDateTime(attributes.date)>
 
 </cfif>
 
@@ -95,7 +99,7 @@ once defined (probably with some additional cf_spType attributes).
 			title = '#left(attributes.title,250)#',
 			description = '#left(attributes.description,500)#',
 			body = <cfqueryparam value="#left(attributes.body,64000)#" cfsqltype="CF_SQL_LONGVARCHAR" maxlength="64000">,
-			ts = #createODBCDateTime(attributes.date)#
+			ts = #createODBCDateTime(ts)#
 		WHERE id = '#uCase(attributes.id)#'
 	</cfquery>	
 
@@ -118,7 +122,7 @@ once defined (probably with some additional cf_spType attributes).
 			'#left(attributes.title,250)#',
 			'#left(attributes.description,500)#',
 			<cfqueryparam value="#left(attributes.body,64000)#" cfsqltype="CF_SQL_LONGVARCHAR" maxlength="64000">,
-			#createODBCDateTime(attributes.date)#
+			#createODBCDateTime(ts)#
 		)
 	</cfquery>
 

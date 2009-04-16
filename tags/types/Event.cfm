@@ -557,11 +557,11 @@ Licensed under the Academic Free License version 2.1
 		</cfif>
 		
 		<cfscript>
-			// get dates as dates (stored as ISO-8601 date string in db, i.e. YYYY-MM-DD)
-			startDate = createDate(listFirst(content.startDate,"-"),listGetAt(content.startDate,2,"-"),listLast(content.startDate,"-"));
+			// parse date strings (Speck dates are stored in the db as YYYY-MM-DD format strings)
+			startDate = lsParseDateTime(content.startDate);
 			if ( len(content.endDate) )
-				endDate = createDate(listFirst(content.endDate,"-"),listGetAt(content.endDate,2,"-"),listLast(content.endDate,"-"));
-		</cfscript>	
+				endDate = lsParseDateTime(content.endDate);
+		</cfscript>
 		
 		<cfoutput>
 		<div class="event_summary_text">
@@ -690,10 +690,10 @@ Licensed under the Academic Free License version 2.1
 		</cfif>
 			
 		<cfscript>
-			// get dates as dates (stored as ISO-8601 date string in db, i.e. YYYY-MM-DD)
-			startDate = createDate(listFirst(content.startDate,"-"),listGetAt(content.startDate,2,"-"),listLast(content.startDate,"-"));
+			// parse date strings (Speck dates are stored in the db as YYYY-MM-DD format strings)
+			startDate = lsParseDateTime(content.startDate);
 			if ( len(content.endDate) )
-				endDate = createDate(listFirst(content.endDate,"-"),listGetAt(content.endDate,2,"-"),listLast(content.endDate,"-"));
+				endDate = lsParseDateTime(content.endDate);
 		</cfscript>
 			
 		<cfoutput>
@@ -811,12 +811,6 @@ Licensed under the Academic Free License version 2.1
 		<cfif structKeyExists(request.speck,"portal")>
 		
 			<!--- update the content index --->
-			
-			<cfif len(content.startDate)>
-				<cfset indexDate = createDate(listFirst(content.startDate,"-"),listGetAt(content.startDate,2,"-"),listLast(content.startDate,"-"))>
-			<cfelse>
-				<cfset indexDate = content.spCreated>
-			</cfif>
 				
 			<cf_spContentIndex type="#content.spType#"
 				id="#content.spId#"
@@ -824,7 +818,7 @@ Licensed under the Academic Free License version 2.1
 				title="#content.title#"
 				description="#content.summary#"
 				body="#content.title# #content.summary# #content.description#"
-				date="#indexDate#">
+				date="#content.startDate#">
 				
 		</cfif>
 	
@@ -875,12 +869,6 @@ Licensed under the Academic Free License version 2.1
 			<cfelse>
 				
 				<!--- update the content index --->
-				
-				<cfif len(content.startDate)>
-					<cfset indexDate = createDate(listFirst(content.startDate,"-"),listGetAt(content.startDate,2,"-"),listLast(content.startDate,"-"))>
-				<cfelse>
-					<cfset indexDate = content.spCreated>
-				</cfif>
 					
 				<cf_spContentIndex type="#content.spType#"
 					id="#content.spId#"
@@ -888,7 +876,7 @@ Licensed under the Academic Free License version 2.1
 					title="#content.title#"
 					description="#content.summary#"
 					body="#content.title# #content.summary# #content.description#"
-					date="#indexDate#">
+					date="#content.startDate#">
 				
 			
 			</cfif>
