@@ -39,6 +39,11 @@ Licensed under the Academic Free License version 2.1
 
 </cfsavecontent>
 
+<!--- create a flash structure to store messages between requests (yet another idea nicked from the rails world) --->
+<cfif not structKeyExists(session.speck,"flash")>
+	<cfset session.speck.flash = structNew()>
+</cfif>
+
 <cfif not len(speck.layout)>
 
 	<!--- we need to generate the content --->
@@ -417,3 +422,6 @@ Licensed under the Academic Free License version 2.1
 </body>
 </html>
 </cfoutput>
+
+<!--- always clear the flash structure after each request --->
+<cfset void = structClear(session.speck.flash)>
