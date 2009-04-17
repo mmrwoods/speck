@@ -617,7 +617,7 @@ Licensed under the Academic Free License version 2.1
 			<cfoutput><div class="article_display_pubdate"></cfoutput>
 			
 			<!--- get publication date as date (stored as ISO-8601 date string in db, i.e. YYYY-MM-DD) --->
-			<cfset pubdate = lsParseDateTime(content.pubdate)>
+			<cfset pubdate = parseDateTime(content.pubdate)>
 		
 			<cfoutput>
 			#lsDateFormat(pubdate,"DD MMMM YYYY")#
@@ -625,7 +625,7 @@ Licensed under the Academic Free License version 2.1
 			
 			<cfif structKeyExists(content,"updatedDate") and len(content.updatedDate) and content.updatedDate gt content.pubdate>
 			
-				<cfset updatedDate = lsParseDateTime(content.updatedDate)>
+				<cfset updatedDate = parseDateTime(content.updatedDate)>
 				
 				<cfoutput>
 				<em>(updated: #lsDateFormat(updatedDate,"DD MMMM YYYY")#)</em>

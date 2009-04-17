@@ -558,9 +558,9 @@ Licensed under the Academic Free License version 2.1
 		
 		<cfscript>
 			// parse date strings (Speck dates are stored in the db as YYYY-MM-DD format strings)
-			startDate = lsParseDateTime(content.startDate);
+			startDate = parseDateTime(content.startDate);
 			if ( len(content.endDate) )
-				endDate = lsParseDateTime(content.endDate);
+				endDate = parseDateTime(content.endDate);
 		</cfscript>
 		
 		<cfoutput>
@@ -691,9 +691,9 @@ Licensed under the Academic Free License version 2.1
 			
 		<cfscript>
 			// parse date strings (Speck dates are stored in the db as YYYY-MM-DD format strings)
-			startDate = lsParseDateTime(content.startDate);
+			startDate = parseDateTime(content.startDate);
 			if ( len(content.endDate) )
-				endDate = lsParseDateTime(content.endDate);
+				endDate = parseDateTime(content.endDate);
 		</cfscript>
 			
 		<cfoutput>
