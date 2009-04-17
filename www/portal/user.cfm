@@ -179,7 +179,7 @@ Licensed under the Academic Free License version 2.1
 	<cfparam name="form.groups_expiration" default="">
 	<cfparam name="form.expires" default="">
 	
-	<cfparam name="form.send_welcome_email" default="1" type="boolean">
+	<cfparam name="form.send_password" default="1" type="boolean">
 	
 	<cfloop from="1" to="#arrayLen(stType.props)#" index="i">
 	
@@ -398,10 +398,10 @@ input {max-width:220px;}
 	<cfelse>
 	
 		<cfoutput>
-		<td style="vertical-align:middle" nowrap="yes"><label for="send_welcome_email">Send Password</label>&nbsp;<span class="hint" onmouseover="return escape('Email the username and password to the user after creating the account (highly recommended!). Only works if you enter an email address for the user.');"> </span>&nbsp;</td>
+		<td style="vertical-align:middle" nowrap="yes"><label for="send_password">Send Password</label>&nbsp;<span class="hint" onmouseover="return escape('Email the username and password to the user after creating the account (highly recommended!). Only works if you enter an email address for the user.');"> </span>&nbsp;</td>
 		<td style="vertical-align:middle">
-			<input type="radio" name="send_welcome_email" value="1"<cfif form.send_welcome_email> checked="yes"</cfif> />Yes
-			<input type="radio" name="send_welcome_email" value="0"<cfif not form.send_welcome_email> checked="yes"</cfif> />No
+			<input type="radio" name="send_password" value="1"<cfif form.send_password> checked="yes"</cfif> />Yes
+			<input type="radio" name="send_password" value="0"<cfif not form.send_password> checked="yes"</cfif> />No
 		</td>
 		</cfoutput>
 

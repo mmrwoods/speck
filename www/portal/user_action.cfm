@@ -126,6 +126,10 @@ Licensed under the Academic Free License version 2.1
 			
 			</cfif>
 			
+		<cfelseif isDefined("form.send_password") and form.send_password>
+		
+			<cfset void = actionError("Send password is set to 'yes', but email address is blank.")>
+			
 		</cfif>
 		
 		<cfif len(form.expires) and form.expires neq "YYYY-MM-DD">
@@ -466,7 +470,7 @@ Licensed under the Academic Free License version 2.1
 				
 				</cfloop>
 				
-				<cfif len(stContent.email) and form.send_welcome_email>
+				<cfif len(stContent.email) and form.send_password>
 				
 					<cfset nl = chr(13) & chr(10)>
 					<cfset domain = request.speck.portal.domain>
