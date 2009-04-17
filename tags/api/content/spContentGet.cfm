@@ -220,38 +220,7 @@ TODO: explore this idea further and see if it can be used to improve performance
 	if ( attributes.revision neq ""  ) {
 		switch (trim(attributes.revision)) {
 			case "tip": {
-				
-				if ( not request.speck.enableRevisions and structKeyExists(stType,"containsRevisions") and not (stType.containsRevisions) ) {
-					// performance hack to avoid running a subquery to get the correct revision when revisioning disabled and type never contained any revisions. 
-					revisionWhereClause = "1=1";
-				} else {
-					// normal tip revision where clause has to run a subquery even when revisioning is disabled because it may have been enabled in the past
-					revisionWhereClause = "spRevision IN (
-												SELECT MAX(tip.spRevision)
-												FROM #attributes.type# #ta# tip
-												WHERE content.spId = tip.spId
-												#iif(attributes.date neq "", DE("AND tip.spUpdated <= " & odbcdate), DE(""))#
-												)";
-				}
-											
-				// hack to avoid the really nasty correlated subquery on the history table when revisioning enabled, but promotion disabled.
-				// If revisioning on, but promotion off, assume that we by default want the tip revision where the content item was never 
-				// removed. Although the Speck history table in theory allows removed items to be restored, but still keep a record of the 
-				// fact that they were once removed, this is never done in practice (there's no UI for it). It's basically impossible to use 
-				// this hack with promotion on unless we add the promotion level to the content type tables. 
-				// NOTE: code updated to compare removal timestamp and content updated timestamp, should now be possible to remove and restore 
-				// items and keep a history of the removal as long as the restored content item is actually a new revision, with an updated date 
-				// that occurs after the previous removal. Man, this is nasty and needs an overhaul. It works, but it's seriously ugly now.
-				if ( request.speck.enableRevisions ) {
-					revisionWhereClause = revisionWhereClause & "
-										AND NOT EXISTS ( 
-											SELECT id 
-											FROM spHistory 
-											WHERE id = content.spId 
-												AND revision = 0
-												AND ts >= content.spUpdated
-											)";
-				}
+				revisionWhereClause = "spArchived IS NULL"; // tip revision is the only one that hasn't been archived
 				break;
 		 	}
 			case "all": {

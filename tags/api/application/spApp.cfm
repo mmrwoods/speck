@@ -1207,7 +1207,7 @@ I'm sure this all used to be necessary in CF5
 					</cfcatch>
 					</cftry> --->
 						
-					<cfif stApp.types[typeName].name neq typeName>
+					<cfif compare(stApp.types[typeName].name,typeName) neq 0>
 					
 						<cf_spError error="TYPENAME_NOT_FILENAME" lParams="#stApp.types[typeName].name#,/speck/types/#name#" context=#stApp#>
 					
@@ -1242,7 +1242,7 @@ I'm sure this all used to be necessary in CF5
 					</cfcatch>
 					</cftry> --->
 						
-					<cfif stApp.types[typeName].name neq typeName>
+					<cfif compare(stApp.types[typeName].name,typeName) neq 0>
 					
 						<cf_spError error="TYPENAME_NOT_FILENAME" lParams="#stApp.types[typeName].name#,/#stApp.mapping#/types/#name#" context=#stApp#>
 					

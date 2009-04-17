@@ -6,13 +6,13 @@
 description = Sydney Jabiru Flying School Website
 
 ; Installation root for this application
-appInstallRoot = c:\inetpub\webapps\sydneyjabiru
+appInstallRoot = /var/www/webapps/sydneyjabiru
 
 ; Datasource for content database
 codb = sydneyjabiru
 
 ; Database type access|sqlserver|oracle|postgresql|firebird|mysql|...
-dbtype = access
+dbtype = postgresql
 
 ; Template mapping to application's tags directory - only required if 
 ; appInstallRoot and Speck directory not within same parent directory
@@ -21,12 +21,6 @@ dbtype = access
 ; Web root for this application. Enable this setting to run this speck app inside a virtual directory. 
 ; If necessary, replace "sydneyjabiru" with the name of your virtual directory
 ; appWebRoot = /sydneyjabiru
-
-; Manage the list of application keywords?
-manageKeywords = yes
-
-; Allow keywords to be nested to how many levels...
-maxKeywordLevels = 1
 
 ; What roles should be required to edit the label and keywords for content items?
 labelRoles = spSuper
