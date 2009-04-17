@@ -100,7 +100,7 @@ Licensed under the Academic Free License version 2.1
 			
 		</cfif>
 	
-		<cfoutput><input #readonlyAttribute# type="text" name="#stPD.name#" value="#value#" size="#stPD.displaySize#" maxlength="#stPD.maxlength#"></cfoutput>
+		<cfoutput><input class="text" #readonlyAttribute# type="text" name="#stPD.name#" value="#value#" size="#stPD.displaySize#" maxlength="#stPD.maxlength#"></cfoutput>
 		
 		<!--- durty hack to allow other properties take action if the keyword has children (roles and groups may force permissions on child keywords) --->
 		<cfset request.bKeywordHasChildren = false>

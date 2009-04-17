@@ -471,7 +471,7 @@ Licensed under the Academic Free License version 2.1
 		<!--- Output the form header --->
 		<cfoutput>
 		<form autocomplete="off" name="speditform" id="speditform" action="#cgi.script_name#?#reReplace(cgi.query_string,"action=[a-z]+","action=" & url.action)#" enctype="multipart/form-data" method="post">
-		<table>
+		<table width="570">
 		</cfoutput>
 		
 		<!--- add opener url to querystring if necessary --->

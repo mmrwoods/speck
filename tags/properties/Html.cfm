@@ -474,7 +474,7 @@ Licensed under the Academic Free License version 2.1
 						stConfig.Width = stPD.fckWidth;
 					} else if ( not isDefined("stConfig.Width") ) {
 						// default width
-						stConfig.Width = "452"; 
+						stConfig.Width = "100%"; 
 					}
 					// Height
 					if ( isDefined("stPD.fckHeight") ) { 
@@ -641,13 +641,13 @@ Licensed under the Academic Free License version 2.1
 					
 			<cfelse>
 			
-				<cfoutput><textarea name="#stPD.name#" wrap="virtual" cols="#listFirst(stPD.displaySize)#" rows="#listLast(stPD.displaySize)#">#value#</textarea></cfoutput>
+				<cfoutput><textarea class="html" name="#stPD.name#" wrap="virtual" cols="#listFirst(stPD.displaySize)#" rows="#listLast(stPD.displaySize)#">#value#</textarea></cfoutput>
 			
 			</cfif> <!--- stPD.richEdit --->
 		
 		<cfelse>
 			
-			<cfoutput><input type="text" name="#stPD.name#" value="#replace(value,"""","&quot;","all")#" size="#stPD.displaySize#" maxlength="#stPD.maxlength#"></cfoutput>
+			<cfoutput><input class="html" type="text" name="#stPD.name#" value="#replace(value,"""","&quot;","all")#" size="#stPD.displaySize#" maxlength="#stPD.maxlength#"></cfoutput>
 		
 		</cfif>
 	

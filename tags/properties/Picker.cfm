@@ -290,7 +290,12 @@ Licensed under the Academic Free License version 2.1
 			<cfoutput>
 			<script>
 				function picker_remove_#stPD.name#(id) {
-					if ( confirm(#request.speck.buildString("A_PICKER_REMOVE_CONFIRM","#stType.caption#,#stPD.caption#")#) ) {
+					if ( formModified_#stPD.name# ) {
+						var confirmMsg = #request.speck.buildString("A_PICKER_REMOVE_CONFIRM","#stType.caption#,#stPD.caption#")#;
+					} else {
+						var confirmMsg = "#request.speck.buildString("T_DEFAULT_PICKER_REMOVE_CAPTION","#stType.caption#,#stPD.caption#")#";
+					}
+					if ( confirm(confirmMsg) ) {
 						var currentValue = document.speditform.#stPD.name#.value;
 						// was going to do this with one statement, but ran into trouble so step by step we go...
 						var newValue = currentValue.replace(id.replace(/\-/,"\-"),""); // remove id
@@ -303,7 +308,12 @@ Licensed under the Academic Free License version 2.1
 				}
 				
 				function picker_delete_#stPD.name#(id) {
-					if ( confirm(#request.speck.buildString("A_PICKER_DELETE_CONFIRM","#stType.caption#,#stPD.caption#")#) ) {
+					if ( formModified_#stPD.name# ) {
+						var confirmMsg = #request.speck.buildString("A_PICKER_DELETE_CONFIRM","#stType.caption#,#stPD.caption#")#;
+					} else {
+						var confirmMsg = "#request.speck.buildString("T_DEFAULT_PICKER_DELETE_CAPTION","#stType.caption#,#stPD.caption#")#";
+					}
+					if ( confirm(confirmMsg) ) {
 						var win = window.open("/speck/admin/admin.cfm?action=delete&app=#request.speck.appname#&type=#stType.name#&id=" + id + "&caption=#stType.caption#", "delete" + id.replace(/-/g, ""), "menubar=no,scrollbars=no,resizable=yes,width=150,height=100");
 						var currentValue = document.speditform.#stPD.name#.value;
 						// was going to do this with one statement, but ran into trouble so step by step we go...
@@ -362,9 +372,9 @@ Licensed under the Academic Free License version 2.1
 			
 			<cfoutput><table cellspacing="1" border="0" cellpadding="0" width="100%" style="margin:3px"></cfoutput>
 					
-			<cfset editCaptionString = request.speck.buildString("T_DEFAULT_PICKER_EDIT_CAPTION")>
-			<cfset removeCaptionString = request.speck.buildString("T_DEFAULT_PICKER_REMOVE_CAPTION")>
-			<cfset deleteCaptionString = request.speck.buildString("T_DEFAULT_PICKER_DELETE_CAPTION")>
+			<cfset editCaptionString = request.speck.buildString("T_DEFAULT_PICKER_EDIT_CAPTION",stType.caption)>
+			<cfset removeCaptionString = request.speck.buildString("T_DEFAULT_PICKER_REMOVE_CAPTION",stType.caption)>
+			<cfset deleteCaptionString = request.speck.buildString("T_DEFAULT_PICKER_DELETE_CAPTION",stType.caption)>
 			
 			<!--- output each picked item --->
 			
@@ -377,10 +387,26 @@ Licensed under the Academic Free License version 2.1
 					
 				<cfoutput>
 				<tr <cfif currentRow mod 2 eq 1>class="alternateRow"</cfif>>
-				<td width="30" valign="top" nowrap>
+				<td width="30" valign="top" nowrap style="padding:0 5px;vertical-align:middle;">
 				</cfoutput>
 				
 				<cfif stPD.showEdit>
+			
+					<cfoutput><a href="javascript:picker_launch_edit_#stPD.name#('#qContent.spId#','#stPD.contentType#')" title="#editCaptionString#">#listFirst(editCaptionString," ")#</a>&nbsp;</cfoutput>
+				
+				</cfif>
+				
+				<cfif stPD.dependent>
+				
+					<cfoutput><a href="javascript:picker_delete_#stPD.name#('#qContent.spId#')" title="#deleteCaptionString#">#listFirst(deleteCaptionString," ")#</a></cfoutput>
+					
+				<cfelse>
+				
+					<cfoutput><a href="javascript:picker_remove_#stPD.name#('#qContent.spId#')" title="#removeCaptionString#">#listFirst(removeCaptionString," ")#</a></cfoutput>
+				
+				</cfif>
+				
+				<!--- <cfif stPD.showEdit>
 			
 					<cfoutput><a href="javascript:picker_launch_edit_#stPD.name#('#qContent.spId#','#stPD.contentType#')" title="#editCaptionString#">#left(editCaptionString,1)#</a>&nbsp;</cfoutput>
 				
@@ -398,7 +424,7 @@ Licensed under the Academic Free License version 2.1
 					<a href="javascript:picker_remove_#stPD.name#('#qContent.spId#')" title="#removeCaptionString#">#left(removeCaptionString,1)#</a>
 					</cfoutput>
 				
-				</cfif>
+				</cfif> --->
 				
 				<cfoutput>
 				</td>
@@ -423,7 +449,7 @@ Licensed under the Academic Free License version 2.1
 					<!--- allow picked items to be sorted --->
 
 					<cfoutput>
-					<td valign="top" nowrap align="center">
+					<td valign="top" nowrap align="center" style="padding:0 5px;vertical-align:middle;">
 					<a href="javascript:picker_moveTop_#stPD.name#('#qContent.spId#')" title="#request.speck.buildString("T_DEFAULT_PICKER_MOVE_TOP_CAPTION")#"><img style="vertical-align:middle;" src="/speck/properties/picker/picker_top.gif" width="9" height="9" border="0"></a>
 					<a href="javascript:picker_moveUp_#stPD.name#('#qContent.spId#')" title="#request.speck.buildString("T_DEFAULT_PICKER_MOVE_UP_CAPTION")#"><img style="vertical-align:middle;" src="/speck/properties/picker/picker_up.gif" width="9" height="9" border="0"></a>
 					<a href="javascript:picker_moveDown_#stPD.name#('#qContent.spId#')" title="#request.speck.buildString("T_DEFAULT_PICKER_MOVE_DOWN_CAPTION")#"><img style="vertical-align:middle;" src="/speck/properties/picker/picker_down.gif" width="9" height="9" border="0"></a>

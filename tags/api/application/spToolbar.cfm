@@ -293,7 +293,7 @@ Renders toolbar allowing editors and reviewers (i.e. spEdit or spReview permissi
 			<!--- force spContent to output all the admin functions, but without returning any content or outputting any links --->
 			<cf_spContent type="spKeywords" enableAdminLinks="yes" enableAddLink="no" maxRows="0">
 			<cfoutput>
-			<a class="spToolbar spEditKeyword" href="javascript:launch_edit('spKeywords','#request.speck.portal.qKeyword.spId#', '', '','Navigation Section');" title="Edit configuration for current page">Page Config</a>
+			<a class="spToolbar spEditKeyword" href="javascript:launch_edit('spKeywords','#request.speck.portal.qKeyword.spId#', '', '','Navigation Section');" title="Edit settings for the current page/section">Page Settings</a>
 			</cfoutput>
 		
 		</cfif>
