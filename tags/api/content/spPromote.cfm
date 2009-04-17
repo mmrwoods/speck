@@ -211,66 +211,73 @@ Attributes:
 </cfquery>
 
 <cfloop from=#firstPromotion# to=#targetLevel# index="level">
-
-	<cfset levelDesc = listGetAt("edit,review,live", level)>
 	
-	<!--- Run the type's promote handler --->
-	<cfif structKeyExists(stType.methods, "promote")>
+	<cftransaction isolation="serializable">
 	
-		<!--- call handler with promote method --->
-		<cfmodule template=#stType.methods.promote#
-			qContent=#qContent#
-			type=#attributes.type#
-			method="promote"
-			newLevel=#levelDesc#>
-	
-	</cfif>	
-		
-	<cfloop from=1 to=#arrayLen(stType.props)# index="prop">
-	
-		<cfset stPD = stType.props[prop]>
-		
-		<cfif structKeyExists(stPD.methods, "promote")>
-		
-			<!--- property has a promote method, run the handler with this method --->
-			<cfmodule template=#stPD.methods.promote#
-				method="promote"
-				stPD=#stPD#
-				value=#qContent[stPD.name][1]#
-				id=#attributes.id#
-				type=#attributes.type#
-				revision=#attributes.revision#
-				newLevel=#levelDesc#>
-				
-		</cfif>
-		
-	</cfloop>
-	
-	<!--- Only want to add record if revision isn't already at this level --->
-	
-	<!--- commented out this check because we need to allow a record to be added to the history regardless
-		of whether it's been already at this level in the past (to allow rollbacks) --->
-<!--- 	<cf_spRevisionGet
-		id=#attributes.id#
-		type=#attributes.type#
-		level=#levelDesc#
-		r_revision="currentRevisionAtInsertLevel">
-		
-	<cfif attributes.revision neq currentRevisionAtInsertLevel> --->
-	
-<!--- <cfoutput>
-INSERT INTO spHistory (id,revision,contentType,promoLevel,editor,changeId,ts)
-			VALUES ('#attributes.id#', #attributes.revision#, '#attributes.type#', #level#, '#attributes.editor#', #changeValue#, #createODBCDateTime(now())#)
-		<br>
-</cfoutput>	 --->
-	
- 		<cfquery name="qInsertPromotion" datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
+		<cfquery name="qInsertPromotion" datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
 			INSERT INTO spHistory (id,revision,contentType,promoLevel,editor,changeId,ts)
 			VALUES ('#attributes.id#', #attributes.revision#, '#attributes.type#', #level#, '#attributes.editor#', #changeValue#, #createODBCDateTime(now())#)
 		</cfquery>
 		
-	<!--- </cfif> --->	
+		<!--- archive the previous version at this level --->
+		<cfquery name="qUpdateLevel" datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
+			UPDATE #attributes.type# 
+			SET spArchived = #createODBCDateTime(now())#
+			WHERE spId = '#qContent.spId#' 
+				AND spRevision < #qContent.spRevision#
+				AND spArchived IS NULL
+		</cfquery>
+		
+		<!--- update the row in the content table for this revision - set the level to the current level and set the archived date as required (NULL, unless we're promoting a deletion to live) --->
+		<cfquery name="qUpdateLevel" datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
+			UPDATE #attributes.type# 
+			SET spLevel = #targetLevel#, 
+			<cfif level eq 3 and attributes.revision eq 0>
+				<!--- promoting a deletion to live, archive this row in the content table --->
+				spArchived = #createODBCDateTime(now())#
+			<cfelse>
+				spArchived = NULL
+			</cfif>
+			WHERE spId = '#qContent.spId#' 
+				AND spRevision = #qContent.spRevision#
+		</cfquery>
+	
+	</cftransaction>
 
+</cfloop>
+
+<!--- run promote handlers for the target level only (this is a big change and I'm not sure how this will affect things like the auto promote feature of the picker property) --->
+
+<!--- Run the type's promote handler --->
+<cfif structKeyExists(stType.methods, "promote")>
+
+	<!--- call handler with promote method --->
+	<cfmodule template=#stType.methods.promote#
+		qContent=#qContent#
+		type=#attributes.type#
+		method="promote"
+		newLevel=#attributes.newLevel#>
+
+</cfif>	
+	
+<cfloop from=1 to=#arrayLen(stType.props)# index="prop">
+
+	<cfset stPD = stType.props[prop]>
+	
+	<cfif structKeyExists(stPD.methods, "promote")>
+	
+		<!--- property has a promote method, run the handler with this method --->
+		<cfmodule template=#stPD.methods.promote#
+			method="promote"
+			stPD=#stPD#
+			value=#qContent[stPD.name][1]#
+			id=#attributes.id#
+			type=#attributes.type#
+			revision=#attributes.revision#
+			newLevel=#attributes.newLevel#>
+			
+	</cfif>
+	
 </cfloop>
 
 <cfif attributes.newLevel eq "live">

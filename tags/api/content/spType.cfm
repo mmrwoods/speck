@@ -382,40 +382,76 @@ Attributes:
 			
 		<cfelse>
 		
-			<!--- ############# temporary code to add spLabelIndex column to existing tables ################### --->
-			<cfif not listFindNoCase(qTableCheck.columnList, "spLabelIndex")>
-				<cfquery name="qCreateColumn" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
-					ALTER TABLE #ca.context.dbIdentifier(a.name,ca.context)# ADD spLabelIndex #ca.context.textDDLString(250,ca.context)#
-				</cfquery>
-				<!--- populate the spLabelIndex with the upper case version of the real label --->
-				<cfquery name="qUpdateColumn" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
-					UPDATE #ca.context.dbIdentifier(a.name,ca.context)#
-					SET spLabelIndex = <cfif ca.context.dbtype eq "access">spLabel<cfelse>UPPER(spLabel)</cfif>
-				</cfquery>
-				<!--- drop the existing index on the mixed case label and create an index on the upper case version --->
-				<cftry>
-					<cfquery name="qDropIndex" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
-						DROP INDEX #a.name#_spLabel
+			<!--- ############# temporary code to add spLevel and spArchived columns to existing tables ################### --->
+			<cfif not listFindNoCase(qTableCheck.columnList, "spLevel")>
+
+				<cftransaction isolation="serializable">
+				
+					<cfquery name="qCreateColumn" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
+						ALTER TABLE #ca.context.dbIdentifier(a.name,ca.context)# ADD spLevel INTEGER
 					</cfquery>
-					<cftry>
-						<cfquery name="qAddIndex" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
-							CREATE INDEX #a.name#_spLabel
-							ON #ca.context.dbIdentifier(a.name,ca.context)# (spLabelIndex)
+					
+					<cfquery name="qUpdate" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
+						UPDATE #ca.context.dbIdentifier(a.name,ca.context)# SET spLevel = 3
+					</cfquery>
+					
+					<cfquery name="qCreateColumn" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
+						ALTER TABLE #ca.context.dbIdentifier(a.name,ca.context)# ADD spArchived #ca.context.database.tsDDLString#
+					</cfquery>
+					
+					<cfquery name="qRevisionsCheck" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
+						SELECT MAX(spRevision) AS maxRevision FROM #ca.context.dbIdentifier(a.name,ca.context)#
+					</cfquery>
+					
+					<cfif isNumeric(qRevisionsCheck.maxRevision) and qRevisionsCheck.maxRevision gt 1>
+					
+						<!--- just archive anything that was ever deleted (there's no way of restoring something once deleted without hacking the db anyway) --->
+						<cfquery name="qUpdate" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
+							UPDATE #ca.context.dbIdentifier(a.name,ca.context)# 
+							SET spArchived = #createODBCDateTime(now())#
+							WHERE spId IN ( SELECT id FROM spHistory WHERE revision = 0 )
 						</cfquery>
-					<cfcatch type="Database">
-						<cflog type="warning" 
-							file="#ca.context.appName#" 
-							application="no"
-							text="CF_SPTYPE: Could not create database index #a.name#_spLabel. Error: #cfcatch.message# #cfcatch.detail#">
-					</cfcatch>
-					</cftry>
-				<cfcatch type="Database">
-					<cflog type="warning" 
-						file="#ca.context.appName#" 
-						application="no"
-						text="CF_SPTYPE: Could not drop database index #a.name#_spLabel. Error: #cfcatch.message# #cfcatch.detail#">
-				</cfcatch>
-				</cftry>
+						
+						<!--- for all other items, set the archive date to the updated date for the previous revision --->
+						<cfquery name="qContent" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
+							SELECT spId, spRevision, spUpdated 
+							FROM #ca.context.dbIdentifier(a.name,ca.context)# 
+							ORDER BY spId, spRevision DESC
+						</cfquery>
+						
+						<cfset currentId = "">
+						
+						<cfloop query="qContent">
+						
+							<cfif currentId neq spId>
+							
+								<!--- note: don't update the latest revision --->
+								
+								<cfset currentId = spId>
+								
+								<cfset previousRevisionUpdated = spUpdated>
+								
+							<cfelse>
+								
+								<cfquery name="qUpdate" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
+									UPDATE #ca.context.dbIdentifier(a.name,ca.context)#
+									SET spArchived = #createODBCDateTime(previousRevisionUpdated)#
+									WHERE spId = '#spId#'
+										AND spRevision = #spRevision#
+								</cfquery>
+								
+								<cfset previousRevisionUpdated = spUpdated>
+							
+							</cfif>
+						
+						</cfloop>
+	
+	
+					</cfif>
+					
+				</cftransaction>
+				
+				
 			</cfif>
 			<!--- ############# end temp code ############# --->		
 			
@@ -440,7 +476,7 @@ Attributes:
 					
 						<cfset sequenceId = sequenceId + 1>
 						<cfquery name="qUpdate" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
-								UPDATE #ca.context.dbIdentifier(a.name,ca.context)# SET spSequenceId = #sequenceId# WHERE spId = '#spId#'
+							UPDATE #ca.context.dbIdentifier(a.name,ca.context)# SET spSequenceId = #sequenceId# WHERE spId = '#spId#'
 						</cfquery>
 						
 					</cfloop>
