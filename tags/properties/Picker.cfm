@@ -370,7 +370,7 @@ Licensed under the Academic Free License version 2.1
 
 		<cfif len(trim(value))>
 			
-			<cfoutput><table cellspacing="1" border="0" cellpadding="0" width="100%" style="margin:3px"></cfoutput>
+			<cfoutput><table cellspacing="1" border="0" cellpadding="3" width="100%" style="margin:3px"></cfoutput>
 					
 			<cfset editCaptionString = request.speck.buildString("T_DEFAULT_PICKER_EDIT_CAPTION",stType.caption)>
 			<cfset removeCaptionString = request.speck.buildString("T_DEFAULT_PICKER_REMOVE_CAPTION",stType.caption)>
@@ -387,7 +387,7 @@ Licensed under the Academic Free License version 2.1
 					
 				<cfoutput>
 				<tr <cfif currentRow mod 2 eq 1>class="alternateRow"</cfif>>
-				<td width="30" valign="top" nowrap style="padding:0 5px;vertical-align:middle;">
+				<td width="30" valign="top" nowrap style="vertical-align:middle;">
 				</cfoutput>
 				
 				<cfif stPD.showEdit>
@@ -449,7 +449,7 @@ Licensed under the Academic Free License version 2.1
 					<!--- allow picked items to be sorted --->
 
 					<cfoutput>
-					<td valign="top" nowrap align="center" style="padding:0 5px;vertical-align:middle;">
+					<td valign="top" nowrap align="center" style="vertical-align:middle;">
 					<a href="javascript:picker_moveTop_#stPD.name#('#qContent.spId#')" title="#request.speck.buildString("T_DEFAULT_PICKER_MOVE_TOP_CAPTION")#"><img style="vertical-align:middle;" src="/speck/properties/picker/picker_top.gif" width="9" height="9" border="0"></a>
 					<a href="javascript:picker_moveUp_#stPD.name#('#qContent.spId#')" title="#request.speck.buildString("T_DEFAULT_PICKER_MOVE_UP_CAPTION")#"><img style="vertical-align:middle;" src="/speck/properties/picker/picker_up.gif" width="9" height="9" border="0"></a>
 					<a href="javascript:picker_moveDown_#stPD.name#('#qContent.spId#')" title="#request.speck.buildString("T_DEFAULT_PICKER_MOVE_DOWN_CAPTION")#"><img style="vertical-align:middle;" src="/speck/properties/picker/picker_down.gif" width="9" height="9" border="0"></a>

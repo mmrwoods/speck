@@ -41,13 +41,17 @@ once defined (probably with some additional cf_spType attributes).
 
 </cfif>
 
-<cfif not lsIsDate(attributes.date)>
-
-	<cf_spError error="ATTR_INV" lParams="#attributes.date#,date"> <!--- Invalid attribute --->
-	
-<cfelse>
+<cfif lsIsDate(attributes.date)>
 
 	<cfset ts = lsParseDateTime(attributes.date)>
+
+<cfelseif isDate(attributes.date)>
+
+	<cfset ts = parseDateTime(attributes.date)>
+
+<cfelse>
+
+	<cf_spError error="ATTR_INV" lParams="#attributes.date#,date"> <!--- Invalid attribute ---> 
 
 </cfif>
 
