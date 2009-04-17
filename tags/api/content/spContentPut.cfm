@@ -670,7 +670,8 @@ Attributes:
 		<!--- New record --->
 		<cfquery name="qInsert" datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
 		
-			INSERT INTO #stType.name# (<cfif lSaveToDatabase neq "">#lSaveToDatabase#,</cfif>spLabel,spLabelIndex,spSequenceId,spCreated,spCreatedBy,spUpdated,spUpdatedBy,spKeywords,spId,spRevision) VALUES (
+			INSERT INTO #stType.name# (<cfif lSaveToDatabase neq "">#lSaveToDatabase#,</cfif>spLabel,spLabelIndex,spSequenceId,spCreated,spCreatedBy,spUpdated,spUpdatedBy,spKeywords,spId,spRevision,spLevel) 
+			VALUES (
 			
 			<cfset counter = 0>
 			<cfloop list=#lSaveToDatabase# index="propertyName">
@@ -713,7 +714,9 @@ Attributes:
 			<!--- '#listSort(qContent.spKeywords[item], "textnocase")#', --->
 			<cfif len(trim(thisKeywords))>'#listSort(preserveSingleQuotes(thisKeywords), "textnocase")#'<cfelse>NULL</cfif>,
 			'#qContent.spId[item]#',
-			#qContent.spRevision[item]#)
+			#qContent.spRevision[item]#,
+			<cfif bPromotion>1<cfelse>3</cfif>
+			)
 
 		</cfquery>
 
