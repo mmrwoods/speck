@@ -98,13 +98,54 @@ Licensed under the Academic Free License version 2.1
 		
 		<!--- Render current selection --->
 		
+		<!--- monitor form for changes and only request confirmation to submit the form after adding/editing/moving an item if the form has been modified --->
+		<cfscript>
+			bHtmlEditorFound = false;
+			for ( i=1; i lte arrayLen(stType.props); i = i+1 ) {
+				prop = stType.props[i];
+				if ( prop.type eq "Html" and structKeyExists(prop,"richEdit") and prop.richEdit ) {
+					bHtmlEditorFound = true;
+				}	
+			}
+		</cfscript>
+		<cfif bHtmlEditorFound>
+			
+			<!--- can't easily observe fck editor instances, so assume form has been modified --->
+			<cfoutput>
+			<script type="text/javascript">
+			var formModified_#stPD.name# = true;
+			</script>
+			</cfoutput>
+			
+		<cfelse>
+		
+			<cfoutput>
+			<script type="text/javascript">
+				if ( window.onload ) 
+					otherOnLoad_#stPD.name# = window.onload;
+				else 
+					otherOnLoad_#stPD.name# = new Function;
+					
+				var formModified_#stPD.name# = false;
+				
+				window.onload = function() {
+					new Form.Observer('speditform', 0.3, function(form, value) {
+						formModified_#stPD.name# = true;
+					});
+				};
+			</script>
+			</cfoutput>
+		
+		</cfif>
+		
 		<cfoutput>
-		<script>
+		<script type="text/javascript">
 			function submitForm_#stPD.name#() {
 				if ( document.speditform.onsubmit ) {
 					document.speditform.onsubmit();
 				}
 				document.speditform.action = document.location.href;
+				$('saving').style.visibility='visible';
 				document.speditform.submit();
 			}
 			
@@ -139,7 +180,7 @@ Licensed under the Academic Free License version 2.1
 				} catch(e) { 
 					// do nothing 
 				}
-				if ( confirm(#request.speck.buildString("A_PICKER_EDIT_UPDATE_CONFIRM","#stType.caption#")#) ) {
+				if ( !formModified_#stPD.name# || confirm(#request.speck.buildString("A_PICKER_EDIT_UPDATE_CONFIRM","#stType.caption#")#) ) {
 					submitForm_#stPD.name#();
 				}
 				pickerpopup_#stPD.name#.close();
@@ -151,7 +192,7 @@ Licensed under the Academic Free License version 2.1
 				} catch(e) { 
 					// do nothing 
 				}
-				if ( confirm(#request.speck.buildString("A_PICKER_ADD_CONFIRM","#stType.caption#,#stPD.caption#")#) ) {
+				if ( !formModified_#stPD.name# || confirm(#request.speck.buildString("A_PICKER_ADD_CONFIRM","#stType.caption#,#stPD.caption#")#) ) {
 					<cfif stPD.append>
 						document.speditform.#stPD.name#.value = <cfif stPD.maxSelect gt 1>document.speditform.#stPD.name#.value + "," + </cfif>ids;
 					<cfelse>
@@ -163,7 +204,7 @@ Licensed under the Academic Free License version 2.1
 			}
 			
 			function picker_move_confirm_#stPD.name#() {
-				return confirm(#request.speck.buildString("A_PICKER_MOVE_CONFIRM","#stType.caption#")#);
+				return ( !formModified_#stPD.name# || confirm(#request.speck.buildString("A_PICKER_MOVE_CONFIRM","#stType.caption#")#) );
 			}
 			
 			function picker_moveUp_#stPD.name#(id) {
@@ -226,7 +267,7 @@ Licensed under the Academic Free License version 2.1
 					document.speditform.#stPD.name#.value = idRemovedValue + "," + id;
 					submitForm_#stPD.name#();
 				}
-			}		
+			}
 		</script>
 		</cfoutput>
 		
