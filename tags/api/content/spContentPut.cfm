@@ -719,16 +719,41 @@ Attributes:
 			)
 
 		</cfquery>
-
-		<!---
-		If new revision number and revision enabled and
-		-	Promotion disabled, promote the new revision to live.
-		-	Promotion enabled, promote the new revision to edit.
-		(The cf_promote tag will create a change, record the changeid and editor in spHistory and
-		call property handler promote action)
-		--->
 		
 		<cfif bRevision>
+		
+			<cfif isDefined("request.speck.historySize") and isNumeric(request.speck.historySize)>
+			
+				<cfset request.speck.historySize = int(request.speck.historySize)>
+			
+				<cfif qContent.spRevision[item] gt request.speck.historySize>
+					
+					<!--- delete revisions earlier that the cut off revision --->
+					<cfset revisionCutOff = ( qContent.spRevision[item] - request.speck.historySize ) + 1>
+					
+					<cfquery name="qDeleteOldRevisions" datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
+						DELETE FROM #stType.name# 
+						WHERE spId = '#qContent.spId[item]#' 
+							AND spRevision < #revisionCutOff#
+					</cfquery>
+					
+					<cfquery name="qCleanOldRevisionsFromHistory" datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
+						DELETE FROM spHistory
+						WHERE id = '#qContent.spId[item]#'
+							AND revision < #revisionCutOff#
+					</cfquery>
+				
+				</cfif>
+			
+			</cfif>
+		
+			<!---
+			If new revision number and revision enabled and
+			-	Promotion disabled, promote the new revision to live.
+			-	Promotion enabled, promote the new revision to edit.
+			(The cf_promote tag will create a change, record the changeid and editor in spHistory and
+			call property handler promote action)
+			--->
 		
 			<cfscript>
 				

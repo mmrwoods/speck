@@ -391,12 +391,34 @@ Attributes:
 						ALTER TABLE #ca.context.dbIdentifier(a.name,ca.context)# ADD spLevel INTEGER
 					</cfquery>
 					
-					<cfquery name="qUpdate" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
-						UPDATE #ca.context.dbIdentifier(a.name,ca.context)# SET spLevel = 3
-					</cfquery>
-					
 					<cfquery name="qCreateColumn" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
 						ALTER TABLE #ca.context.dbIdentifier(a.name,ca.context)# ADD spArchived #ca.context.database.tsDDLString#
+					</cfquery>
+					
+					<!--- drop some old indexes and create new versions with the spArchived and spLevel columns included --->
+					<cfquery name="qDropIndex" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
+						DROP INDEX #a.name#_spLabel
+					</cfquery>
+					
+					<cfquery name="qAddIndex" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
+						CREATE INDEX #a.name#_spLabel ON #ca.context.dbIdentifier(a.name,ca.context)# (spLabelIndex, spArchived, spLevel)
+					</cfquery>
+					
+					<cfquery name="qDropIndex" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
+						DROP INDEX #a.name#_spId
+					</cfquery>
+					
+					<cfquery name="qAddIndex" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
+						CREATE INDEX #a.name#_spId ON #ca.context.dbIdentifier(a.name,ca.context)# (spId, spArchived, spLevel)
+					</cfquery>
+					
+					<!--- create an index on spArchived --->
+					<cfquery name="qAddIndex" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
+						CREATE INDEX #a.name#_spArchived ON #ca.context.dbIdentifier(a.name,ca.context)# (spArchived, spLevel)
+					</cfquery>
+					
+					<cfquery name="qUpdate" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
+						UPDATE #ca.context.dbIdentifier(a.name,ca.context)# SET spLevel = 3
 					</cfquery>
 					
 					<cfquery name="qRevisionsCheck" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>

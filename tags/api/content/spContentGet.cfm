@@ -237,7 +237,10 @@ TODO: explore this idea further and see if it can be used to improve performance
 			}
 		}
 	} else if (attributes.level neq "") {
-		if (level gt 1) {
+		if ( level eq 3 and attributes.date eq "" and not attributes.showRemoved ) {
+			// we don't need to do anything fancy, just get the live revision that hasn't been archived
+			revisionWhereClause = "spArchived IS NULL AND spLevel = 3";
+		} else if (level gt 1) {
 			// Select most recent revision promoted to specified level that hasn't been removed* since promotion.
 			// At review and live levels there will always be a row in spHistory recording the promotion to or
 			// removal from that level.

@@ -398,9 +398,16 @@ I'm sure this all used to be necessary in CF5
 			<cfparam name="stApp.enableOutputCaching" type="boolean" default="yes">
 			<cfparam name="stApp.persistentOutputCache" type="boolean" default="yes">
 
-			<cfparam name="stApp.enableRevisions" type="boolean" default="no">
+			<cfparam name="stApp.enableRevisions" type="boolean" default="no">			
 			<cfparam name="stApp.enablePromotion" type="boolean" default="no">
 			<cfparam name="stApp.enableChangeControl" type="boolean" default="no">
+			
+			<!--- default history size - set to empty string for unlimited size --->
+			<!--- 
+			warning: Speck stores all revisions for a content type in the same table as the 
+			current revision, so keeping a massive history will affect database performance.
+			--->
+			<cfparam name="stApp.historySize" default="100">
 			
 			<cfparam name="stApp.manageKeywords" default="no" type="boolean">
 			<cfparam name="stApp.maxKeywordLevels" default="3">
