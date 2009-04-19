@@ -722,14 +722,41 @@ Attributes:
 		
 		<cfif bRevision>
 		
+			<!---
+			If new revision number and revision enabled and
+			-	Promotion disabled, promote the new revision to live.
+			-	Promotion enabled, promote the new revision to edit.
+			(The cf_promote tag will create a change, record the changeid and editor in spHistory and
+			call property handler promote action)
+			--->
+		
+			<cfscript>
+				
+				if (bPromotion) 
+					newLevel = "edit";
+				else
+					newLevel = "live";
+
+			</cfscript>
+			
+			<cfparam name="changeId" default="">
+			
+			<cf_spPromote
+				id = #qContent.spId[item]#
+				type = #attributes.type#
+				revision = #qContent.spRevision[item]#
+				newLevel = #newLevel#
+				editor = #attributes.user#
+				changeId = #changeId#>
+				
+			<!--- DELETE OLD REVISIONS OF THIS ITEM?? --->
 			<cfif isDefined("request.speck.historySize") and isNumeric(request.speck.historySize)>
 			
 				<cfset request.speck.historySize = int(request.speck.historySize)>
 			
 				<cfif qContent.spRevision[item] gt request.speck.historySize>
 					
-					<!--- 
-					DELETE OLD REVISIONS OF THIS ITEM
+					<!---
 					TODO: update spDelete tag so it can be used with revisioning enabled and used to 
 					delete a specific revision of a content item. Then call it from here so delete
 					handlers for the content type or any of the property types will run as expected.					
@@ -770,11 +797,12 @@ Attributes:
 								WHERE spId = '#qContent.spId[item]#' 
 									AND spRevision < #revisionCutOff#
 									AND spRevision NOT IN ( 
-										SELECT #propName# <!--- database col for asset props stores revision at which prop added --->
+										SELECT #propName# <!--- database col for asset prop stores revision at which asset was added --->
 										FROM #stType.name# 
 										WHERE spId = '#qContent.spId[item]#'
 											AND spRevision >= #revisionCutOff#
 									)
+								ORDER BY spRevison ASC
 							</cfquery>
 							
 							<cfloop query="qDeletionCandidates">
@@ -829,34 +857,7 @@ Attributes:
 				
 				</cfif>
 			
-			</cfif>
-		
-			<!---
-			If new revision number and revision enabled and
-			-	Promotion disabled, promote the new revision to live.
-			-	Promotion enabled, promote the new revision to edit.
-			(The cf_promote tag will create a change, record the changeid and editor in spHistory and
-			call property handler promote action)
-			--->
-		
-			<cfscript>
-				
-				if (bPromotion) 
-					newLevel = "edit";
-				else
-					newLevel = "live";
-
-			</cfscript>
-			
-			<cfparam name="changeId" default="">
-			
-			<cf_spPromote
-				id = #qContent.spId[item]#
-				type = #attributes.type#
-				revision = #qContent.spRevision[item]#
-				newLevel = #newLevel#
-				editor = #attributes.user#
-				changeId = #changeId#>
+			</cfif>				
 
 		<cfelse>
 		
