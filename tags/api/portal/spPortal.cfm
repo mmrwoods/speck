@@ -228,6 +228,7 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 	<cfparam name="stPortal.dbtype" default="ansicompliant">
 	<cfparam name="stPortal.htmlEditor" default="FCKeditor">
 	<cfparam name="stPortal.enableRevisions" default="no" type="boolean">
+	<cfparam name="stPortal.historySize" default="100">
 	<cfparam name="stPortal.enablePromotion" default="no" type="boolean">
 	<cfparam name="stPortal.locale" default="#getLocale()#">
 	<cfparam name="stPortal.language" default=""> <!--- spApp will automatically determine the default language from the locale, but you can override it here --->
@@ -329,6 +330,7 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 		labelRoles = #stPortal.labelRoles#
 		keywordsRoles = #stPortal.keywordsRoles#
 		enableRevisions = #stPortal.enableRevisions#
+		historySize = #stPortal.historySize#
 		enablePromotion = #stPortal.enablePromotion#
 		enableChangeControl = no
 		debug = #stPortal.debug#

@@ -515,6 +515,11 @@ Licensed under the Academic Free License version 2.1
 		
 		return html;
 	}
+	
+	// Hash used to break assets up across directories numbered 0-99
+	function assetHash(id) {
+		return lsParseNumber("0" & REReplace(left(id, 5), "[^0-9]", "", "ALL")) mod 100;
+	}
 
 	stServer.buildString = buildString;
 	stServer.getNextRow = getNextRow;
@@ -537,6 +542,7 @@ Licensed under the Academic Free License version 2.1
 	stServer.getPropertyDefinition = getPropertyDefinition;
 	stServer.forceParagraphs = forceParagraphs;
 	stServer.getDomainFromHostName = getDomainFromHostName;
+	stServer.assetHash = assetHash;
 
 </cfscript>
 

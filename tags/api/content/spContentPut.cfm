@@ -728,8 +728,92 @@ Attributes:
 			
 				<cfif qContent.spRevision[item] gt request.speck.historySize>
 					
+					<!--- 
+					DELETE OLD REVISIONS OF THIS ITEM
+					TODO: update spDelete tag so it can be used with revisioning enabled and used to 
+					delete a specific revision of a content item. Then call it from here so delete
+					handlers for the content type or any of the property types will run as expected.					
+					--->
+					
 					<!--- delete revisions earlier that the cut off revision --->
 					<cfset revisionCutOff = ( qContent.spRevision[item] - request.speck.historySize ) + 1>
+					
+					<!--- 
+					Note RE deleting old assets...
+					Assets are versioned separately to the properties stored in the database, so a new revision 
+					of a content item with an all new row in the database might refer to an asset added as part 
+					of an earlier revision. We only delete the files added with the revisions we're deleting, that
+					are not being used in later revisions that we're not deleting. Damn, this is complicated.
+					--->
+					
+					<cfscript>
+						// get a list of asset properties
+						lAssetProps = "";
+						for(i=1; i le arrayLen(stType.props); i = i + 1) {
+							if ( stType.props[i].type eq "Asset" ) {
+								lAssetProps = listAppend(lAssetProps,stType.props[i].name);
+							}
+						}
+					</cfscript>
+					
+					<cfset idHash = request.speck.assetHash(qContent.spId[item])>
+					
+					<cfset fs = request.speck.fs>
+					
+					<cfif listLen(lAssetProps)>
+					
+						<cfloop list="#lAssetProps#" index="propName">
+						
+							<cfquery name="qDeletionCandidates" datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
+								SELECT spId, spRevision 
+								FROM #stType.name# 
+								WHERE spId = '#qContent.spId[item]#' 
+									AND spRevision < #revisionCutOff#
+									AND spRevision NOT IN ( 
+										SELECT #propName# <!--- database col for asset props stores revision at which prop added --->
+										FROM #stType.name# 
+										WHERE spId = '#qContent.spId[item]#'
+											AND spRevision >= #revisionCutOff#
+									)
+							</cfquery>
+							
+							<cfloop query="qDeletionCandidates">
+							
+								<cfset secureAssetDir = request.speck.appInstallRoot & fs & "secureassets" & fs & idHash & fs & spId & "_" & spRevision & "_" & propName & fs>
+								<cfif directoryExists(secureAssetDir)>
+								
+									<cftry>
+									
+										<!--- delete contents of directory and then directory itself --->
+										<cfdirectory action="list" directory="#secureAssetDir#" sort="type desc" name="qFilesToDelete">
+				
+										<cfloop query="qFilesToDelete">
+										
+											<cfif type eq "file">
+											
+												<cffile action="delete" file="#secureAssetDir##name#">
+											
+											</cfif>
+										
+										</cfloop>
+										
+										<cfdirectory action="delete" directory="#secureAssetDir#">
+									
+									<cfcatch>
+										
+										<!--- TODO: log error, a permissions issue here should not stop the contentPut process from completing successfully --->
+										<cfrethrow>
+										
+									</cfcatch>
+									</cftry>
+								
+								</cfif>
+							
+							</cfloop>
+						
+						</cfloop>
+					
+					</cfif>
 					
 					<cfquery name="qDeleteOldRevisions" datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
 						DELETE FROM #stType.name# 

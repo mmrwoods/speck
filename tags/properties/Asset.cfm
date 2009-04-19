@@ -8,11 +8,13 @@ Licensed under the Academic Free License version 2.1
 --->
 
 <cfscript>
-	// Hash used to break assets up across directories numbered 0-99
-	function assetHash(id) {
-		return lsParseNumber("0" & REReplace(left(id, 5), "[^0-9]", "", "ALL")) mod 100;
+	// asset hash function has been moved to spFunctions
+	if ( structKeyExists(request,"speck") ) {
+		assetHash = request.speck.assetHash;
+	} else {
+		assetHash = caller.caller.attributes.context.assetHash;
 	}
-	
+
 	function imageWriteBugWorkaround(image,destination) {
 		
 		// workaround for bug with imageWrite function in CF 8.01
