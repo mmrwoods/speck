@@ -22,18 +22,23 @@
 .spClearfix { display: block; }
 
 /* block surrounding each content item */
-.spContentAdmin {border:0;padding:0;margin:0;}
+.spContentAdmin {border:0;}
 .spContentAdmin.spContentHighlight {
 	border: 1px #484 solid;
 	background: #efe;
+	opacity: .80;
+	filter: alpha(opacity=80); 
+	-moz-opacity: 0.8;	
 }
 .spContentAdmin.spContentWarning {
 	border: 1px #CC0000 solid;
 	background: #fee;
+	opacity: .80;
+	filter: alpha(opacity=80); 
+	-moz-opacity: 0.8;	
 }
 /* span around admin links */
 .spAdminLinks {
-	padding:0;margin:0;
 	font:10px Verdana, Arial, Helvetica, sans-serif;
 }
 /* admin links */

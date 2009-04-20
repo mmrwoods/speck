@@ -32,27 +32,7 @@ Licensed under the Academic Free License version 2.1
 <cfparam name="attributes.date" default=#request.speck.session.viewDate#>
 <cfparam name="attributes.level" default=#request.speck.session.viewLevel#>
 <cfparam name="attributes.editor" default=#request.speck.session.user#>
-<!---
-Default revision attribute according to application's enablePromotion and enableRevisions settings
-Note: if revisioning enabled, but promotion disabled, we still need to retrieve content items based 
-on a level to avoid retrieving removed items, i.e. content items with revision 0 promoted to live. 
-Retrieving content based on a promotion level and filtering out removed items currently results in 
-a pretty nasty revision where clause.
-Note 2: performance hack added to revisionWhereClause - if revisioning enabled, but promotion 
-disabled, we now get the tip revision where the content item has never been removed. This breaks 
-the recording of a complete history for a content item. The only way to restore a deleted content 
-item while this hack is in place is to removed its deleted revision from the history table, but it 
-avoids that really, really nasty correlated subquery and makes a huge difference to query 
-performance when revisioning is enabled but promotion disabled (up to 100x faster - honest). 
-TODO: overhaul promotion model to improve performance when promotion enabled and maintain improved 
-performance achieved by note2, but without breaking the nice content history feature of Speck.
-Note3: performance hack, eh, hacked. Added AND ts >= content.spUpdated to condition to check if an 
-item has been removed. Although I haven't tested it, this should in theory allow a content item to 
-be removed and then a new revision to be created with a later updated date than the date of the 
-removal and the content item will re-appear, while still recording a complete history, including 
-a temporary removal. This code relies on the fact that promotion happens after content is put.
-TODO: explore this idea further and see if it can be used to improve performance with promotion on.
---->
+<!--- Default revision attribute according to application's enablePromotion and enableRevisions settings --->
 <cfif request.speck.enablePromotion or len(attributes.date)>
 	<cfparam name="attributes.revision" default="">
 <cfelse>

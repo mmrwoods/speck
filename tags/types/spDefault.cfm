@@ -57,6 +57,7 @@ Licensed under the Academic Free License version 2.1
 		
 		<cfscript>
 			lFormErrors = ""; // List of errors on submitted form
+			lErrorFields = ""; // list of fields containing errors
 			stNewContent = structNew(); // Submitted values
 			
 			bSuper = request.speck.userHasPermission("spSuper"); 
@@ -212,7 +213,14 @@ Licensed under the Academic Free License version 2.1
 							newValue=#stNewContent[stPD.name]#
 							r_lErrors ="lPropertyErrors">
 							
-						<cfset lFormErrors = listAppend(lFormErrors, lPropertyErrors)>
+						<cfif len(lPropertyErrors)>
+							
+							<cfset lFormErrors = listAppend(lFormErrors, lPropertyErrors)>
+							<cfset lErrorFields = listAppend(lErrorFields, stPD.name)>
+						
+						</cfif>
+							
+						
 						
 					<!--- <cfcatch>
 					
@@ -495,8 +503,11 @@ Licensed under the Academic Free License version 2.1
 		<cfif lFormErrors neq "">
 		
 			<!--- List the errors at the top of the form --->
-			
-			<cfoutput><p class="notsaved">#stStrings.notSaved#:</p><ul class="notsaved"></cfoutput>
+			<cfoutput>
+			<div id="errorExplanation" class="errorExplanation">
+			<p>#stStrings.notSaved#:</p>
+			<ul>
+			</cfoutput>
 			
 			<cfloop list=#lFormErrors# index="error">
 			
@@ -504,7 +515,10 @@ Licensed under the Academic Free License version 2.1
 				
 			</cfloop>
 			
-			<cfoutput></ul></cfoutput>
+			<cfoutput>
+			</ul>
+			</div>
+			</cfoutput>
 			
 		</cfif>	
 		
@@ -545,7 +559,7 @@ Licensed under the Academic Free License version 2.1
 						
 					<cfoutput>
 					<tr <cfif len(stPD.class)>class="#stPD.class#"</cfif> <cfif len(stPD.style)>style="#stPD.style#"</cfif>>
-					<td style="padding-top:5px;" <cfif not request.speck.bFieldsetOpen>width="60"</cfif>></cfoutput>
+					<td style="padding-top:5px;" <cfif listFindNoCase(lErrorFields,stPD.name)>class="fieldWithErrors"</cfif> <cfif not request.speck.bFieldsetOpen>width="60"</cfif>></cfoutput>
 					
 					<cfif stPD.required><cfoutput><span class="required">*</span></cfoutput></cfif>
 					

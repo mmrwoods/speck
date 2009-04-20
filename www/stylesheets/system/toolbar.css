@@ -40,13 +40,13 @@ a.spToolbar:hover {
 	font: 10px Verdana, Arial, Helvetica, sans-serif;
 	color: white;
 	text-decoration: none; 
-	background-color: green;
+	background-color: #484;
 }
 a.spRefreshApp:hover { 
 	font: 10px Verdana, Arial, Helvetica, sans-serif;
 	color: white;
 	text-decoration: none; 
-	background-color: red;
+	background-color: #CC0000;
 }
 input.spToolbar, select.spToolbar {
 	font: 10px Verdana, Arial, Helvetica, sans-serif;
@@ -67,7 +67,7 @@ a.spViewDate { background: url(/speck/images/icons/silk/calendar.png) no-repeat;
 	font-weight: bold;
 	color: white;
 	text-decoration: none; 
-	background-color: green;
+	background-color: #484;
 	padding:3px;
 }
 

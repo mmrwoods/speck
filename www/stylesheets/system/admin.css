@@ -2,10 +2,18 @@
 	visibility : hidden;
 }
 .required {
-	color: red;
+	color: #CC0000;
 }
-.notsaved {
-	color: red;
+#errorExplanation {
+	color: #CC0000;
+	border: 1px #CC0000 solid;
+	background: #fee;
+	padding: 10px;
+	margin-bottom: 1em;
+}
+#errorExplanation p, #errorExplanation ul li {color: #CC0000;}
+.fieldWithErrors {
+	color:#CC0000;
 }
 .alternateRow {
 	background: #f7f7f7;
@@ -28,7 +36,7 @@
 	font-weight: bold;
 	color: white;
 	text-decoration: none; 
-	background-color: green;
+	background-color: #484;
 	padding:2px;
 }
 body {
