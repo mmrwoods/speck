@@ -107,7 +107,7 @@ Licensed under the Academic Free License version 2.1
 	
 	
 	<cf_spHandler method="thumbnail">
-	
+		
 		<cfparam name="attributes.showCaption" default="yes">
 		<cfparam name="attributes.popup" default="yes">
 		<cfparam name="attributes.gallery" default="yes">
@@ -167,10 +167,10 @@ Licensed under the Academic Free License version 2.1
 				}
 				
 				if ( attributes.popup ) {
-					if ( attributes.gallery and caller.caller.attributes.qContent.recordCount gt 1 ) { 
+					if ( attributes.gallery and attributes.qContent.recordCount gt 1 ) { 
 						// get a list of ids to pass to the gallery script
 						// note: caller.content is the entire content query for the current spContent call
-						ids = valueList(caller.caller.attributes.qContent.spId);
+						ids = valueList(attributes.qContent.spId);
 						onclick = "image_gallery_popup('#ids#','#content.spRowNumber#');return false;";
 					} else {
 						// simple popup window, no gallery

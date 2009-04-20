@@ -176,7 +176,9 @@ Attributes:
 		
 			<cfoutput><table class="spHandler" summary="for layout purposes only"><tr class="spHandlerRow1"><td class="spHandlerColumn1"></cfoutput>
 			
-		<cfelseif bRenderAdminLinks>
+		</cfif>
+		
+		<cfif bRenderAdminLinks>
 		
 			<!--- always wrap content in an admin span that we can use to hightlight the item(s) to be edited etc. --->
 			<cfoutput><span style="display:block;" class="spContentAdmin spClearfix"></cfoutput>
@@ -237,7 +239,7 @@ Attributes:
 		<!--- If more than one column, set up next table data or row --->
 		<cfif caller.attributes.columns gt 1>
 		
-			<cfset columnNumber = columnNumber + 1>
+			<cfset columnNumber = columnNumber + 1>		
 		
 			<cfoutput></td></cfoutput>
 			
@@ -257,15 +259,15 @@ Attributes:
 		
 			<!--- insert separator --->
 			<cfoutput>#caller.attributes.separator#</cfoutput>
-			
-			<cfif bRenderAdminLinks>
-			
-				<!--- close admin span and open new one if admin links are on --->
-				<cfoutput></span></cfoutput>
-				<cfoutput><span style="display:block;" class="spContentAdmin spClearfix"></cfoutput>			
-
-			</cfif>
 		
+		</cfif>
+		
+		<cfif bRenderAdminLinks>
+		
+			<!--- close admin span and open new one if admin links are on --->
+			<cfoutput></span></cfoutput>
+			<cfoutput><span style="display:block;" class="spContentAdmin spClearfix"></cfoutput>			
+
 		</cfif>
 		
 		<!--- show admin buttons if enabled --->
@@ -280,13 +282,20 @@ Attributes:
 		
 	<cfelse>
 	
+		<cfif bRenderAdminLinks>
+		
+			<!--- close the admin span --->
+			<cfoutput></span></cfoutput>
+		
+		</cfif>	
+	
 		<!--- If more than one column, close off table data and last row --->
-		<cfif caller.attributes.columns gt 1>
+		<cfif caller.attributes.columns gt 1>	
 		
 			<!--- close current table data --->
 			<cfoutput></td></cfoutput>
 			
-			<cfset remainder = caller.attributes.endRow mod caller.attributes.columns>
+			<cfset remainder = caller.attributes.columns mod caller.attributes.endRow>
 			
 			<cfif remainder neq 0>
 			
@@ -305,11 +314,6 @@ Attributes:
 			<!--- End of row and table --->
 			<cfoutput></tr></table></cfoutput>
 			
-		<cfelseif bRenderAdminLinks>
-		
-			<!--- close the admin span --->
-			<cfoutput></span></cfoutput>
-		
 		</cfif>
 		
 		<cfexit>

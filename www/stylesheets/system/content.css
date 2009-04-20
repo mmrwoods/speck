@@ -22,15 +22,18 @@
 .spClearfix { display: block; }
 
 /* block surrounding each content item */
-.spContentAdmin {border:0;}
+.spContentAdmin {border:0;padding:0;margin:0;}
 .spContentAdmin.spContentHighlight {
-	border:1px solid green;
+	border: 1px #484 solid;
+	background: #efe;
 }
 .spContentAdmin.spContentWarning {
-	border:1px solid red;
+	border: 1px #CC0000 solid;
+	background: #fee;
 }
 /* span around admin links */
 .spAdminLinks {
+	padding:0;margin:0;
 	font:10px Verdana, Arial, Helvetica, sans-serif;
 }
 /* admin links */
@@ -41,13 +44,13 @@ a.spAdminLink {
 }
 a.spAdminLink:hover {
 	font:10px Verdana, Arial, Helvetica, sans-serif;
-	background-color:green;
+	background-color:#484;
 	color:white;
 	text-decoration:none;
 }
 a.spAdminLink.spAdminWarning:hover {
 	font:10px Verdana, Arial, Helvetica, sans-serif;
-	background-color:red;
+	background-color:#CC0000;
 	color:white;
 	text-decoration:none;
 }

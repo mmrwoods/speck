@@ -41,7 +41,29 @@ once defined (probably with some additional cf_spType attributes).
 
 </cfif>
 
-<cfif lsIsDate(attributes.date)>
+<!--- 
+CF's date parsing functions seem horribly inconsistent...
+isDate(timestamp string) = true
+lsIsDate(timestamp string) = true
+parseDateTime(timestamp string) works fine
+lsParseDateTime(timestamp string) throws an exception! 
+--->
+<!--- TODO: make me a function, stick me into spFunctions and use me wherever date strings are parsed --->
+<cfif left(attributes.date,1) eq "{">
+
+	<!--- CF/ODBC/JDBC timestamp or date string --->
+	<cfset ts = parseDateTime(attributes.date)>
+	
+<cfelseif reFind("^[0-9]{4}-[0-9]{2}-[0-9]{2}",attributes.date)>
+
+	<!--- iso date or date time string, parse without time zone... --->
+	<cfif len(attributes.date) gt 19>
+		<cfset attributes.date = left(attributes.date,19)>
+	</cfif>
+	
+	<cfset ts = parseDateTime(replaceList(attributes.date,"T,t"," , "))>>
+	
+<cfelseif lsIsDate(attributes.date)>
 
 	<cfset ts = lsParseDateTime(attributes.date)>
 
