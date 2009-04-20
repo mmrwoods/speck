@@ -563,7 +563,7 @@ Licensed under the Academic Free License version 2.1
 					
 					<cfif stPD.required><cfoutput><span class="required">*</span></cfoutput></cfif>
 					
-					<cfoutput>#stPD.caption#</cfoutput>
+					<cfoutput><label>#stPD.caption#</label></cfoutput>
 					
 					<cfif isDefined("stPD.hint") and len(stPD.hint)>
 					

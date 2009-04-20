@@ -26,8 +26,9 @@ Licensed under the Academic Free License version 2.1
 <cfscript>	
 	// function to add form errors to the actionErrors array
 	function actionError(str) {
-		if ( not isDefined("actionErrors") ) 
+		if ( not isDefined("actionErrors") ) {
 			actionErrors = arrayNew(1); // note: do not declare actionErrors with var, we actually want this in local/variables scope
+		}
 		arrayAppend(actionErrors,str);
 	}	
 	

@@ -10,10 +10,11 @@ Licensed under the Academic Free License version 2.1
 <cfif isDefined("actionErrors") and arrayLen(actionErrors)>
 
 	<cfoutput>
-	<p class="notsaved">
+	<div id="errorExplanation" class="errorExplanation">
+	<p>
 	Sorry, the action could not be completed due to the following issues...
 	</p>
-	<ul class="notsaved">
+	<ul>
 	</cfoutput>
 	
 	<cfloop from="1" to="#arrayLen(actionErrors)#" index="i">
@@ -24,7 +25,7 @@ Licensed under the Academic Free License version 2.1
 	
 	<cfoutput>
 	</ul>
-	</span>
+	</div>
 	</cfoutput>
 
 </cfif>
