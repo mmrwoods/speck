@@ -802,7 +802,7 @@ Attributes:
 										WHERE spId = '#qContent.spId[item]#'
 											AND spRevision >= #revisionCutOff#
 									)
-								ORDER BY spRevison ASC
+								ORDER BY spRevision ASC
 							</cfquery>
 							
 							<cfloop query="qDeletionCandidates">
