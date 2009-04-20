@@ -299,10 +299,8 @@ Attributes:
 		<cftry>
 		
 			<cfquery name="qTableCheck" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
-			
 				SELECT * FROM #ca.context.dbIdentifier(a.name,ca.context)#
 				WHERE spId='noSuchId'
-			
 			</cfquery>
 		
 		<cfcatch type="Any">
@@ -325,7 +323,6 @@ Attributes:
 			<cf_spError logOnly="true" error="NO_TYPE_TABLE" lParams=#a.name# context=#ca.context#>
 			
 			<cfquery name="qCreateTable" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
-			
 				CREATE TABLE #ca.context.dbIdentifier(a.name,ca.context)# (
 					spId CHAR (35) NOT NULL ,
 					spSequenceId INTEGER NOT NULL ,
@@ -339,7 +336,6 @@ Attributes:
 					spKeywords #ca.context.textDDLString(ca.context.database.maxIndexKeyLength,ca.context)# ,
 					PRIMARY KEY (spId,spRevision)
 				)
-				
 			</cfquery>
 			
 			<cfquery name="qInsert" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
@@ -349,34 +345,34 @@ Attributes:
 			<cftry>
 			
 				<cfquery name="qAddIndex" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
-				
 					CREATE INDEX #a.name#_spLabel
 					ON #ca.context.dbIdentifier(a.name,ca.context)# (spLabelIndex)
-					
 				</cfquery>
 			
 			<cfcatch type="Database">
+				
 				<cflog type="warning" 
 					file="#ca.context.appName#" 
 					application="no"
 					text="CF_SPTYPE: Could not create database index #a.name#_spLabel. Error: #cfcatch.message# #cfcatch.detail#">
+					
 			</cfcatch>
 			</cftry>
 			
 			<cftry>
 			
 				<cfquery name="qAddIndex" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
-				
 					CREATE INDEX #a.name#_spKeywords
 					ON #ca.context.dbIdentifier(a.name,ca.context)# (spKeywords)
-					
 				</cfquery>
 			
 			<cfcatch type="Database">
+				
 				<cflog type="warning" 
 					file="#ca.context.appName#" 
 					application="no"
 					text="CF_SPTYPE: Could not create database index #a.name#_spKeywords. Error: #cfcatch.message# #cfcatch.detail#">
+					
 			</cfcatch>
 			</cftry>			
 			
@@ -395,24 +391,7 @@ Attributes:
 						ALTER TABLE #ca.context.dbIdentifier(a.name,ca.context)# ADD spArchived #ca.context.database.tsDDLString#
 					</cfquery>
 					
-					<!--- drop some old indexes and create new versions with the spArchived and spLevel columns included --->
-					<cfquery name="qDropIndex" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
-						DROP INDEX #a.name#_spLabel
-					</cfquery>
-					
-					<cfquery name="qAddIndex" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
-						CREATE INDEX #a.name#_spLabel ON #ca.context.dbIdentifier(a.name,ca.context)# (spLabelIndex, spArchived, spLevel)
-					</cfquery>
-					
-					<cfquery name="qDropIndex" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
-						DROP INDEX #a.name#_spId
-					</cfquery>
-					
-					<cfquery name="qAddIndex" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
-						CREATE INDEX #a.name#_spId ON #ca.context.dbIdentifier(a.name,ca.context)# (spId, spArchived, spLevel)
-					</cfquery>
-					
-					<!--- create an index on spArchived --->
+					<!--- create an index for the new columns --->
 					<cfquery name="qAddIndex" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
 						CREATE INDEX #a.name#_spArchived ON #ca.context.dbIdentifier(a.name,ca.context)# (spArchived, spLevel)
 					</cfquery>
@@ -473,6 +452,46 @@ Attributes:
 					
 				</cftransaction>
 				
+				<!--- drop some old indexes and create new versions with the spArchived and spLevel columns included --->
+				<cftry>
+				
+					<cfquery name="qDropIndex" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
+						DROP INDEX #a.name#_spLabel
+					</cfquery>
+					
+					<cfquery name="qAddIndex" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
+						CREATE INDEX #a.name#_spLabel ON #ca.context.dbIdentifier(a.name,ca.context)# (spLabelIndex, spArchived, spLevel)
+					</cfquery>
+					
+				<cfcatch type="Database">
+					
+					<cflog type="warning" 
+						file="#ca.context.appName#" 
+						application="no"
+						text="CF_SPTYPE: Could not create database index #a.name#_spLabel. Error: #cfcatch.message# #cfcatch.detail#">
+						
+				</cfcatch>
+				</cftry>
+				
+				<cftry>
+				
+					<cfquery name="qDropIndex" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
+						DROP INDEX #a.name#_spId
+					</cfquery>
+					
+					<cfquery name="qAddIndex" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
+						CREATE INDEX #a.name#_spId ON #ca.context.dbIdentifier(a.name,ca.context)# (spId, spArchived, spLevel)
+					</cfquery>
+				
+				<cfcatch type="Database">
+					
+					<cflog type="warning" 
+						file="#ca.context.appName#" 
+						application="no"
+						text="CF_SPTYPE: Could not drop and recreate database index #a.name#_spId. Error: #cfcatch.message# #cfcatch.detail#">
+						
+				</cfcatch>
+				</cftry>
 				
 			</cfif>
 			<!--- ############# end temp code ############# --->		

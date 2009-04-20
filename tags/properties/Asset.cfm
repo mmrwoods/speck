@@ -9,7 +9,7 @@ Licensed under the Academic Free License version 2.1
 
 <cfscript>
 	// asset hash function has been moved to spFunctions
-	if ( structKeyExists(request,"speck") ) {
+	if ( isDefined("request.speck.assetHash") ) {
 		assetHash = request.speck.assetHash;
 	} else {
 		assetHash = caller.caller.attributes.context.assetHash;
