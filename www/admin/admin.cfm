@@ -36,9 +36,9 @@ Licensed under the Academic Free License version 2.1
 		
 	</cfif>
 	
-	<cfif listfind("add,edit,delete,promote,demote,rollback,history", url.action) eq 0>
+	<cfif listfind("add,edit,delete,promote,demote,history", url.action) eq 0>
 	
-		<cfthrow message="Action '#url.action#' must be one of add, edit, delete, promote, demote, rollback or history">
+		<cfthrow message="Action '#url.action#' must be one of add, edit, delete, promote, demote or history">
 		
 	</cfif>
 	
@@ -141,7 +141,6 @@ Licensed under the Academic Free License version 2.1
 			// both spEdit and spLive are required to edit content with promotioning disabled (content is immediately promoted to live when edited)
 			bLiveAccess = true;
 		}
-		
 		if (bEditAccess) {
 			request.speck.session.roles['spEdit'] = "";
 		}
@@ -480,8 +479,16 @@ Licensed under the Academic Free License version 2.1
 			r_revision="revision">
 			
 		<cfif request.speck.session.viewLevel eq "edit">
-		
-			<cfset newLevel = "review">
+			
+			<cfif bLiveAccess>
+			
+				<cfset newLevel = "live">
+			
+			<cfelse>
+			
+				<cfset newLevel = "review">
+				
+			</cfif>
 		
 		<cfelseif request.speck.session.viewLevel eq "review">
 		

@@ -26,17 +26,17 @@ form.spLogout {text-align:right;}
 a.spToolbar, span.spToolbar {
 	margin-right:5px;
 }
-a.spToolbar:link {
+td.spToolbar a:link {
 	font: 10px Verdana, Arial, Helvetica, sans-serif;
 	color: #0000FF;
 	text-decoration: underline;
 }
-a.spToolbar:visited {
+td.spToolbar a:visited {
 	font: 10px Verdana, Arial, Helvetica, sans-serif; 
 	color: #0000FF;
 	text-decoration: underline;
 }
-a.spToolbar:hover { 
+td.spToolbar a:hover { 
 	font: 10px Verdana, Arial, Helvetica, sans-serif;
 	color: white;
 	text-decoration: none; 

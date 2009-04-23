@@ -140,8 +140,8 @@ Renders toolbar allowing editors and reviewers (i.e. spEdit or spReview permissi
 			}
 		}
 		
-		function spSetViewLevel() {
-			var viewLevel = document.spToolbar.spViewLevel.options[document.spToolbar.spViewLevel.selectedIndex].value;
+		function spSetViewLevel(viewLevel) {
+			//var viewLevel = document.spToolbar.spViewLevel.options[document.spToolbar.spViewLevel.selectedIndex].value;
 			spSendRequest("/speck/admin/session/set_view_level.cfm?app=#request.speck.appName#&viewLevel=" + escape(viewLevel));
 		}
 		//]]>
@@ -170,6 +170,43 @@ Renders toolbar allowing editors and reviewers (i.e. spEdit or spReview permissi
 		
 		<cfoutput>
 		<span class="spToolbar spViewLevel">
+		#stStrings.viewLevel# 
+		</cfoutput>
+		
+		<cfloop list=#lLevels# index="level">
+		
+			<cfset levelCaption = request.speck.buildString("A_PROMOLEVEL_" & Ucase(level))>
+			<cfif find("A_PROMOLEVEL_" & Ucase(level),levelCaption)>
+				<cfset levelCaption = level>
+			</cfif>
+			
+			<cfif level eq request.speck.session.viewLevel>
+				
+				<cfoutput>
+				<strong>#levelCaption#</strong>
+				</cfoutput>
+			
+			<cfelse>
+			
+				<cfoutput>
+				<a href="javascript:return false;" onclick="spSetViewLevel('#lCase(level)#');return false;">#levelCaption#</a>
+				</cfoutput>
+				
+			</cfif>
+		
+			<!--- <cfoutput>
+			<input type="radio" name="spViewLevel" onchange="spSetViewLevel();" class="spToolbar" value="#lCase(level)#" <cfif level eq request.speck.session.viewLevel>checked="checked"</cfif>>
+			#levelCaption#
+			</cfoutput> --->
+		
+		</cfloop>
+		
+		<cfoutput>
+		</span>
+		</cfoutput>
+		
+		<!--- <cfoutput>
+		<span class="spToolbar spViewLevel">
 		#stStrings.viewLevel# <select class="spToolbar" name="spViewLevel" onchange="spSetViewLevel();"></cfoutput>
 		
 		<cfloop list=#lLevels# index="level">
@@ -186,7 +223,7 @@ Renders toolbar allowing editors and reviewers (i.e. spEdit or spReview permissi
 		<cfoutput>
 		</select>
 		</span>
-		</cfoutput>
+		</cfoutput> --->
 		
 	</cfif>
 	
@@ -238,7 +275,7 @@ Renders toolbar allowing editors and reviewers (i.e. spEdit or spReview permissi
 			//]]>
 			//-->
 		</script>
-		#stStrings.viewDate# <input class="spToolbar" title="Click to set view date to 'Now'" onclick="this.value='';spSetViewDate();" readonly="yes" style="background:##eeeeee;" type="text" name="spViewDate" value="#viewDate#" size="19" maxlength="30" onchange="spSetViewDate();" />
+		#stStrings.viewDate# <input class="spToolbar" title="Click to set view date to 'Now'" onclick="this.value='';spSetViewDate();" readonly="yes" style="background:##eeeeee;width:120px" type="text" name="spViewDate" value="#viewDate#" size="19" maxlength="30" onchange="spSetViewDate();" />
 		<a href="javascript:return false;"
 			class="spViewDate"
 			onclick="openCalendar_spToolbar(event);return false;"		

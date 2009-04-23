@@ -124,16 +124,17 @@ the startRow and endRow values returned from the paging module before passing to
 		
 </cfif>
 
-<!--- Render admin links (code needs to be optimized) --->
 <cfscript>
+// These variables are later in this tag and from the handler tag as well so set defaults outside any conditions
+bShowEditAdmin = false;		
+bShowEditPromoAdmin = false;
+bShowReviewAdmin = false;
+bShowAddAdmin = false;
+</cfscript>
 
-	bShowEditAdmin = false;		// These variables are later referenced from the handler tag as well
-	bShowEditPromoAdmin = false;
-	bShowReviewAdmin = false;
+<cfif (attributes.enableAdminLinks or attributes.enableAddLink) and attributes.method neq "spEdit">
 	
-	bShowAddAdmin = false;
-	
-	if ( (attributes.enableAdminLinks or attributes.enableAddLink) and attributes.method neq "spEdit") {
+	<cfscript>
 	
 		// check admin access control to determine whether or not to show admin links (note: actual access control code is in admin.cfm)
 		bSuper = request.speck.userHasPermission("spSuper");
@@ -181,15 +182,7 @@ the startRow and endRow values returned from the paging module before passing to
 			else
 				bShowAddAdmin = bEditAccess;
 		}
-		
-	}
-
-</cfscript>
-
-<!--- <cfif (bShowEditAdmin or bShowEditPromoAdmin or bShowReviewAdmin or bShowAddAdmin)> --->
-<cfif (attributes.enableAdminLinks or attributes.enableAddLink) and attributes.method neq "spEdit">
-
-	<cfscript>
+	
 		
 		// get list of cacheNames in ancestor spCacheThis tags, used in resetCache JS function to 
 		// force caches which this content is contained it to be reset. (note: this is used in 
@@ -233,36 +226,33 @@ the startRow and endRow values returned from the paging module before passing to
 			request.speck.spContent = structNew();
 			
 		if ( not structKeyExists(request.speck.spContent,"strings") ) {
-
+	
 			request.speck.spContent.strings = structNew();
 			
+			request.speck.spContent.strings.add = request.speck.buildString("A_CONTENT_ADD");
 			request.speck.spContent.strings.edit = request.speck.buildString("A_CONTENT_EDIT");
 			request.speck.spContent.strings.review = request.speck.buildString("A_CONTENT_REVIEW");
-
-			// different string for deletions depending on whether revisioning is on or off
-			if ( request.speck.enableRevisions and stType.revisioned )
-				request.speck.spContent.strings.delete = request.speck.buildString("A_CONTENT_REMOVE");
-			else
-				request.speck.spContent.strings.delete = request.speck.buildString("A_CONTENT_DELETE");
+			request.speck.spContent.strings.delete = request.speck.buildString("A_CONTENT_DELETE");
 				
-			// different promote, demote and rollback strings depending on viewLevel when promotion is enabled
-			// (no check for enablePromotion because these strings are always needed for the JavaScript code below)
+			// different promote and demote strings depending on viewLevel and permissions when promotion is enabled
 			if ( request.speck.session.viewLevel eq "edit" ) {
-				request.speck.spContent.strings.promote = request.speck.buildString("A_CONTENT_EDIT_PROMOTE");
-				request.speck.spContent.strings.demote = request.speck.buildString("A_CONTENT_EDIT_DEMOTE");
-				request.speck.spContent.strings.rollback = request.speck.buildString("A_CONTENT_EDIT_ROLLBACK");
+				if ( bLiveAccess ) {
+					// users with live access promote directly to live site
+					request.speck.spContent.strings.promote = request.speck.buildString("A_CONTENT_PUBLISH");
+				} else {
+					request.speck.spContent.strings.promote = request.speck.buildString("A_CONTENT_SUBMIT");
+				}
+				request.speck.spContent.strings.demote = request.speck.buildString("A_CONTENT_REVERT");
 			} else {
-				request.speck.spContent.strings.promote = request.speck.buildString("A_CONTENT_REVIEW_PROMOTE");
-				request.speck.spContent.strings.demote = request.speck.buildString("A_CONTENT_REVIEW_DEMOTE");
-				request.speck.spContent.strings.rollback = request.speck.buildString("A_CONTENT_REVIEW_ROLLBACK");
+				request.speck.spContent.strings.promote = request.speck.buildString("A_CONTENT_PUBLISH");
+				request.speck.spContent.strings.demote = request.speck.buildString("A_CONTENT_REJECT");
 			}
 			
 			// some extra strings used in handler tag if promotion is enabled (and if it isn't, set the rollback string 
 			// back to the default one used with revisioning on and promotion off)
-			if ( request.speck.enablePromotion )
+			if ( request.speck.enablePromotion ) {
 				request.speck.spContent.strings.forRemoval = request.speck.buildString("A_CONTENT_FOR_REMOVAL");
-			else 
-				request.speck.spContent.strings.rollback = request.speck.buildString("A_CONTENT_ROLLBACK"); // set rollback string back to default
+			}
 			
 		}
 		
@@ -273,7 +263,7 @@ the startRow and endRow values returned from the paging module before passing to
 			caption = stType.caption;
 		else
 			caption = stType.description;
-
+	
 	</cfscript>
 
 	<cfif not structKeyExists(request.speck.spContent,"jsOutputComplete")>
@@ -293,12 +283,6 @@ the startRow and endRow values returned from the paging module before passing to
 				if ( label.length > 0 ) { label = " '" + label + "'"; }
 				if (window.confirm("#request.speck.spContent.strings.promote# " + caption + label + "?")) {
 					var win = window.open("/speck/admin/admin.cfm?action=promote&app=#request.speck.appname#&type=" + type + "&id=" + id + "&label=" + label + "&keywords=" + keywords + "&cacheList=" + cacheList + "&caption=" + caption, "promote" + id.replace(/-/g, "_"), "menubar=no,scrollbars=no,resizable=yes,width=150,height=100");
-				}
-			}
-			function launch_rollback(type, id, label, keywords, cacheList, caption) {
-				if ( label.length > 0 ) { label = " '" + label + "'"; }
-				if (window.confirm("#request.speck.spContent.strings.rollback# changes to " + caption + label + "?")) {
-					var win = window.open("/speck/admin/admin.cfm?action=rollback&app=#request.speck.appname#&type=" + type + "&id=" + id + "&label=" + label + "&keywords=" + keywords + "&cacheList=" + cacheList + "&caption=" + caption, "rollback" + id.replace(/-/g, "_"), "menubar=no,scrollbars=no,resizable=yes,width=150,height=100");
 				}
 			}
 			function launch_demote(type, id, label, keywords, cacheList, caption) {
