@@ -42,7 +42,7 @@ td.spToolbar a:hover {
 	text-decoration: none; 
 	background-color: #484;
 }
-a.spRefreshApp:hover { 
+td.spToolbar a.spRefreshApp:hover { 
 	font: 10px Verdana, Arial, Helvetica, sans-serif;
 	color: white;
 	text-decoration: none; 
