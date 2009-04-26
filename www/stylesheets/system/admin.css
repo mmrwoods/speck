@@ -27,9 +27,11 @@
 	background-color:#eee;
 	font-weight:bold;
 	padding-left:2px;
-	padding-right:2px;*/
+	padding-right:2px;
 	padding: 0 0 2px 16px;
-	background: url(/speck/images/icons/silk/help.png) no-repeat;
+	background: url(/speck/images/icons/silk/help.png) no-repeat;*/
+	padding: 2px 18px 2px 0;
+	background: transparent url(/speck/images/icons/silk/help.png) no-repeat center right;
 }
 #loading, #saving {
 	font: 12px Verdana, Arial, Helvetica, sans-serif;

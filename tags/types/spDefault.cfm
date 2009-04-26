@@ -563,15 +563,21 @@ Licensed under the Academic Free License version 2.1
 					
 					<cfif stPD.required><cfoutput><span class="required">*</span></cfoutput></cfif>
 					
-					<cfoutput><label>#stPD.caption#</label></cfoutput>
+					<cfoutput><label></cfoutput>
 					
 					<cfif isDefined("stPD.hint") and len(stPD.hint)>
 					
 						<!--- note: that space within the span tags is necessary for IE6 --->
-						<cfoutput>&nbsp;<span class="hint" onmouseover="return escape('#jsStringFormat(stPD.hint)#');"><!--- ? ---> </span>&nbsp;</cfoutput>
+						<cfoutput><span class="hint" onmouseover="return escape('#jsStringFormat(stPD.hint)#');">#stPD.caption#</span></cfoutput>
+						
+					<cfelse>
+					
+						<cfoutput>#stPD.caption#</cfoutput>
 
 					</cfif>
-
+					
+					<cfoutput></label></cfoutput>
+					
 					<cfoutput>
 					</td>
 					<td>

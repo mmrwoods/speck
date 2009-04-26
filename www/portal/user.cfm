@@ -364,11 +364,11 @@ input {max-width:220px;}
 	<td style="vertical-align:middle"><label for="email">Email Address</label></td>
 	<td><input type="text" name="email" id="email" value="#form.email#" size="35" maxlength="100" /></td>
 	<td>&nbsp;</td>
-	<td style="vertical-align:middle"><span class="required">*</span><label for="password">Password</label><cfif not len(request.speck.portal.passwordEncryption)>&nbsp;<span class="hint" onmouseover="return escape('The password is hidden for security purposes, but you can view it by moving the mouse over the password field.');"> </span>&nbsp;</cfif></td>
+	<td style="vertical-align:middle"><span class="required">*</span><cfif not len(request.speck.portal.passwordEncryption)><label for="password"><span class="hint" onmouseover="return escape('The password is hidden for security purposes, but you can view it by moving the mouse over the password field.');">Password</span></label><cfelse><label for="password">Password</label></cfif></td>
 	<td><input <cfif len(url.username)>type="password"<cfelse>type="text"</cfif> name="password" id="password" value="#form.password#" <cfif not len(request.speck.portal.passwordEncryption)>title="#form.password#"</cfif> size="35" maxlength="20" /></td>
 	</tr>
 	<tr>
-	<td style="vertical-align:middle" nowrap="yes"><label for="newsletter">Send Newsletter</label>&nbsp;<span class="hint" onmouseover="return escape('Include the user\'s name and email address in the newsletter subscription list? You can export the list of subscribers and use it to send a newsletter.');"> </span></td>
+	<td style="vertical-align:middle" nowrap="yes"><label for="newsletter"><span class="hint" onmouseover="return escape('Include the user\'s name and email address in the newsletter subscription list? You can export the list of subscribers and use it to send a newsletter.');">Send Newsletter</span></label></td>
 	<td style="vertical-align:middle">
 		<cfparam name="request.speck.portal.newsletter" default="false" type="boolean">
 		<cfset bNewsletterEnabled = request.speck.portal.newsletter>
@@ -398,7 +398,7 @@ input {max-width:220px;}
 	<cfelse>
 	
 		<cfoutput>
-		<td style="vertical-align:middle" nowrap="yes"><label for="send_password">Send Password</label>&nbsp;<span class="hint" onmouseover="return escape('Email the username and password to the user after creating the account (highly recommended!). Only works if you enter an email address for the user.');"> </span>&nbsp;</td>
+		<td style="vertical-align:middle" nowrap="yes"><label for="send_password"><span class="hint" onmouseover="return escape('Email the username and password to the user after creating the account (highly recommended!). Only works if you enter an email address for the user.');">Send Password</span></label></td>
 		<td style="vertical-align:middle">
 			<input type="radio" name="send_password" value="1"<cfif form.send_password> checked="yes"</cfif> />Yes
 			<input type="radio" name="send_password" value="0"<cfif not form.send_password> checked="yes"</cfif> />No
@@ -489,7 +489,7 @@ input {max-width:220px;}
 
 	<cfoutput>
 	<tr>
-	<td nowrap="yes"><label for="notes">Notes</label>&nbsp;<span class="hint" onmouseover="return escape('The notes field is only accessible from this window. Standard users cannot view or edit their own notes.');"> </span>&nbsp;</td>
+	<td nowrap="yes"><label for="notes"><span class="hint" onmouseover="return escape('The notes field is only accessible from this window. Standard users cannot view or edit their own notes.');">Notes</span></label></td>
 	<td colspan="4">
 		<textarea name="notes" id="notes" rows="3" cols="80" style="max-width:800px;width:600px">#form.notes#</textarea>
 	</td>
@@ -518,12 +518,12 @@ input {max-width:220px;}
 
 	<cfoutput>
 	<tr>
-	<td style="vertical-align:middle" nowrap="yes"><label for="suspended">Account Status</label>&nbsp;<span class="hint" onmouseover="return escape('Set status to suspended to prevent a user from logging in without deleting them.');"> </span>&nbsp;</td>
+	<td style="vertical-align:middle" nowrap="yes"><label for="suspended"><span class="hint" onmouseover="return escape('Set status to suspended to prevent a user from logging in without deleting them.');">Account Status</span></label></td>
 	<td style="vertical-align:middle" colspan="2">
 		<input type="radio" name="suspended" value="0"<cfif not form.suspended> checked="yes"</cfif><cfif bSuperUser> disabled="yes"</cfif> />Active
 		<input type="radio" name="suspended" value="1"<cfif form.suspended> checked="yes"</cfif><cfif bSuperUser> disabled="yes"</cfif> />Suspended
 	</td>
-	<td style="vertical-align:middle" nowrap="yes"><label for="expires">Account Expires</label>&nbsp;<span class="hint" onmouseover="return escape('Set an expiry date for this account to prevent a user logging in from that date forward.');"> </span>&nbsp;</td>
+	<td style="vertical-align:middle" nowrap="yes"><label for="expires"><span class="hint" onmouseover="return escape('Set an expiry date for this account to prevent a user logging in from that date forward.');">Account Expires</span></label></td>
 	<td style="vertical-align:middle" colspan="2">
 		<input type="text" name="expires" value="#form.expires#" <cfif bSuperUser> disabled="yes"</cfif> onfocus="if (this.value == 'YYYY-MM-DD' ) { this.value='' };" size="14" maxlength="10" style="vertical-align:middle;">
 		<a href="javascript:return false;" 
