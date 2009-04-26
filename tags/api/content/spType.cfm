@@ -378,6 +378,43 @@ Attributes:
 			
 		<cfelse>
 		
+			<!--- ############# temporary code to add spLabelIndex column to existing tables ################### --->
+			<cfif not listFindNoCase(qTableCheck.columnList, "spLabelIndex")>
+				<cfquery name="qCreateColumn" datasource=#ca.context.codb#>
+					ALTER TABLE #ca.context.dbIdentifier(a.name,ca.context)# ADD spLabelIndex #ca.context.textDDLString(250,ca.context)#
+				</cfquery>
+				<!--- populate the spLabelIndex with the upper case version of the real label --->
+				<cfquery name="qUpdateColumn" datasource=#ca.context.codb#>
+					UPDATE #ca.context.dbIdentifier(a.name,ca.context)#
+					SET spLabelIndex = <cfif ca.context.dbtype eq "access">spLabel<cfelse>UPPER(spLabel)</cfif>
+				</cfquery>
+				<!--- drop the existing index on the mixed case label and create an index on the upper case version --->
+				<cftry>
+					<cfquery name="qDropIndex" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
+						DROP INDEX #a.name#_spLabel
+					</cfquery>
+					<cftry>
+						<cfquery name="qAddIndex" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
+							CREATE INDEX #a.name#_spLabel
+							ON #ca.context.dbIdentifier(a.name,ca.context)# (spLabelIndex)
+						</cfquery>
+					<cfcatch type="Database">
+						<cflog type="warning" 
+							file="#ca.context.appName#" 
+							application="no"
+							text="CF_SPTYPE: Could not create database index #a.name#_spLabel. Error: #cfcatch.message# #cfcatch.detail#">
+					</cfcatch>
+					</cftry>
+				<cfcatch type="Database">
+					<cflog type="warning" 
+						file="#ca.context.appName#" 
+						application="no"
+						text="CF_SPTYPE: Could not drop database index #a.name#_spLabel. Error: #cfcatch.message# #cfcatch.detail#">
+				</cfcatch>
+				</cftry>
+			</cfif>
+			<!--- ############# end temp code ############# --->			
+		
 			<!--- ############# temporary code to add spLevel and spArchived columns to existing tables ################### --->
 			<cfif not listFindNoCase(qTableCheck.columnList, "spLevel")>
 
