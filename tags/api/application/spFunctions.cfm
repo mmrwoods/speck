@@ -145,7 +145,7 @@ Licensed under the Academic Free License version 2.1
 			context = request.speck;
 		}
 		if ( REFindNoCase("(table|relation|object).*(unknown|invalid|not found|doesn't exist|does not exist)",errorMsg)
-			or REFindNoCase("(unknown|invalid|cannot find).*(table|relation|object)",errorMsg) ) {
+			or REFindNoCase("(unknown|invalid|cannot find|failed to find).*(table|relation|object)",errorMsg) ) {
 			return true;
 		} else {
 			if ( len(context.database.tableNotFound) ) {
