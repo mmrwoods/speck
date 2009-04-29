@@ -19,7 +19,8 @@ Licensed under the Academic Free License version 2.1
 		required="no"
 		maxSelect="25"
 		dependent="#attributes.context.getConfigString("types","article_container","articles_dependent","no")#"
-		showSort="yes">
+		showSort="yes"
+		prepend="yes">
 		
 	<cf_spHandler method="display">
 	

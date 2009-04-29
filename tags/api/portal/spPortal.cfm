@@ -11,7 +11,6 @@ Licensed under the Academic Free License version 2.1
 
 <cfparam name="attributes.name" default="">
 <cfparam name="attributes.refresh" default="false" type="boolean">
-<cfparam name="attributes.setclientcookies" default="false" type="boolean">
 
 <cfif not len(attributes.name)>
 
@@ -35,10 +34,8 @@ Licensed under the Academic Free License version 2.1
 	
 </cfif>
 
-<cfapplication 
-	name="#attributes.name#" 
-	sessionmanagement="Yes" 
-	setclientcookies="#attributes.setclientcookies#">
+<!--- minimal call to cfapplication so we can look for things in application scope - spApp overrides this by calling cfapplication again --->
+<cfapplication name="#attributes.name#" sessionmanagement="Yes" setclientcookies="no">
 
 <!--- 
 Check if we need to refresh the application. Set bRefresh to true to refresh portal (this may happen due to an application 
@@ -234,8 +231,9 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 	<cfparam name="stPortal.language" default=""> <!--- spApp will automatically determine the default language from the locale, but you can override it here --->
 	<cfparam name="stPortal.mapping" default="">
 	<!--- default session and application timeout values - note: these are strings that get evaluated within spApp --->
-	<cfparam name="stPortal.sessionTimeout" default="createTimeSpan(0, 0, 30, 0)">
-	<cfparam name="stPortal.applicationTimeout" default="createTimeSpan(1, 0, 0, 0)">
+	<cfparam name="stPortal.sessionTimeout" default="30"> <!--- minutes --->
+	<cfparam name="stPortal.applicationTimeout" default="7"> <!--- days --->
+	<cfparam name="stPortal.setClientCookies" default="No">
 	
 	<!--- read application config file --->
 	<cfset stConfig = structNew()>
@@ -334,7 +332,7 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 		enablePromotion = #stPortal.enablePromotion#
 		enableChangeControl = no
 		debug = #stPortal.debug#
-		setClientCookies = #attributes.setClientCookies#
+		setClientCookies = #stPortal.setClientCookies#
 		sessionTimeout = #stPortal.sessionTimeout#
 		applicationTimeout = #stPortal.applicationTimeout#
 		">

@@ -16,7 +16,9 @@ Licensed under the Academic Free License version 2.1
 	
 		<cfparam name="stPD.dependent" default="no"> <!--- if yes, picked content items are dependent on their containing content item, if the container is deleted/removed, the picked items should also be deleted/removed --->
 		
-		<cfparam name="stPD.append" default="no"> <!--- append items to the end of the list? default is to insert at the beginning --->
+		<!--- <cfparam name="stPD.append" default="no"> ---> <!--- OBSOLETE - PICKER NOW APPENDS BY DEFAULT, USE PREPEND ATTRIBUE TO FORCE PREPENDING --->
+		
+		<cfparam name="stPD.prepend" default="no">
 		
 		<cfparam name="stPD.showAdd" default="yes"> <!--- show add content item link when rendering form field? --->
 		<cfparam name="stPD.showEdit" default="yes"> <!--- show edit content item link when rendering form field? --->
@@ -193,10 +195,10 @@ Licensed under the Academic Free License version 2.1
 					// do nothing 
 				}
 				if ( !formModified_#stPD.name# || confirm(#request.speck.buildString("A_PICKER_ADD_CONFIRM","#stType.caption#,#stPD.caption#")#) ) {
-					<cfif stPD.append>
-						document.speditform.#stPD.name#.value = <cfif stPD.maxSelect gt 1>document.speditform.#stPD.name#.value + "," + </cfif>ids;
-					<cfelse>
+					<cfif stPD.prepend>
 						document.speditform.#stPD.name#.value = ids<cfif stPD.maxSelect gt 1> + "," + document.speditform.#stPD.name#.value</cfif>;
+					<cfelse>
+						document.speditform.#stPD.name#.value = <cfif stPD.maxSelect gt 1>document.speditform.#stPD.name#.value + "," + </cfif>ids;
 					</cfif>
 					submitForm_#stPD.name#();
 				}

@@ -164,28 +164,36 @@ Licensed under the Academic Free License version 2.1
 <!--- default application configuration setting values to pass to CFAPPLICATION --->
 <cfparam name="stApp.clientManagement" default="No">
 <cfparam name="stApp.clientStorage" default="">
-<cfparam name="stApp.setClientCookies" default="Yes">
+<cfparam name="stApp.setClientCookies" default="No">
 <cfparam name="stApp.sessionManagement" default="Yes">
 <cfparam name="stApp.setDomainCookies" default="No">
 <cfscript>
-	// handle timespans from application configuration files
+	// process session and application timeouts...
+	// config allows integers or createTimeSpan() function call syntax (which should be considered deprecated)
+	// session timeout default is 30 minutes, if setting is integer it's assumed to be a number of minutes
 	if ( isDefined("stApp.sessionTimeout") ) {
 		if ( isNumeric(stApp.sessionTimeout) ) {
-			stApp.sessionTimeout = createTimeSpan(0, 0, stApp.sessionTimeout, 0);
+			stApp.sessionTimeout = createTimeSpan(0, 0, int(stApp.sessionTimeout), 0);
 		} else {
 			stApp.sessionTimeout = evaluate(stApp.sessionTimeout);
 		}	
 	} else {
 		stApp.sessionTimeout = createTimeSpan(0, 0, 30, 0);
 	}
+	// application timeout default is 7 days, if setting is integer it's assumed to be a number of days
 	if ( isDefined("stApp.applicationTimeout") ) {
 		if ( isNumeric(stApp.applicationTimeout) ) {
-			stApp.applicationTimeout = createTimeSpan(0, 0, stApp.applicationTimeout, 0);
+			if ( stApp.applicationTimeout gt 365 ) {
+				// backwards compatibility, applicationTimeout setting used to take numbers of minutes, not days
+				stApp.applicationTimeout = createTimeSpan(0, 0, int(stApp.applicationTimeout), 0);
+			} else {
+				stApp.applicationTimeout = createTimeSpan(int(stApp.applicationTimeout), 0, 0, 0);
+			}
 		} else {
 			stApp.applicationTimeout = evaluate(stApp.applicationTimeout);
 		}	
 	} else {
-		stApp.applicationTimeout = createTimeSpan(2, 0, 0, 0);
+		stApp.applicationTimeout = createTimeSpan(7, 0, 0, 0);
 	}
 </cfscript>
 
@@ -216,14 +224,14 @@ I'm sure this all used to be necessary in CF5
 
 </cfif> --->
 
-<cfapplication name = "#attributes.name#"
-	clientManagement = "#stApp.clientManagement#"
-	clientStorage = "#stApp.clientStorage#"
-	setClientCookies = "#stApp.setClientCookies#" 
-	sessionManagement = "#stApp.sessionManagement#"
-	sessionTimeout = "#stApp.sessionTimeout#"
-	applicationTimeout = "#stApp.applicationTimeout#"
-	setDomainCookies = "#stApp.setDomainCookies#">
+<cfapplication name="#attributes.name#"
+	clientManagement="#stApp.clientManagement#"
+	clientStorage="#stApp.clientStorage#"
+	setClientCookies="#stApp.setClientCookies#" 
+	sessionManagement="#stApp.sessionManagement#"
+	sessionTimeout="#stApp.sessionTimeout#"
+	applicationTimeout="#stApp.applicationTimeout#"
+	setDomainCookies="#stApp.setDomainCookies#">
 
 <!--- force per-session cfid and cftoken cookies if not set by cfapplication (regardless of whether j2ee session management is enabled) --->
 <cfif not isDefined("cookie.cfid")>

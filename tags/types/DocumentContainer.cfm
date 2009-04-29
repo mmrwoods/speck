@@ -20,8 +20,7 @@ Licensed under the Academic Free License version 2.1
 		dependent="#attributes.context.getConfigString("types","document_container","documents_dependent","no")#"
 		maxSelect="25"
 		showSort="yes"
-		showAdd="yes"
-		showEdit="yes">
+		prepend="yes">
 	
 	<cf_spHandler method="display">
 	
