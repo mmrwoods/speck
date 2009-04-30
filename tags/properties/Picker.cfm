@@ -46,6 +46,9 @@ Licensed under the Academic Free License version 2.1
 	
 	<cf_spPropertyHandlerMethod method="renderFormField">
 	
+		<!--- can be removed once all applications have been refreshed --->
+		<cfparam name="stPD.prepend" default="no">	
+	
 		<!--- Get type info --->
 		<cfmodule template=#request.speck.getTypeTemplate(stPD.contentType)# r_stType="stType">
 		
