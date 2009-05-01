@@ -334,6 +334,8 @@ Attributes:
 					spUpdated #ca.context.database.tsDDLString# ,
 					spUpdatedby #ca.context.textDDLString(20,ca.context)# ,
 					spKeywords #ca.context.textDDLString(ca.context.database.maxIndexKeyLength,ca.context)# ,
+					spArchived #ca.context.database.tsDDLString#,
+					spLevel #ca.context.database.integerDDLString#,
 					PRIMARY KEY (spId,spRevision)
 				)
 			</cfquery>

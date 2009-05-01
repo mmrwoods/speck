@@ -594,16 +594,19 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 						spUpdated #tsDDLString#,
 						spUpdatedby #textDDLString(20)#,
 						spKeywords #textDDLString(maxIndexKeyLength)#,
+						spArchived #tsDDLString#,
+						spLevel #integerDDLString#,
 						lastLogon #tsDDLString#,
 						lastActive #tsDDLString#,
-						registered  #tsDDLString#,
+						registered #tsDDLString#,
+						suspended #tsDDLString#,
+						expires #tsDDLString#,
 						username #textDDLString(50)# NOT NULL,
 						fullname #textDDLString(100)# NOT NULL,
 						password #textDDLString(100)# NOT NULL,
 						email #textDDLString(100)#,
 						phone #textDDLString(100)#,
 						notes #textDDLString(4000)#,
-						expires #tsDDLString#,
 						PRIMARY KEY (username)
 					)
 				</cfquery>
