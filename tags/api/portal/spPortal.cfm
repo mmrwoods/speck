@@ -118,51 +118,29 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 		stPortal = structNew(); // save all configuration settings here and save to application scope when finished initialising	
 	</cfscript>
 	
-	<!--- default portal configuration settings... --->
+	<!--- default portal specific configuration settings (i.e. things that are not passed to spApp) --->
 	<cfparam name="stPortal.docType" default="xhtml"> <!--- html|xhtml --->
 	<cfparam name="stPortal.docSubtype" default="transitional"> <!--- strict|transitional|frameset --->
 	<!--- possible TODO: add docTypeVersion configuration setting --->
-	<cfparam name="stPortal.codb" default="#attributes.name#">
-	<cfparam name="stPortal.appWebRoot" default="">
-	<cfparam name="stPortal.debug" default="no" type="boolean">
-	
-	<!--- these are the only configuration settings which should generally need to be set per application --->
 	<cfparam name="stPortal.name" default="#attributes.name#"> <!--- name of site, can be used by shared templates when outputting site name --->
 	<cfparam name="stPortal.domain" default=""> <!--- domain name used by default when building email address etc. - if left blank, will be derived from host name --->
-	<!---<cfparam name="stPortal.description" default="">---> <!--- default meta description for site pages. OBSOLETE - DO NOT USE, HAS NO EFFECT ANYMORE --->
-	<!---<cfparam name="stPortal.keywords" default="">---> <!--- default meta keywords for site pages. OBSOLETE - DO NOT USE, HAS NO EFFECT ANYMORE --->
 	<cfparam name="stPortal.stylesheet" default=""> <!--- will default to /stylesheets/screen.css or /stylesheets/main.css if files exist --->
 	<cfparam name="stPortal.importStyles" default="">
 	<cfparam name="stPortal.printStylesheet" default=""> <!--- will default to /stylesheets/print.css if file exists --->
 	<cfparam name="stPortal.popupStylesheet" default=""> <!--- will default to /stylesheets/popup.css if file exists --->
-	<cfparam name="stPortal.adminStylesheets" default="">
-	<cfparam name="stPortal.toolbarPrefix" default="">
 	<cfparam name="stPortal.layout" default="">
 	<cfparam name="stPortal.template" default="">
-	<cfparam name="stPortal.maxKeywordLevels" default="2">
-	<cfparam name="stPortal.useKeywordsIndex" type="boolean" default="no">
-	<cfparam name="stPortal.labelRoles" default="spSuper,spEdit=r">
-	<cfparam name="stPortal.keywordsRoles" default="spSuper,spEdit=r">
+	<cfparam name="stPortal.titleSeparator" default="-">
 	<cfparam name="stPortal.breadCrumbPageTitles" type="boolean" default="no"> <!--- deprecated setting, do not use, likely to be removed --->
 	<cfparam name="stPortal.trackUserActivity" type="boolean" default="no"> <!--- record when user was last active in spUsers database table (use with caution, results in an update statement eveyr 90 seconds or so) --->
 	<cfparam name="stPortal.logRequests" type="boolean" default="no">
-	<cfparam name="stPortal.passwordEncryption" default=""> <!--- set to name of function to encrypt/hash passwords - gets passed to portal security zone, see speck docs --->
-
-	<!--- use X-SendFile header when sending files using Speck asset script (requires X-SendFile support at web server level and only tested with Apache) --->
-	<cfparam name="stPortal.xSendFile" type="boolean" default="no">
-	
-	<!--- include various javascripts when outputting html head --->
+	<cfparam name="stPortal.passwordEncryption" default=""> <!--- set to name of function to encrypt/hash passwords - gets passed to portal security zone, see speck docs --->	
 	<cfparam name="stPortal.pngfix" type="boolean" default="no"> <!--- hack for IE6 to provide support for transparent backgrounds in png images --->
 	<cfparam name="stPortal.prototype" type="boolean" default="no"> <!--- the dogs bollox! I love you prototype, in whatever way a man can love a javascript library. --->
 	<cfparam name="stPortal.scriptaculous" type="boolean" default="no"> <!--- note: depends on prototype --->
 	<cfparam name="stPortal.lightbox" type="boolean" default="no"> <!--- note: depends on scriptaculous. If enabled, Image content type will use lightbox to display popup images. --->
-
 	<cfparam name="stPortal.clearfix" type="boolean" default="no"> <!--- define a clearfix class selector which can be used to clear floats within block level elements (it's a hack Jim, but a necessary one to make the new FCKeditor config "just work" --->
-	
 	<cfparam name="stPortal.seoIdentifiers" type="boolean" default="no"> <!--- if true, templates should try to avoid using UUIDs in URLs and instead use labels or some other search engine optimized/friendly identifiers in URLs (typically the label) --->
-	
-	<!--- search engine optimised urls --->
-	<cfparam name="stPortal.sesSuffix" default=".html"> <!--- dummy suffix appended to the end of urls --->
 	<cfparam name="stPortal.rewriteEngine" default="no" type="boolean"> <!--- external url rewriting engine enabled (see below) --->
 	<cfparam name="stPortal.rewritePrefix" default="go/"> <!--- prefix urls to allow for a simple rewrite rule to match speck urls (see below) --->
 	<!---
@@ -219,22 +197,37 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 
 	--->
 	
-	<!--- these defaults should really be configurable per speck installation / server --->
-	<cfparam name="stPortal.titleSeparator" default="-">
-	<cfparam name="stPortal.securityZones" default="portal">
-	<cfparam name="stPortal.dbtype" default="ansicompliant">
-	<cfparam name="stPortal.enableRevisions" default="no" type="boolean">
-	<cfparam name="stPortal.historySize" default="100">
-	<cfparam name="stPortal.enablePromotion" default="no" type="boolean">
-	<cfparam name="stPortal.locale" default="#getLocale()#">
-	<cfparam name="stPortal.language" default=""> <!--- spApp will automatically determine the default language from the locale, but you can override it here --->
-	<cfparam name="stPortal.mapping" default="">
-	<!--- default session and application timeout values - note: these are strings that get evaluated within spApp --->
-	<cfparam name="stPortal.sessionTimeout" default="30"> <!--- minutes --->
-	<cfparam name="stPortal.applicationTimeout" default="7"> <!--- days --->
-	<cfparam name="stPortal.setClientCookies" default="No">
+	<!--- default config settings to include in Speck application configuration --->
+	<cfset stApp = structNew()>
+	<cfset stApp.appName = attributes.name>
+	<cfset stApp.appInstallRoot = appInstallRoot>
+	<cfparam name="stApp.codb" default="#stApp.appName#">
+	<cfparam name="stApp.appWebRoot" default="">
+	<cfparam name="stApp.debug" default="no" type="boolean">
+	<cfparam name="stApp.adminStylesheets" default="">
+	<cfparam name="stApp.maxKeywordLevels" default="2">
+	<cfparam name="stApp.useKeywordsIndex" type="boolean" default="no">
+	<cfparam name="stApp.labelRoles" default="spSuper,spEdit=r">
+	<cfparam name="stApp.keywordsRoles" default="spSuper,spEdit=r">
+	<cfparam name="stApp.xSendFile" type="boolean" default="no">	
+	<cfparam name="stApp.sesSuffix" default=".html"> <!--- dummy suffix appended to the end of urls (when rewrite engine enabled, this only gets appended to urls referencing a content item) --->	
+	<cfparam name="stApp.securityZones" default="portal">
+	<cfparam name="stApp.dbtype" default="ansicompliant">
+	<cfparam name="stApp.enableRevisions" default="no" type="boolean">
+	<cfparam name="stApp.historySize" default="100">
+	<cfparam name="stApp.enablePromotion" default="no" type="boolean">
+	<cfparam name="stApp.locale" default="#getLocale()#">
+	<cfparam name="stApp.language" default=""> <!--- spApp will automatically determine the default language from the locale, but you can override it here --->
+	<cfif compareNoCase(replace(speckInstallRoot,"#fs#speck",""),listDeleteAt(appInstallRoot,listLen(appInstallRoot,fs),fs)) neq 0> 
+		<cfparam name="stApp.mapping" default="/webapps/#attributes.name#/tags"> <!--- if speck and application directories do not have same parent, assume a /webapps mapping exists --->
+	<cfelse>
+		<cfparam name="stApp.mapping" default="">
+	</cfif>
+	<cfparam name="stApp.sesUrls" default="yes" type="boolean">
+	<cfparam name="stApp.manageKeywords" default="yes" type="boolean">
+	<cfparam name="stApp.toolbarPrefix" default="">
 	
-	<!--- read application config file --->
+	<!--- read portal config file --->
 	<cfset stConfig = structNew()>
 	<cfif fileExists("#appInstallRoot##fs#config#fs#portal.cfg")>
 	
@@ -264,6 +257,23 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 		</cfif>
 	
 	</cfif>
+
+	<cfif not structKeyExists(stConfig,"settings")>
+	
+		<cfthrow message="Invalid portal configuration file format - settings section not found">
+	
+	</cfif>
+	
+	<cfscript>
+		// copy settings from portal config file to stPortal and stApp (anything not pre-defined as a portal config setting also gets copied to stApp)
+		for ( key in stConfig.settings ) {
+			if ( key neq "appName" ) // do not allow appName to be overwritten
+				stPortal[key] = stConfig.settings[key];
+				if ( not structKeyExists(stPortal,key) ) {
+					stApp[key] = stConfig.settings[key];
+				}
+		}
+	</cfscript>
 	
 	<!--- look for default stylesheets --->
 	<cfscript>
@@ -287,20 +297,7 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 		<cfset stPortal.favIcon = true>
 	<cfelse>
 		<cfset stPortal.favIcon = false>
-	</cfif>
-	
-	<cfif not structKeyExists(stConfig,"settings")>
-	
-		<cfthrow message="Invalid portal configuration file format - settings section not found">
-	
-	</cfif>
-	
-	<cfscript>
-		for ( key in stConfig.settings ) {
-			if ( key neq "appName" ) // do not allow appName to be overwritten
-				stPortal[key] = stConfig.settings[key];
-		}
-	</cfscript>
+	</cfif>	
 	
 	<cfif stPortal.rewriteEngine and len(stPortal.rewritePrefix) and not reFind("^([a-z]+(\-|/)){1,}$",stPortal.rewritePrefix)> <!--- note: allow pattern to be repeated for backwards compatibility --->
 		
@@ -312,48 +309,13 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 	<!--- always pad titleSeparator with spaces --->
 	<cfset stPortal.titleSeparator = " " & stPortal.titleSeparator & " ">
 	
-	<cfset stPortal.securityZones = REReplace(stPortal.securityZones,"[[:space:]]+","","all")> <!--- remove spaces from list --->
+	<cfset stApp.securityZones = REReplace(stApp.securityZones,"[[:space:]]+","","all")> <!--- remove spaces from list --->
 	
 	<!--- create speck application config file --->
-	<cfset fileContents = "
-		[settings]
-		appName = #attributes.name#
-		appInstallRoot = #appInstallRoot#
-		codb = #stPortal.codb#
-		dbtype = #stPortal.dbtype#
-		securityzones = #stPortal.securityZones#
-		locale = #stPortal.locale#
-		language = #stPortal.language#
-		sesUrls = yes
-		sesSuffix = #stPortal.sesSuffix#
-		xSendFile =  #stPortal.xSendFile#
-		appWebRoot = #stPortal.appWebRoot#
-		toolbarPrefix = #stPortal.toolbarPrefix#
-		adminStylesheets = #stPortal.adminStylesheets#
-		manageKeywords = yes
-		maxKeywordLevels = #stPortal.maxKeywordLevels#
-		useKeywordsIndex = #stPortal.useKeywordsIndex#
-		labelRoles = #stPortal.labelRoles#
-		keywordsRoles = #stPortal.keywordsRoles#
-		enableRevisions = #stPortal.enableRevisions#
-		historySize = #stPortal.historySize#
-		enablePromotion = #stPortal.enablePromotion#
-		enableChangeControl = no
-		debug = #stPortal.debug#
-		setClientCookies = #stPortal.setClientCookies#
-		sessionTimeout = #stPortal.sessionTimeout#
-		applicationTimeout = #stPortal.applicationTimeout#
-		">
-		
 	<cfscript>
-		// remove tabs from file contents
-		fileContents = trim(replace(fileContents,chr(9),"","all"));
-		
-		// set the mapping if necessary
-		if ( len(stPortal.mapping) ) {
-			fileContents = fileContents & nl & "mapping = " & stPortal.mapping & nl;
-		} else if ( compareNoCase(replace(speckInstallRoot,"#fs#speck",""),listDeleteAt(appInstallRoot,listLen(appInstallRoot,fs),fs)) neq 0 ) { // if speck and application directories do not have same parent, assume a /webapps mapping exists
-			fileContents = fileContents & nl & "mapping = /webapps/#attributes.name#/tags" & nl;
+		fileContents = "[settings]" & nl;
+		for ( key in stApp ) {
+			fileContents = fileContents & key & " = " & stApp[key] & nl;
 		}
 
 		// allow portal apps to override default system database configuration
@@ -404,8 +366,8 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 	<cf_spGetProfileStructure file="#speckInstallRoot##fs#config#fs#system#fs#databases.cfg" variable="stDatabases">
 	
 	<cfscript>
-		if ( structKeyExists(stDatabases, stPortal.dbType) ) {
-			stDatabase = duplicate(stDatabases[stPortal.dbType]);
+		if ( structKeyExists(stDatabases, stApp.dbType) ) {
+			stDatabase = duplicate(stDatabases[stApp.dbType]);
 		} else {
 			stDatabase = structNew();
 		}
@@ -467,7 +429,7 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 	<cfset bCreateTable = false>
 	<cftry>
 	
-		<cfquery name="qTableExists" datasource="#stPortal.codb#">
+		<cfquery name="qTableExists" datasource="#stApp.codb#">
 			SELECT * FROM spContentIndex WHERE id = 'noSuchId'
 		</cfquery>
 	
@@ -488,7 +450,7 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 	
 	<cfif bCreateTable>
 	
- 		<cfquery name="qCreateTable" datasource=#stPortal.codb#>
+ 		<cfquery name="qCreateTable" datasource=#stApp.codb#>
 			CREATE TABLE spContentIndex (
 				id #textDDLString(maxIndexKeyLength)#,
 				contentType #textDDLString(50)# NOT NULL,
@@ -501,19 +463,19 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 			)
 		</cfquery>
 		
-		<cfquery name="qAddIndex" datasource=#stPortal.codb#>
+		<cfquery name="qAddIndex" datasource=#stApp.codb#>
 			CREATE INDEX spContentIdx1 <!--- damn, fscking sql identifier limitations! --->
 			ON spContentIndex (contentType)
 		</cfquery>
 		
-		<cfquery name="qAddIndex" datasource=#stPortal.codb#>
+		<cfquery name="qAddIndex" datasource=#stApp.codb#>
 			CREATE INDEX spContentIdx2 
 			ON spContentIndex (keyword)
 		</cfquery>
 
 	</cfif>
 	
-	<cfif find("portal",stPortal.securityZones)>
+	<cfif find("portal",stApp.securityZones)>
 
 		<!--- create user database tables for portal security zone if required --->
 
@@ -521,7 +483,7 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 	
 		<cftry>
 		
-			<cfquery name="qTableExists" datasource="#stPortal.codb#">
+			<cfquery name="qTableExists" datasource="#stApp.codb#">
 				SELECT * FROM spUsers WHERE username = 'noSuchUser'
 			</cfquery>
 		
@@ -544,11 +506,11 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 			
 			<cfif not listFindNoCase(qTableExists.columnList,"registered")>
 		
-				<cfquery name="qAlterUsers" datasource="#stPortal.codb#">
+				<cfquery name="qAlterUsers" datasource="#stApp.codb#">
 					ALTER TABLE spUsers ADD registered #tsDDLString#
 				</cfquery>
 				
-				<cfquery name="qUpdateUsers" datasource="#stPortal.codb#">
+				<cfquery name="qUpdateUsers" datasource="#stApp.codb#">
 					UPDATE spUsers SET registered = spCreated
 				</cfquery>
 				
@@ -556,7 +518,7 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 			
 			<cfif not listFindNoCase(qTableExists.columnList,"suspended")>
 		
-				<cfquery name="qAlterUsers" datasource="#stPortal.codb#">
+				<cfquery name="qAlterUsers" datasource="#stApp.codb#">
 					ALTER TABLE spUsers ADD suspended #tsDDLString#
 				</cfquery>
 				
@@ -564,19 +526,19 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 
 			<cfif not listFindNoCase(qTableExists.columnList,"expires")>
 		
-				<cfquery name="qAlterUsers" datasource="#stPortal.codb#">
+				<cfquery name="qAlterUsers" datasource="#stApp.codb#">
 					ALTER TABLE spUsers ADD expires #tsDDLString#
 				</cfquery>
 				
 			</cfif>
 			
-			<cfquery name="qUsersGroups" datasource="#stPortal.codb#">
+			<cfquery name="qUsersGroups" datasource="#stApp.codb#">
 				SELECT * FROM spUsersGroups WHERE username = 'noSuchUser'
 			</cfquery>
 			
 			<cfif not listFindNoCase(qUsersGroups.columnList,"expires")>
 		
-				<cfquery name="qAlterUsers" datasource="#stPortal.codb#">
+				<cfquery name="qAlterUsers" datasource="#stApp.codb#">
 					ALTER TABLE spUsersGroups ADD expires #tsDDLString#
 				</cfquery>
 				
@@ -592,7 +554,7 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 				note: spUsers table created with columns required for a Speck content type, 
 				'cos we might make it one later. Then it could be extended per application.
 				--->
-		 		<cfquery name="qCreateTable" datasource=#stPortal.codb#>
+		 		<cfquery name="qCreateTable" datasource=#stApp.codb#>
 					CREATE TABLE spUsers (
 						spId CHAR(35) NOT NULL,
 						spRevision #integerDDLString# NOT NULL,
@@ -619,17 +581,17 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 					)
 				</cfquery>
 				
-				<cfquery name="qAddIndex" datasource=#stPortal.codb#>
+				<cfquery name="qAddIndex" datasource=#stApp.codb#>
 					CREATE INDEX spUsers_email
 					ON spUsers (email)
 				</cfquery>		
 				
-				<cfquery name="qAddIndex" datasource=#stPortal.codb#>
+				<cfquery name="qAddIndex" datasource=#stApp.codb#>
 					CREATE INDEX spUsers_lastlogon
 					ON spUsers (lastLogon)
 				</cfquery>
 				
-		 		<cfquery name="qCreateTable" datasource=#stPortal.codb#>
+		 		<cfquery name="qCreateTable" datasource=#stApp.codb#>
 					CREATE TABLE spGroups (
 						groupname #textDDLString(50)# NOT NULL,
 						description #textDDLString(100)#,
@@ -637,7 +599,7 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 					)
 				</cfquery>
 				
-		 		<cfquery name="qCreateTable" datasource=#stPortal.codb#>
+		 		<cfquery name="qCreateTable" datasource=#stApp.codb#>
 					CREATE TABLE spUsersGroups (				
 						username #textDDLString(50)# NOT NULL,
 						groupname #textDDLString(50)# NOT NULL,
@@ -646,7 +608,7 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 					)
 				</cfquery>				
 				
-		 		<cfquery name="qCreateTable" datasource=#stPortal.codb#>
+		 		<cfquery name="qCreateTable" datasource=#stApp.codb#>
 					CREATE TABLE spRoles (
 						rolename #textDDLString(50)# NOT NULL,
 						description #textDDLString(100)#,
@@ -654,7 +616,7 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 					)
 				</cfquery>			
 				
-		 		<cfquery name="qCreateTable" datasource=#stPortal.codb#>
+		 		<cfquery name="qCreateTable" datasource=#stApp.codb#>
 					CREATE TABLE spRolesAccessors (				
 						rolename #textDDLString(50)# NOT NULL,
 						accessor #textDDLString(50)# NOT NULL,
@@ -664,81 +626,81 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 				
 				
 				<!--- add default roles --->
-		 		<cfquery name="qInsert" datasource=#stPortal.codb#>
+		 		<cfquery name="qInsert" datasource=#stApp.codb#>
 					INSERT INTO spRoles (rolename, description) 
 					VALUES ('spSuper', 'Super user role. Has access to manage all content and everything else too.')
 				</cfquery>				
 				
-		 		<cfquery name="qInsert" datasource=#stPortal.codb#>
+		 		<cfquery name="qInsert" datasource=#stApp.codb#>
 					INSERT INTO spRoles (rolename, description) 
 					VALUES ('spEdit', 'Role required to edit content.')
 				</cfquery>			
 				
-				 <cfquery name="qInsert" datasource=#stPortal.codb#>
+				 <cfquery name="qInsert" datasource=#stApp.codb#>
 					INSERT INTO spRoles (rolename, description) 
 					VALUES ('spLive', 'Role required to put content live.')
 				</cfquery>
 				
-				 <cfquery name="qInsert" datasource=#stPortal.codb#>
+				 <cfquery name="qInsert" datasource=#stApp.codb#>
 					INSERT INTO spRoles (rolename, description) 
 					VALUES ('spKeywords', 'Role required to manage navigation keywords.')
 				</cfquery>
 				
-				 <cfquery name="qInsert" datasource=#stPortal.codb#>
+				 <cfquery name="qInsert" datasource=#stApp.codb#>
 					INSERT INTO spRoles (rolename, description) 
 					VALUES ('spUsers', 'Role required to manage users (spSuper is required to manage groups and roles).')
 				</cfquery>
 				
 				
 				<!--- add default groups --->
-		 		<cfquery name="qInsert" datasource=#stPortal.codb#>
+		 		<cfquery name="qInsert" datasource=#stApp.codb#>
 					INSERT INTO spGroups (groupname, description) 
 					VALUES ('admins', 'Administrators / super users group.')
 				</cfquery>
-				<cfquery name="qInsert" datasource=#stPortal.codb#>
+				<cfquery name="qInsert" datasource=#stApp.codb#>
 					INSERT INTO spRolesAccessors (rolename,accessor) 
 					VALUES ('spSuper','admins')
 				</cfquery>
 				
-		 		<cfquery name="qInsert" datasource=#stPortal.codb#>
+		 		<cfquery name="qInsert" datasource=#stApp.codb#>
 					INSERT INTO spGroups (groupname, description) 
 					VALUES ('managers', 'Site managers group.')
 				</cfquery>
-				<cfquery name="qInsert" datasource=#stPortal.codb#>
+				<cfquery name="qInsert" datasource=#stApp.codb#>
 					INSERT INTO spRolesAccessors (rolename,accessor) 
 					VALUES ('spEdit','managers')
 				</cfquery>
-				<cfquery name="qInsert" datasource=#stPortal.codb#>
+				<cfquery name="qInsert" datasource=#stApp.codb#>
 					INSERT INTO spRolesAccessors (rolename,accessor) 
 					VALUES ('spLive','managers')
 				</cfquery>
-				<cfquery name="qInsert" datasource=#stPortal.codb#>
+				<cfquery name="qInsert" datasource=#stApp.codb#>
 					INSERT INTO spRolesAccessors (rolename,accessor) 
 					VALUES ('spUsers','managers')
 				</cfquery>
-				<cfquery name="qInsert" datasource=#stPortal.codb#>
+				<cfquery name="qInsert" datasource=#stApp.codb#>
 					INSERT INTO spRolesAccessors (rolename,accessor) 
 					VALUES ('spKeywords','managers')
 				</cfquery>
 				
-		 		<cfquery name="qInsert" datasource=#stPortal.codb#>
+		 		<cfquery name="qInsert" datasource=#stApp.codb#>
 					INSERT INTO spGroups (groupname, description) 
 					VALUES ('editors', 'Content editors group.')
 				</cfquery>
-				<cfquery name="qInsert" datasource=#stPortal.codb#>
+				<cfquery name="qInsert" datasource=#stApp.codb#>
 					INSERT INTO spRolesAccessors (rolename,accessor) 
 					VALUES ('spEdit','editors')
 				</cfquery>
-				<cfquery name="qInsert" datasource=#stPortal.codb#>
+				<cfquery name="qInsert" datasource=#stApp.codb#>
 					INSERT INTO spRolesAccessors (rolename,accessor) 
 					VALUES ('spLive','editors')
 				</cfquery>
-				<cfquery name="qInsert" datasource=#stPortal.codb#>
+				<cfquery name="qInsert" datasource=#stApp.codb#>
 					INSERT INTO spRolesAccessors (rolename,accessor) 
 					VALUES ('spKeywords','editors')
 				</cfquery>
 				
-				<cfquery name="qInsert" datasource=#stPortal.codb#>
+				<cfquery name="qInsert" datasource=#stApp.codb#>
 					INSERT INTO spGroups (groupname, description) 
 					VALUES ('users', 'Web site users.')
 				</cfquery>
@@ -810,12 +772,12 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 				
 				<cfset generatedPassword = makePassword()>
 				
-		 		<cfquery name="qInsert" datasource=#stPortal.codb#>
+		 		<cfquery name="qInsert" datasource=#stApp.codb#>
 					INSERT INTO spUsers (spId, spRevision, spCreated, spCreatedBy, registered, username, fullname, password) 
 					VALUES ('#createUuid()#', 1, #createOdbcDatetime(now())#, 'spSystem', #createOdbcDatetime(now())#, 'admin', 'Admin User', '#generatedPassword#')
 				</cfquery>
 				
-		 		<cfquery name="qInsert" datasource=#stPortal.codb#>
+		 		<cfquery name="qInsert" datasource=#stApp.codb#>
 					INSERT INTO spUsersGroups (username, groupname) 
 					VALUES ('admin', 'admins')
 				</cfquery>
@@ -847,7 +809,7 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 		<!--- create new newsetter subscribers table? --->
 		<cftry>
 			
-			<cfquery name="qCheckExists" datasource="#stPortal.codb#">
+			<cfquery name="qCheckExists" datasource="#stApp.codb#">
 				SELECT * FROM spNewsletterSubscribers
 				WHERE email = 'noSuchEmail'
 			</cfquery>
@@ -857,7 +819,7 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 			<cfif cfcatch.sqlstate eq "S0002" or dbTableNotFound(cfcatch.detail)>
 			
 				<!--- note: this is really, really simple and doesn't allow for multiple newsletters on the one application --->
-				<cfquery name="qCreateTable" datasource="#stPortal.codb#">
+				<cfquery name="qCreateTable" datasource="#stApp.codb#">
 					CREATE TABLE spNewsletterSubscribers (
 						fullname #textDDLString(100)#,
 						email #textDDLString(100)# NOT NULL,
@@ -868,12 +830,12 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 				<!--- create indexes (note: this might look like overkill, but by putting both columns into both indexes, the dbms can return all the data from the index, without having to access the table itself) --->
 				<cftry>
 				
-					<cfquery name="qAddIndex" datasource="#stPortal.codb#">
+					<cfquery name="qAddIndex" datasource="#stApp.codb#">
 						CREATE INDEX spNewsletterSubscribers_email
 						ON spNewsletterSubscribers (email, fullname)
 					</cfquery>
 					
-					<cfquery name="qAddIndex" datasource="#stPortal.codb#">
+					<cfquery name="qAddIndex" datasource="#stApp.codb#">
 						CREATE INDEX spNewsletterSubscribers_fullname
 						ON spNewsletterSubscribers (fullname, email)
 					</cfquery>
@@ -894,7 +856,7 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 			<!--- attempt to insert users into newsletter subscribers table (this should work fine with Postgres, MySQL, Orable and SQL Server, not sure beyond that) --->
 			<cftry>
 			
-				<cfquery name="qInsertNewsletterSubscribers" datasource="#stPortal.codb#">
+				<cfquery name="qInsertNewsletterSubscribers" datasource="#stApp.codb#">
 					INSERT INTO spNewsletterSubscribers (fullname, email) 
 					SELECT fullname, email FROM spUsers WHERE email IS NOT NULL AND newsletter = 1 AND registered IS NOT NULL AND suspended IS NULL
 				</cfquery>
@@ -904,7 +866,7 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 				<!--- the first insert might have failed due to a primary key constraint violation (the email column of the spUsers table is not unique - most of the code enforces uniqueness, but there's no guarantee) --->
 				<cftry>
 				
-					<cfquery name="qInsertNewsletterSubscribers" datasource="#stPortal.codb#">
+					<cfquery name="qInsertNewsletterSubscribers" datasource="#stApp.codb#">
 						INSERT INTO spNewsletterSubscribers (email) 
 						SELECT DISTINCT(email) FROM spUsers WHERE email IS NOT NULL AND newsletter = 1 AND registered IS NOT NULL AND suspended IS NULL
 					</cfquery>
@@ -928,7 +890,7 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 	<cf_spApp attributeCollection="#attributes#">
 	
 	<!--- set the password encryption for the portal security zone (this is a hack to allow a single portal security zone support different encryption settings per application) --->
-	<cfif find("portal",stPortal.securityZones)>
+	<cfif find("portal",stApp.securityZones)>
 	
 		<cflock scope="application" timeout="3" type="exclusive">
 		<cfset application.speck.securityZones.portal.users.options.encryption = stPortal.passwordEncryption>
