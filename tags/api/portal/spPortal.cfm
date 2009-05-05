@@ -265,13 +265,13 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 	</cfif>
 	
 	<cfscript>
-		// copy settings from portal config file to stPortal and stApp (anything not pre-defined as a portal config setting also gets copied to stApp)
+		// copy settings from portal config file to stPortal and stApp (almost anything not pre-defined as a portal config setting also gets copied to stApp)
 		for ( key in stConfig.settings ) {
-			if ( key neq "appName" ) // do not allow appName to be overwritten
-				stPortal[key] = stConfig.settings[key];
-				if ( not structKeyExists(stPortal,key) ) {
-					stApp[key] = stConfig.settings[key];
-				}
+			if ( not structKeyExists(stPortal,key) and not listFindNoCase("appName,keywords",key) ) {
+				// copy setting to stApp
+				stApp[key] = stConfig.settings[key];
+			}
+			stPortal[key] = stConfig.settings[key];
 		}
 	</cfscript>
 	
