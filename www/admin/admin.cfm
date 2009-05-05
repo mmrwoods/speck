@@ -719,18 +719,18 @@ Licensed under the Academic Free License version 2.1
 		</cfsavecontent>
 		
 		<!--- include layout file if defined --->
-		<cfif isDefined("request.speck.layout") and len(request.speck.layout)>
+		<cfif isDefined("request.speck.adminLayout") and len(request.speck.adminLayout)>
 		
 			<!--- todo: add try/catch and handle missingInclude exception with spError --->
-			<cfif left(request.speck.layout,1) eq "/">
+			<cfif left(request.speck.adminLayout,1) eq "/">
 			
 				<!--- assume value is complete path to template --->
-				<cfinclude template="#request.speck.layout#">
+				<cfinclude template="#request.speck.adminLayout#">
 				
 			<cfelse>
 			
 				<!--- assume value matches a file in /webapps/speck/www/admin/layouts/ minus the .cfm extension --->
-				<cfinclude template="layouts/#request.speck.layout#.cfm">
+				<cfinclude template="layouts/#request.speck.adminLayout#.cfm">
 			
 			</cfif>
 		
