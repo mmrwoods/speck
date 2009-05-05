@@ -386,8 +386,8 @@ I'm sure this all used to be necessary in CF5
 			
 			<!--- default values for database settings --->
 			<cfparam name="stApp.dbType" default="ansicompliant">
-			<cfparam name="stApp.database.username" default="">
-			<cfparam name="stApp.database.password" default="">
+			<cfparam name="stApp.database.username" default=""> <!--- deprecated, do not use --->
+			<cfparam name="stApp.database.password" default=""> <!--- deprecated, do not use --->
 			<cfparam name="stApp.database.type" default="#stApp.dbType#">
 			<cfparam name="stApp.database.varcharType" default="varchar">
 			<cfparam name="stApp.database.varcharMaxLength" default="">
@@ -427,31 +427,32 @@ I'm sure this all used to be necessary in CF5
 			<cfparam name="stApp.contentStylesheet" default="">
 			
 			<!--- look for stylesheets in this sub-directory of speck/www/stylesheets/ --->
-			<cfparam name="stApp.stylesheets" default="custom">
+			<cfparam name="stApp.stylesheets" default="custom"> <!--- deprecated setting, do not use --->
+			<cfparam name="stApp.adminStylesheets" default="#stApp.stylesheets#">
 			
 			<cfscript>
 				// if default stylesheets location not set, look in custom sub-directory
-				if ( not len(stApp.stylesheets) ) {
-					stApp.stylesheets = "custom";
+				if ( not len(stApp.adminStylesheets) ) {
+					stApp.adminStylesheets = "custom";
 				}
-				customStylesPath = stApp.speckInstallRoot & fs & "www" & fs & "stylesheets" & fs & stApp.stylesheets & fs;
+				customStylesPath = stApp.speckInstallRoot & fs & "www" & fs & "stylesheets" & fs & stApp.adminStylesheets & fs;
 				if ( not len(stApp.adminStylesheet) ) {
 					if ( fileExists(customStylesPath & "admin.css") ) {
-						stApp.adminStylesheet = "/speck/stylesheets/" & stApp.stylesheets & "/admin.css";
+						stApp.adminStylesheet = "/speck/stylesheets/" & stApp.adminStylesheets & "/admin.css";
 					} else {
 						stApp.adminStylesheet = "/speck/stylesheets/system/admin.css";
 					}
 				}
 				if ( not len(stApp.toolbarStylesheet) ) {
 					if ( fileExists(customStylesPath & "admin.css") ) {
-						stApp.toolbarStylesheet = "/speck/stylesheets/" & stApp.stylesheets & "/toolbar.css";
+						stApp.toolbarStylesheet = "/speck/stylesheets/" & stApp.adminStylesheets & "/toolbar.css";
 					} else {
 						stApp.toolbarStylesheet = "/speck/stylesheets/system/toolbar.css";
 					}
 				}
 				if ( not len(stApp.contentStylesheet) ) {
 					if ( fileExists(customStylesPath & "admin.css") ) {
-						stApp.contentStylesheet = "/speck/stylesheets/" & stApp.stylesheets & "/content.css";
+						stApp.contentStylesheet = "/speck/stylesheets/" & stApp.adminStylesheets & "/content.css";
 					} else {
 						stApp.contentStylesheet = "/speck/stylesheets/system/content.css";
 					}

@@ -131,10 +131,10 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 	<cfparam name="stPortal.domain" default=""> <!--- domain name used by default when building email address etc. - if left blank, will be derived from host name --->
 	<!---<cfparam name="stPortal.description" default="">---> <!--- default meta description for site pages. OBSOLETE - DO NOT USE, HAS NO EFFECT ANYMORE --->
 	<!---<cfparam name="stPortal.keywords" default="">---> <!--- default meta keywords for site pages. OBSOLETE - DO NOT USE, HAS NO EFFECT ANYMORE --->
-	<cfparam name="stPortal.stylesheet" default="">
+	<cfparam name="stPortal.stylesheet" default=""> <!--- will default to /stylesheets/screen.css or /stylesheets/main.css if files exist --->
 	<cfparam name="stPortal.importStyles" default="">
-	<cfparam name="stPortal.printStylesheet" default="">
-	<cfparam name="stPortal.popupStylesheet" default="">
+	<cfparam name="stPortal.printStylesheet" default=""> <!--- will default to /stylesheets/print.css if file exists --->
+	<cfparam name="stPortal.popupStylesheet" default=""> <!--- will default to /stylesheets/popup.css if file exists --->
 	<cfparam name="stPortal.adminStylesheets" default="">
 	<cfparam name="stPortal.toolbarPrefix" default="">
 	<cfparam name="stPortal.layout" default="">
@@ -143,7 +143,7 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 	<cfparam name="stPortal.useKeywordsIndex" type="boolean" default="no">
 	<cfparam name="stPortal.labelRoles" default="spSuper,spEdit=r">
 	<cfparam name="stPortal.keywordsRoles" default="spSuper,spEdit=r">
-	<cfparam name="stPortal.breadCrumbPageTitles" type="boolean" default="no">
+	<cfparam name="stPortal.breadCrumbPageTitles" type="boolean" default="no"> <!--- deprecated setting, do not use, likely to be removed --->
 	<cfparam name="stPortal.trackUserActivity" type="boolean" default="no"> <!--- record when user was last active in spUsers database table (use with caution, results in an update statement eveyr 90 seconds or so) --->
 	<cfparam name="stPortal.logRequests" type="boolean" default="no">
 	<cfparam name="stPortal.passwordEncryption" default=""> <!--- set to name of function to encrypt/hash passwords - gets passed to portal security zone, see speck docs --->
@@ -221,9 +221,8 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 	
 	<!--- these defaults should really be configurable per speck installation / server --->
 	<cfparam name="stPortal.titleSeparator" default="-">
-	<cfparam name="stPortal.securityZones" default="portal"> <!--- multiple security zones are supported, but one of the zones *must* be "portal" --->
+	<cfparam name="stPortal.securityZones" default="portal">
 	<cfparam name="stPortal.dbtype" default="ansicompliant">
-	<cfparam name="stPortal.htmlEditor" default="FCKeditor">
 	<cfparam name="stPortal.enableRevisions" default="no" type="boolean">
 	<cfparam name="stPortal.historySize" default="100">
 	<cfparam name="stPortal.enablePromotion" default="no" type="boolean">
@@ -265,6 +264,23 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 		</cfif>
 	
 	</cfif>
+	
+	<!--- look for default stylesheets --->
+	<cfscript>
+		if ( not len(stPortal.stylesheet) ) {
+			if ( fileExists("#appInstallRoot#/www/stylesheets/screen.css") ) {
+				stPortal.stylesheet = "/stylesheets/screen.css";
+			} else if ( fileExists("#appInstallRoot#/www/stylesheets/main.css") ) {
+				stPortal.stylesheet = "/stylesheets/main.css";
+			}
+		}
+		if ( not len(stPortal.printStylesheet) and fileExists("#appInstallRoot#/www/stylesheets/print.css") ) {
+			stPortal.printStylesheet = "/stylesheets/print.css";
+		}
+		if ( not len(stPortal.popupStylesheet) and fileExists("#appInstallRoot#/www/stylesheets/popup.css") ) {
+			stPortal.popupStylesheet = "/stylesheets/popup.css";
+		}
+	</cfscript>
 
 	<!--- look for a favourite icon in the web root --->
 	<cfif fileExists(appInstallRoot & fs & "www" & fs & "favicon.ico")>
@@ -293,13 +309,6 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 		
 	</cfif>
 
-	<!--- <cfif not listFindNoCase(stPortal.securityZones,"portal")>
-		
-		<cfthrow message="Portal security zone not found in securityZones list '#stPortal.securityZones#'."
-			detail="Multiple security zones are supported, but the portal security zone must be included.">
-		
-	</cfif> --->
-	
 	<!--- always pad titleSeparator with spaces --->
 	<cfset stPortal.titleSeparator = " " & stPortal.titleSeparator & " ">
 	
@@ -319,9 +328,8 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 		sesSuffix = #stPortal.sesSuffix#
 		xSendFile =  #stPortal.xSendFile#
 		appWebRoot = #stPortal.appWebRoot#
-		htmlEditor = #stPortal.htmlEditor#
 		toolbarPrefix = #stPortal.toolbarPrefix#
-		stylesheets = #stPortal.adminStylesheets#
+		adminStylesheets = #stPortal.adminStylesheets#
 		manageKeywords = yes
 		maxKeywordLevels = #stPortal.maxKeywordLevels#
 		useKeywordsIndex = #stPortal.useKeywordsIndex#
@@ -1359,8 +1367,11 @@ if (Len(currentPath)) {
 		path = url.spPath;
 		if ( left(path,1) eq "/" ) { path = replace(path,"/","","one"); }
 		if ( right(path,1) eq "/" ) { path = left(path,len(path)-1); }
-		if ( len(request.speck.sesSuffix) ) {
+		if ( len(request.speck.sesSuffix) and reFind("\#request.speck.sesSuffix#$",path) ) {
+			// when rewrite engine is enabled, the sesSuffix is only appended when viewing a content item, so we know the last item in the path is an id of some sort
 			path = reReplaceNoCase(path,"\#request.speck.sesSuffix#$","");
+			url.spId = listLast(path,"/");
+			path = listDeleteAt(path,listLen(path,"/"),"/");
 		} else {
 			// assume that any trailing .htm or .html suffix is a dummy suffix
 			// possible TODO: just remove any suffixes from url.spPath??
@@ -1482,7 +1493,7 @@ request.speck.portal.cacheKeyword = replace(request.speck.portal.keyword,".","_"
 			request.speck.portal.keywordSeparator = "-";
 		} else {
 			request.speck.portal.keywordSeparator = "/";
-			breadcrumbsSesSuffix = "";
+			breadcrumbsSesSuffix = ""; // we never add the sesSuffix when looking at a site section as opposed to a content item
 		}
 	} else {
 		breadcrumbsBasePath = "#cgi.script_name#/spKey/";
