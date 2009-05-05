@@ -241,7 +241,7 @@ Licensed under the Academic Free License version 2.1
 	
 	function getCleanQueryString() {
 		// clean speck stuff from the querystring
-		return reReplace(cgi.query_string,"\&?resetcache=[^&]*","");
+		return reReplace(reReplace(cgi.query_string,"\&?resetcache=[^&]*",""),"\&?cachelist=[^&]*","");
 	}
 	
 	function capitalize(theString) {
