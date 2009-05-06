@@ -418,7 +418,7 @@ I'm sure this all used to be necessary in CF5
 			<cfparam name="stApp.historySize" default="100">
 			
 			<cfparam name="stApp.manageKeywords" default="no" type="boolean">
-			<cfparam name="stApp.maxKeywordLevels" default="3">
+			<cfparam name="stApp.maxKeywordLevels" default="2">
 			<cfparam name="stApp.useKeywordsIndex" type="boolean" default="no">
 			
 			<!--- allow stylesheets to be customised (empty values means use the default stylesheet) --->

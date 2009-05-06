@@ -197,35 +197,20 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 
 	--->
 	
-	<!--- default config settings to include in Speck application configuration --->
+	<!--- default Speck config settings for portal apps (set the few required settings and cfparam any others where the default for portal apps is different to the default for standard speck apps) --->
 	<cfset stApp = structNew()>
 	<cfset stApp.appName = attributes.name>
 	<cfset stApp.appInstallRoot = appInstallRoot>
 	<cfparam name="stApp.codb" default="#stApp.appName#">
-	<cfparam name="stApp.appWebRoot" default="">
-	<cfparam name="stApp.debug" default="no" type="boolean">
-	<cfparam name="stApp.adminStylesheets" default="">
-	<cfparam name="stApp.maxKeywordLevels" default="2">
-	<cfparam name="stApp.useKeywordsIndex" type="boolean" default="no">
 	<cfparam name="stApp.labelRoles" default="spSuper,spEdit=r">
 	<cfparam name="stApp.keywordsRoles" default="spSuper,spEdit=r">
-	<cfparam name="stApp.xSendFile" type="boolean" default="no">	
 	<cfparam name="stApp.sesSuffix" default=".html"> <!--- dummy suffix appended to the end of urls (when rewrite engine enabled, this only gets appended to urls referencing a content item) --->	
 	<cfparam name="stApp.securityZones" default="portal">
-	<cfparam name="stApp.dbtype" default="ansicompliant">
-	<cfparam name="stApp.enableRevisions" default="no" type="boolean">
-	<cfparam name="stApp.historySize" default="100">
-	<cfparam name="stApp.enablePromotion" default="no" type="boolean">
-	<cfparam name="stApp.locale" default="#getLocale()#">
-	<cfparam name="stApp.language" default=""> <!--- spApp will automatically determine the default language from the locale, but you can override it here --->
 	<cfif compareNoCase(replace(speckInstallRoot,"#fs#speck",""),listDeleteAt(appInstallRoot,listLen(appInstallRoot,fs),fs)) neq 0> 
 		<cfparam name="stApp.mapping" default="/webapps/#attributes.name#/tags"> <!--- if speck and application directories do not have same parent, assume a /webapps mapping exists --->
-	<cfelse>
-		<cfparam name="stApp.mapping" default="">
 	</cfif>
 	<cfparam name="stApp.sesUrls" default="yes" type="boolean">
 	<cfparam name="stApp.manageKeywords" default="yes" type="boolean">
-	<cfparam name="stApp.toolbarPrefix" default="">
 	
 	<!--- read portal config file --->
 	<cfset stConfig = structNew()>

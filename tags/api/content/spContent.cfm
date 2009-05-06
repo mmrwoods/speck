@@ -161,7 +161,7 @@ bShowAddAdmin = false;
 			bEditAccess = bKeywordsAccess;
 		}
 		
-		if (attributes.enableAdminLinks) {
+		if ( attributes.enableAdminLinks ) {
 			// general admin links
 			if (not request.speck.enableRevisions or not stType.revisioned) {
 				bShowEditAdmin = bEditAccess;
@@ -175,12 +175,15 @@ bShowAddAdmin = false;
 			}
 		}
 		
-		if (attributes.enableAddLink) {
-			// add content link		
-			if (stType.revisioned and request.speck.enablePromotion)
-				bShowAddAdmin = (request.speck.session.viewLevel eq "edit" and bEditAccess); // with revisioning and promotion enabled, only show add link at edit level
-			else
+		if ( attributes.enableAddLink ) {
+			// add content link
+			if ( attributes.displayPerPage gt 0 and isDefined("url.#attributes.pagingParam#") and isNumeric(evaluate("url.#attributes.pagingParam#")) and evaluate("url.#attributes.pagingParam#") gt 1 ) {
+				bShowAddAdmin = false;
+			} else if ( stType.revisioned and request.speck.enablePromotion ) {
+				bShowAddAdmin = ( request.speck.session.viewLevel eq "edit" and bEditAccess ); // with revisioning and promotion enabled, only show add link at edit level
+			} else {
 				bShowAddAdmin = bEditAccess;
+			}
 		}
 	
 		
