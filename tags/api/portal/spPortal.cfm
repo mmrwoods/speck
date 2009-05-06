@@ -96,7 +96,7 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 		else
 			fs = "\";
 			
-		nl = chr(10) & chr(13);
+		nl = chr(13) & chr(10);
 		
 		speckOffset = findNoCase(fs & "speck" & fs, speckInstallRoot);
 		speckInstallRoot = left(speckInstallRoot, speckOffset + 5);
@@ -130,6 +130,8 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 	<cfparam name="stPortal.popupStylesheet" default=""> <!--- will default to /stylesheets/popup.css if file exists --->
 	<cfparam name="stPortal.layout" default="">
 	<cfparam name="stPortal.template" default="">
+	<cfparam name="stPortal.fileManager" default="yes" type="boolean">
+	<cfparam name="stPortal.fileManagerIps" default="127.0.0.1">
 	<cfparam name="stPortal.titleSeparator" default="-">
 	<cfparam name="stPortal.breadCrumbPageTitles" type="boolean" default="no"> <!--- deprecated setting, do not use, likely to be removed --->
 	<cfparam name="stPortal.trackUserActivity" type="boolean" default="no"> <!--- record when user was last active in spUsers database table (use with caution, results in an update statement eveyr 90 seconds or so) --->
@@ -1237,8 +1239,7 @@ update: I found it, a logout script wasn't deleting the speck key from session s
 </cfif> <!--- check for portal security zone --->
 
 <!--- Search Engine Safe URL stuff - taken wholesale from SESConverter tag by the people at fusium.com --->
-<!--- TODO: contact the people at fusium and ask for permission to do this before we distribute anything --->
-<!--- NOTE: I have emailed the copyright owners but have not received a response, will try phoning and will remove this code if refused permission to use --->
+<!--- NOTE: I have tried to contact the copyright owners to ask for permission to include this, but never got any reply, I'm assuming there's no problem --->
 <cfscript>
 currentPath = cgi.script_name & replace(cgi.path_info,cgi.script_name,"");
 dummyExtension = request.speck.sesSuffix;
@@ -1308,14 +1309,27 @@ if (Len(currentPath)) {
 	
 <cfelseif structKeyExists(url,"spPath")>
 
-	<!--- note: experimental code to handle new rewrite engine url format --->
+	<!--- code to handle new rewrite engine url format - rewrite engine passes the path as spPath querystring param --->
 
+	<!--- some notes...
+	* First part of the path should match a keyword and it may be followed by an id and some other info.
+	* If nothing in the path matches a keyword, the keyword is set to "noSuchKeyword" so spPage will produce a 404 response. 
+	* The first part of the path which doesn't match a keyword will be set as the value of url.spId, on the 
+	  assumption that it either is an spId or something that can be used to uniquely identify a content item. 
+	  Templates can choose to ignore this value if it is not a real UUID. The getDisplayMethodUrl() function
+	  will generate URLs that conform to this, but there is no requirement that templates and content types 
+	  follow this convention.
+	* If the path ends in the sesSuffix (usually .html), the final element in the path is assumed to represent an identifier for a content item.  
+	* The entire path, as passed along by mod_rewrite, will always be available as url.spPath to all 
+	  templates. Templates can use this value to determine what action is to be taken. 
+	--->
+	
 	<cfscript>
 		path = url.spPath;
 		if ( left(path,1) eq "/" ) { path = replace(path,"/","","one"); }
 		if ( right(path,1) eq "/" ) { path = left(path,len(path)-1); }
 		if ( len(request.speck.sesSuffix) and reFind("\#request.speck.sesSuffix#$",path) ) {
-			// when rewrite engine is enabled, the sesSuffix is only appended when viewing a content item, so we know the last item in the path is an id of some sort
+			// when rewrite engine is enabled, the sesSuffix is only appended when viewing a content item, so we know the last item in the path is an identifier of some sort
 			path = reReplaceNoCase(path,"\#request.speck.sesSuffix#$","");
 			url.spId = listLast(path,"/");
 			path = listDeleteAt(path,listLen(path,"/"),"/");
@@ -1325,18 +1339,6 @@ if (Len(currentPath)) {
 			path = reReplaceNoCase(path,"\.htm(l)?$","");
 		}  
 	</cfscript>
-
-	<!--- some notes...
-	* First part of the path should match a keyword and it may be followed by an id and some other info. 
-	* If nothing in the path matches a keyword, the keyword is set to "noSuchKeyword" so spPage will produce a 404 response. 
-	* The first part of the path which doesn't match a keyword will be set as the value of url.spId, on the 
-	  assumption that it either is an spId or something that can be used to uniquely identify a content item. 
-	  Templates can choose to ignore this value if it is not a real UUID. The getDisplayMethodUrl() function
-	  will generate URLs that conform to this, but there is no requirement that templates and content types 
-	  follow this convention.
-	* The entire path, as passed along by mod_rewrite, will always be available as url.spPath to all 
-	  templates. Templates can use this value to determine what action is to be taken. 
-	--->
 	
 	<!--- look for a keyword in the path --->
 	<cfloop condition="#listLen(path,"/")# gt 0">
@@ -1391,47 +1393,39 @@ note: the spPage tag is responsible for checking if a keyword/page was found
 		</cfif> 
 </cfquery>
 
-<!--- now set various portal settings for the current request --->
-<!--- 
-possible TODO: copy these request variables to request.speck.page,
-rather than request.speck.portal and update code that uses them.
-May need to write something in to make this change backwards 
-compatible - new code should use request.speck.page, but spPage 
-chould also check if the values of any of the old request specific 
-variables in request.speck.portal are changed between the calls 
-to spPortal and their use in spPage and if so, copy those changes 
-automatically to request.speck.page. Should work for old code then.
---->
+<!--- now set up the page structure for the current request --->
 <cfscript>
-request.speck.portal.keyword = qKeyword.keyword;
-request.speck.portal.qKeyword = duplicate(qKeyword);
+request.speck.page = structNew();
+request.speck.page.keyword = qKeyword.keyword;
+request.speck.page.qKeyword = duplicate(qKeyword);
 
-if ( len(request.speck.portal.qKeyword.title) ) {
-	request.speck.portal.title = request.speck.portal.qKeyword.title;	
+if ( len(request.speck.page.qKeyword.title) ) {
+	request.speck.page.title = request.speck.page.qKeyword.title;	
 } else {
-	request.speck.portal.title = request.speck.portal.qKeyword.name;	
+	request.speck.page.title = request.speck.page.qKeyword.name;	
 }
-if ( len(request.speck.portal.qKeyword.description) ) {
-	request.speck.portal.description = request.speck.portal.qKeyword.description;
+request.speck.page.description = request.speck.page.qKeyword.description;
+request.speck.page.keywords = request.speck.page.qKeyword.keywords;
+if ( len(request.speck.page.qKeyword.template) ) {
+	request.speck.page.template = request.speck.page.qKeyword.template;
 } else {
-	request.speck.portal.description = "";
+	request.speck.page.template = request.speck.portal.template;	
 }
-if ( len(request.speck.portal.qKeyword.keywords) ) {
-	request.speck.portal.keywords = request.speck.portal.qKeyword.keywords;
+if ( len(request.speck.page.qKeyword.layout) ) {
+	request.speck.page.layout = request.speck.page.qKeyword.layout;
 } else {
-	request.speck.portal.keywords = "";
+	request.speck.page.layout = request.speck.portal.layout;	
 }
-if ( len(request.speck.portal.qKeyword.template) ) {
-	request.speck.portal.template = request.speck.portal.qKeyword.template;
+request.speck.page.cacheKeyword = replace(request.speck.page.keyword,".","_","all");
+// copy vars in request.speck.page to request.speck.portal for backwards compatibility
+for ( key in request.speck.page ) {
+	request.speck.portal[key] = request.speck.page[key];	
 }
-if ( len(request.speck.portal.qKeyword.layout) ) {
-	request.speck.portal.layout = request.speck.portal.qKeyword.layout;
-}
-request.speck.portal.cacheKeyword = replace(request.speck.portal.keyword,".","_","all");
+// copy the friendly name to request.speck.page after the backwards compatibility code to avoid clashing with the portal/site name
+request.speck.page.name = request.speck.page.qKeyword.name; 
 </cfscript>
 
 <!--- build an array of breadcrumbs and set the keywordSeparator to be used when building ses urls --->
-<!--- TODO: create a function for adding breadcrumbs which can be called both here and in content templates --->
 <cfscript>
 	breadcrumbsSesSuffix = request.speck.sesSuffix;
 	if ( request.speck.portal.rewriteEngine ) {
@@ -1448,7 +1442,8 @@ request.speck.portal.cacheKeyword = replace(request.speck.portal.keyword,".","_"
 	}
 	
 	// create the breadcrumbs array as an ArrayList object because we'll need to create two references to it (for backwards compatibility purposes)
-	request.speck.portal.breadcrumbs = createObject("java","java.util.ArrayList").init();
+	request.speck.page.breadcrumbs = createObject("java","java.util.ArrayList").init();
+	request.speck.portal.breadcrumbs = request.speck.page.breadcrumbs;
 	
 	function appendBreadcrumb(href,caption) {
 		var title = caption;

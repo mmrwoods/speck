@@ -9,7 +9,7 @@ Licensed under the Academic Free License version 2.1
 
 <!--- builds a web page, rendering content passed as an attribute or generated using a template inside a layout --->
 
-<cfif not isDefined("request.speck.portal.qKeyword")> 
+<cfif not isDefined("request.speck.page")> 
 	
 	<cfthrow message="CF_SPPAGE: missing data required to build page." 
 		detail="This error probably means cf_spPortal has not been called as part of this request.">
@@ -49,17 +49,17 @@ Licensed under the Academic Free License version 2.1
 	<!--- we need to generate the content --->
 	
 	<!--- allow template to be set using a tag attribute --->
-	<cfparam name="attributes.template" default="#request.speck.portal.template#">
+	<cfparam name="attributes.template" default="#request.speck.page.template#">
 	
 	<cfsavecontent variable="speck.layout">
 	
 		<!--- add html comment markers to assist parsing further along the yellow brick road --->
-		<cfoutput>#nl#<!-- SPPAGE BEGIN #uCase(request.speck.portal.keyword)# -->#nl#</cfoutput>
+		<cfoutput>#nl#<!-- SPPAGE BEGIN #uCase(request.speck.page.keyword)# -->#nl#</cfoutput>
 	
 	    <!--- check if user has access to this keyword --->
 		<cfscript>
 			bAccess = false; // set to true if user has access
-			lAccessGroups = request.speck.portal.qKeyword.groups; // groups with access
+			lAccessGroups = request.speck.page.qKeyword.groups; // groups with access
 			if ( lAccessGroups eq "" ) {
 				bAccess = true; // no access restrictions
 			} else if ( request.speck.userHasPermission("spSuper,spEdit,spLive") ) {
@@ -78,7 +78,7 @@ Licensed under the Academic Free License version 2.1
 				}
 				// finally, check if the user has been granted edit permission to the keyword
 				if ( not bAccess and isDefined("request.speck.session.roles") ) {
-					lKeywordRoles = request.speck.portal.qKeyword.roles;
+					lKeywordRoles = request.speck.page.qKeyword.roles;
 					lUserRoles = structKeyList(request.speck.session.roles);
 					while (lKeywordRoles neq "" and not bAccess) {
 						role = listFirst(lKeywordRoles);
@@ -96,16 +96,13 @@ Licensed under the Academic Free License version 2.1
 				
 				<cfheader statuscode="403" statustext="Forbidden">
 				
-				<!--- override the page title and so on - no information about the page shouldn't be visible --->
-				<!--- note: this does not prevent the layout from showing the menu and breadcrumbs (we are not changing request.speck.portal.keyword here) --->
+				<!--- override the page title and so on - information about the page shouldn't be visible --->
 				<cfscript>
-					request.speck.portal.qKeyword.name[1] = "Access Denied";
-					request.speck.portal.qKeyword.title[1] = "Access Denied";
-					request.speck.portal.qKeyword.description[1] = "";
-					request.speck.portal.qKeyword.keywords[1] = "";
-					request.speck.portal.title = "Access Denied";
-					request.speck.portal.description = "";
-					request.speck.portal.keywords = "";
+					request.speck.page.qKeyword.name[1] = "Access Denied";
+					request.speck.page.name = "Access Denied";
+					request.speck.page.title = "Access Denied";
+					request.speck.page.description = "";
+					request.speck.page.keywords = "";
 				</cfscript>
 	
 				<cftry>
@@ -139,15 +136,17 @@ Licensed under the Academic Free License version 2.1
 			
 			</cfif>
 		
-		<cfelseif not request.speck.portal.qKeyword.recordCount>
+		<cfelseif not request.speck.page.qKeyword.recordCount>
 		
 			<!--- keyword not found --->
 			<cfheader statuscode="404" statustext="Not Found">
 
 			<cfscript>
-				request.speck.portal.title = "Not Found";	
-				request.speck.portal.description = "";
-				request.speck.portal.keywords = "";
+				request.speck.page.qKeyword.name[1] = "Not Found";
+				request.speck.page.name = "Not Found";	
+				request.speck.page.title = "Not Found";	
+				request.speck.page.description = "";
+				request.speck.page.keywords = "";
 			</cfscript>
 
 			<cftry>
@@ -173,15 +172,15 @@ Licensed under the Academic Free License version 2.1
 		<cfelse>
 		
 			<!--- use blurb type to generate content --->
-			<cf_spCacheThis cacheName="blurb_#replace(request.speck.portal.keyword,".","_","all")#">
+			<cf_spCacheThis cacheName="blurb_#replace(request.speck.page.keyword,".","_","all")#">
 			
-				<cf_spContent type="Blurb" label="#request.speck.portal.keyword#" keywords="#request.speck.portal.keyword#" forceParagraphs="yes">
+				<cf_spContent type="Blurb" label="#request.speck.page.keyword#" keywords="#request.speck.page.keyword#" forceParagraphs="yes">
 		
 			</cf_spCacheThis>
 			
 		</cfif>
 		
-		<cfoutput>#nl#<!-- SPPAGE END #uCase(request.speck.portal.keyword)# -->#nl#</cfoutput>
+		<cfoutput>#nl#<!-- SPPAGE END #uCase(request.speck.page.keyword)# -->#nl#</cfoutput>
 	
 	</cfsavecontent>
 	
@@ -230,15 +229,23 @@ Licensed under the Academic Free License version 2.1
 	}
 </cfscript>
 
+<!--- some code to maintain backwards compatibility with templates designed before we had request.speck.page --->
+<cfloop list="keyword,title,description,keywords" index="key">
+	<cfif compare(request.speck.portal[key],request.speck.page.qKeyword[key][1]) neq 0>
+		<!--- key has chaged during processing, copy to request.speck.page --->
+		<cfset request.speck.page[key] = request.speck.portal[key]>
+	</cfif>
+</cfloop>
+
 <cfparam name="request.speck.portal.breadCrumbPageTitles" default="no">
-<cfif request.speck.portal.breadCrumbPageTitles and request.speck.portal.keyword neq "home">
+<cfif request.speck.portal.breadCrumbPageTitles and request.speck.page.keyword neq "home">
 
 	<!--- build the document title as a reversed breadcrumbs --->
 	<cfset pageTitle = "">
-	<cfset breadCrumbsLength = arrayLen(request.speck.portal.breadcrumbs)>
+	<cfset breadCrumbsLength = arrayLen(request.speck.page.breadcrumbs)>
 	<cfloop from="#breadCrumbsLength#" to="2" index="i" step="-1">
 	
-		<cfset breadcrumb = request.speck.portal.breadcrumbs[i]>
+		<cfset breadcrumb = request.speck.page.breadcrumbs[i]>
 		
 		<cfif i eq breadCrumbsLength>
 			<cfset pageTitle = breadcrumb.title>
@@ -250,19 +257,19 @@ Licensed under the Academic Free License version 2.1
 	
 	<cfset pageTitle = pageTitle & request.speck.portal.titleSeparator & request.speck.portal.name>
 
-<cfelseif request.speck.portal.keyword eq "home">
+<cfelseif request.speck.page.keyword eq "home">
 
-	<cfset pageTitle = request.speck.portal.title>
+	<cfset pageTitle = request.speck.page.title>
 
 <cfelse>
 
-	<cfset pageTitle = request.speck.portal.title & request.speck.portal.titleSeparator & request.speck.portal.name>
+	<cfset pageTitle = request.speck.page.title & request.speck.portal.titleSeparator & request.speck.portal.name>
 	
 </cfif>
 
-<cfif len(request.speck.portal.description)>
+<cfif len(request.speck.page.description)>
 	
-	<cfset description = request.speck.portal.description>
+	<cfset description = request.speck.page.description>
 	
 <cfelse>
 	
@@ -270,9 +277,9 @@ Licensed under the Academic Free License version 2.1
 	
 </cfif>
 
-<cfif len(request.speck.portal.keywords)>
+<cfif len(request.speck.page.keywords)>
 	
-	<cfset keywords = request.speck.portal.keywords>
+	<cfset keywords = request.speck.page.keywords>
 	
 <cfelse>
 	
@@ -405,7 +412,7 @@ Licensed under the Academic Free License version 2.1
 </cfoutput>
 
 <!--- allow layout to be set using a tag attribute --->
-<cfparam name="attributes.layout" default="#request.speck.portal.layout#">
+<cfparam name="attributes.layout" default="#request.speck.page.layout#">
 
 <cfif len(attributes.layout)>
 
