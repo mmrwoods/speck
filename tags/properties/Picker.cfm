@@ -106,11 +106,14 @@ Licensed under the Academic Free License version 2.1
 		<!--- monitor form for changes and only request confirmation to submit the form after adding/editing/moving an item if the form has been modified --->
 		<cfscript>
 			bHtmlEditorFound = false;
-			for ( i=1; i lte arrayLen(stType.props); i = i+1 ) {
-				prop = stType.props[i];
-				if ( prop.type eq "Html" and structKeyExists(prop,"richEdit") and prop.richEdit ) {
-					bHtmlEditorFound = true;
-				}	
+			if ( structKeyExists(caller,"type") and structKeyExists(request.speck.types,url.type) ) {
+				stCallerType = request.speck.types[url.type];
+				for ( i=1; i lte arrayLen(stCallerType.props); i = i+1 ) {
+					prop = stCallerType.props[i];
+					if ( prop.type eq "Html" and structKeyExists(prop,"richEdit") and prop.richEdit ) {
+						bHtmlEditorFound = true;
+					}	
+				}
 			}
 		</cfscript>
 		<cfif bHtmlEditorFound>
@@ -134,6 +137,7 @@ Licensed under the Academic Free License version 2.1
 				var formModified_#stPD.name# = false;
 				
 				window.onload = function() {
+					otherOnLoad_#stPD.name#();
 					new Form.Observer('speditform', 0.3, function(form, value) {
 						formModified_#stPD.name# = true;
 					});

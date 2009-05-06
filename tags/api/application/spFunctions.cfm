@@ -39,9 +39,8 @@ Licensed under the Academic Free License version 2.1
 			for (i=1; i lte arrayLen(aParams); i=i+1) {
 				s = replace(s, "%" & i, aParams[i],"all");
 			}
-			//for (i = 1; i le listLen(lParams); i = i + 1) {
-			//	s = replace(s, "%" & i, replace(listGetAt(lParams, i),"&nbsp;"," ","all"),"all");
-			//}
+			s = replace(s,"&nbsp;"," ","all");
+			s = reReplace(s,"[[:space:]]+"," ","all");
 			return s;
 		}			
 	}
