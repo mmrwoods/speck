@@ -1461,7 +1461,9 @@ request.speck.portal.cacheKeyword = replace(request.speck.portal.keyword,".","_"
 		breadcrumbsBasePath = "#cgi.script_name#/spKey/";
 		request.speck.portal.keywordSeparator = ".";
 	}
-	breadcrumbs = arrayNew(1);
+	
+	// create the breadcrumbs array as an ArrayList object because we'll need to create two references to it (for backwards compatibility purposes)
+	request.speck.portal.breadcrumbs = createObject("java","java.util.ArrayList").init();
 	
 	function appendBreadcrumb(href,caption) {
 		var title = caption;
@@ -1501,11 +1503,7 @@ request.speck.portal.cacheKeyword = replace(request.speck.portal.keyword,".","_"
 			else 
 				thisHref = "#breadcrumbsBasePath##thisKeyword##breadcrumbsSesSuffix#";
 
-			stBreadcrumb = structNew();
-			stBreadcrumb.href = thisHref;
-			stBreadcrumb.caption = thisCaption;			
-			stBreadcrumb.title = thisTitle;
-			arrayAppend(breadcrumbs,stBreadCrumb);
+			appendBreadcrumb(thisHref,thisCaption,thisTitle);
 		</cfscript>
 		
 	</cfif>
@@ -1541,11 +1539,7 @@ request.speck.portal.cacheKeyword = replace(request.speck.portal.keyword,".","_"
 			else
 				thisHref = "#breadcrumbsBasePath##thisKeyword##breadcrumbsSesSuffix#";
 
-			stBreadcrumb = structNew();
-			stBreadcrumb.href = thisHref;
-			stBreadcrumb.caption = thisCaption;			
-			stBreadcrumb.title = thisTitle;
-			arrayAppend(breadcrumbs,stBreadCrumb);
+			appendBreadcrumb(thisHref,thisCaption,thisTitle);
 			
 			parent = keyword;
 		</cfscript>
@@ -1553,5 +1547,3 @@ request.speck.portal.cacheKeyword = replace(request.speck.portal.keyword,".","_"
 	</cfloop>
 
 </cfif>
-
-<cfset request.speck.portal.breadcrumbs = duplicate(breadcrumbs)>
