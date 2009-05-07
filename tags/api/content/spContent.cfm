@@ -349,22 +349,26 @@ bShowAddAdmin = false;
 			
 			<cfif len(stPaging.menu)>
 			
-				<cfoutput><div class="spContentPaging spContentPagingTop"></cfoutput>
-				
-				<cfif len(attributes.pagingCaption)>
+				<cfif attributes.pagingMenu eq "top" or attributes.pagingMenu eq "both">
+			
+					<cfoutput><div class="spContentPaging spContentPagingTop"></cfoutput>
 					
-					<!--- TODO: use a format string from the strings file to build this (e.g. %1 to %2 of %3 %4) --->
-					<cfoutput><span class="spContentPagingCaption">#stPaging.startRow# to #stPaging.endRow# of #totalRows# #attributes.pagingCaption#</span></cfoutput>
+					<cfif len(attributes.pagingCaption)>
 						
-				</cfif>
-				
-				<cfoutput><span class="spContentPagingMenu">#stPaging.menu#</span></div></cfoutput>
-				
-				<cfif bShowEditAdmin or bShowEditPromoAdmin or bShowReviewAdmin>
-				
-					<!--- hack to force the menu to clear before outputting any admin links - TODO: clean this up --->
-					<cfoutput><span style="display:block;clear:both;height:0;font:0/0;">&nbsp;</span></cfoutput>
-				
+						<!--- TODO: use a format string from the strings file to build this (e.g. %1 to %2 of %3 %4) --->
+						<cfoutput><span class="spContentPagingCaption">#stPaging.startRow# to #stPaging.endRow# of #totalRows# #attributes.pagingCaption#</span></cfoutput>
+							
+					</cfif>
+					
+					<cfoutput><span class="spContentPagingMenu">#stPaging.menu#</span></div></cfoutput>
+					
+					<cfif bShowEditAdmin or bShowEditPromoAdmin or bShowReviewAdmin>
+					
+						<!--- hack to force the menu to clear before outputting any admin links - TODO: clean this up --->
+						<cfoutput><span style="display:block;clear:both;height:0;font:0/0;">&nbsp;</span></cfoutput>
+					
+					</cfif>
+					
 				</cfif>
 			
 				<cfset attributes.startRow = stPaging.startRow + rowOffSet>
