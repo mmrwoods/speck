@@ -204,6 +204,7 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 	<cfset stApp.appName = attributes.name>
 	<cfset stApp.appInstallRoot = appInstallRoot>
 	<cfparam name="stApp.codb" default="#stApp.appName#">
+	<cfparam name="stApp.dbType" default="ansicompliant">
 	<cfparam name="stApp.labelRoles" default="spSuper,spEdit=r">
 	<cfparam name="stApp.keywordsRoles" default="spSuper,spEdit=r">
 	<cfparam name="stApp.sesSuffix" default=".html"> <!--- dummy suffix appended to the end of urls (when rewrite engine enabled, this only gets appended to urls referencing a content item) --->	
