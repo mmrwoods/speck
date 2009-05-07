@@ -1,7 +1,11 @@
 # Simple Apache htaccess file for standard Speck rewrite URLs
-# Copy this file to your document root (or copy the contents to 
-# your virtual host configuration), then set rewriteEngine=yes 
-# in your portal configuration file and refresh the application.
+# Copy this file to your document root, then set rewriteEngine
+# to yes in your portal.cfg file and refresh the application.
+# Note: this isn't actually the recommended approach, you
+# should really add a rule within a virtualhost directive.
+
+Options +FollowSymLinks
 
 RewriteEngine On
-RewriteRule ^/go/(.*)$ /index.cfm?spPath=$1 [PT,QSA,L]
+
+RewriteRule ^go/(.*)$ /index.cfm?spPath=$1 [PT,QSA,L]
