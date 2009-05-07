@@ -1085,6 +1085,8 @@ Licensed under the Academic Free License version 2.1
 				
 			</cfif>
 			
+			<!--- TODO: clean up the code to delete publicly accessible assets, it's duplicated in two places below --->
+
 			<cfif fileName neq "" and newLevel eq "live" and stPD.secureKeys eq "" and revision neq 0>
 			
 				<cfif directoryExists(assetDir)>
@@ -1127,10 +1129,28 @@ Licensed under the Academic Free License version 2.1
 				
 				<cffile action="copy" source="#secureAssetDir##fileName#" destination="#assetDir##fileName#" mode="664">
 				
-			<cfelseif filename neq "" and revision eq 0>
+			<cfelseif newLevel eq "live" and revision eq 0 and directoryExists(assetDir)>
 			
-				<!--- Should delete the copy in the asset directory --->
-				<cffile action="delete" file="#assetDir##fileName#">
+				<!--- delete files in the public assets directory --->
+				<cfdirectory action="list" directory="#assetDir#" sort="type desc" name="qFilesToDelete">
+				
+				<cfloop query="qFilesToDelete">
+				
+					<cfif type eq "file" and name neq fileName>
+					
+						<cffile action="delete" file="#assetDir##name#">
+					
+					</cfif>
+				
+				</cfloop>
+				
+				<!--- delete containing directory --->
+				<cftry>
+					<cfdirectory action="delete" directory="#assetDir#">
+				<cfcatch>
+					<!--- do nothing, it's not really a problem if we can't delete the directory --->
+				</cfcatch>
+				</cftry>
 			
 			</cfif>
 		

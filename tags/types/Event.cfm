@@ -427,7 +427,7 @@ Licensed under the Academic Free License version 2.1
 						</td>
 					</tr>
 					<tr>
-						<td colspan="2" align="center">
+						<td colspan="2" align="center" style="text-align:center;">
 						<input type="submit" value=" Send " />
 						<input type="button" value=" Cancel " id="exitbutton" onclick="window.location.href='#form.eventUrl#';" />
 						</td>

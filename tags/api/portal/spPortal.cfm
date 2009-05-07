@@ -132,6 +132,7 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 	<cfparam name="stPortal.template" default="">
 	<cfparam name="stPortal.fileManager" default="yes" type="boolean">
 	<cfparam name="stPortal.fileManagerIps" default="127.0.0.1">
+	<cfparam name="stPortal.fileManagerUsers" default="">
 	<cfparam name="stPortal.titleSeparator" default="-">
 	<cfparam name="stPortal.breadCrumbPageTitles" type="boolean" default="no"> <!--- deprecated setting, do not use, likely to be removed --->
 	<cfparam name="stPortal.trackUserActivity" type="boolean" default="no"> <!--- record when user was last active in spUsers database table (use with caution, results in an update statement eveyr 90 seconds or so) --->
@@ -1423,7 +1424,7 @@ for ( key in request.speck.page ) {
 	request.speck.portal[key] = request.speck.page[key];	
 }
 // copy the friendly name to request.speck.page after the backwards compatibility code to avoid clashing with the portal/site name
-request.speck.page.name = request.speck.page.qKeyword.name; 
+request.speck.page.name = request.speck.page.qKeyword.name;
 </cfscript>
 
 <!--- build an array of breadcrumbs and set the keywordSeparator to be used when building ses urls --->
@@ -1528,3 +1529,26 @@ request.speck.page.name = request.speck.page.qKeyword.name;
 	</cfloop>
 
 </cfif>
+
+<!--- add a function to generate a url for the current keyword (or any keyword provided as an argument), we often need this within templates --->
+<cfscript>
+	function getKeywordUrl() {
+		var keyword = request.speck.page.keyword;
+		var keywordUrl = "";
+		if ( arrayLen(arguments) ) {
+			keyword = arguments[1];	
+		}
+		if ( request.speck.portal.rewriteEngine ) {
+			keywordUrl = "/" & request.speck.portal.rewritePrefix;
+		} else {
+			keywordUrl = cgi.script_name & "/spKey/";
+		}
+		keywordUrl = keywordUrl & replace(request.speck.page.keyword,".",request.speck.portal.keywordSeparator,"all");
+		if ( not request.speck.portal.rewriteEngine ) {
+			keywordUrl = keywordUrl & request.speck.sesSuffix;
+		}
+		return keywordUrl;
+	}
+	request.speck.portal.getKeywordUrl = getKeywordUrl;
+</cfscript>
+
