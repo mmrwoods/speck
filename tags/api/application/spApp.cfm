@@ -1464,7 +1464,7 @@ I'm sure this all used to be necessary in CF5
 	
 	<!--- Get user's details if they're not anonymous --->
 	
-	<cfif session.speck.user neq "anonymous" and not isDefined("session.speck.fullName")>
+	<cfif session.speck.user neq "anonymous" and session.speck.auth eq "none">
 	
 		<cf_spUserGet user="#session.speck.user#" securityZone="#session.speck.securityZone#" r_stUser="stUser">
 			

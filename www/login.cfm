@@ -14,10 +14,19 @@ Attributes:
 	url.app(string, required): name of app
 --->
 
-<cfparam name="form.spLogonUser" default="">
+<cfif request.speck.session.user neq "anonymous">
+	<cfparam name="form.spLogonUser" default="#request.speck.session.user#">
+<cfelse>
+	<cfparam name="form.spLogonUser" default="">
+</cfif>
 <cfparam name="form.spLogonPassword" default="">
-<cfparam name="url.redirect_to" default="#request.speck.appWebRoot#/">
-<cfparam name="form.redirect_to" default="#url.redirect_to#">
+<cfif structKeyExists(url,"redirect_to")>
+	<cfparam name="form.redirect_to" default="#url.redirect_to#">
+<cfelseif len(cgi.http_referer) and findNoCase(cgi.http_host,cgi.http_referer)>
+	<cfparam name="form.redirect_to" default="#cgi.http_referer#">
+<cfelse>
+	<cfparam name="form.redirect_to" default="#request.speck.appWebRoot#/">
+</cfif>
 
 <cfoutput>
 <html>
@@ -60,7 +69,9 @@ Attributes:
 		//-->
 	</script>
 	<form name="spLogonForm" action="#cgi.script_name#?#cgi.query_string#" method="post">
+	<!--- <fieldset style="padding:10px;"> --->
 	<input type="hidden" name="redirect_to" value="#form.redirect_to#" />
+	<div style="margin:20px;">
 	<p>Enter your username and password to login:</p>
 	<cfif isDefined("request.speck.failedLogon")>
 		<cfif structKeyExists(request.speck,"failedLogonMessage")>
@@ -69,19 +80,23 @@ Attributes:
 			<strong style="color:red;">Login failed, please try again...</strong>
 		</cfif>
 	</cfif>
-	<table>
+	<table cellpadding="0" cellspacing="0">
 		<tr>
-		<td style="vertical-align:middle;"><label for="spLogonUser">Username</label></td>
-		<td><input type="text" name="spLogonUser" id="spLogonUser" value="#form.spLogonUser#" size="25" maxlength="20"></td>
+		<td style="vertical-align:middle;" style="padding:5px 0;"><label for="spLogonUser">Username</label></td>
+		<td colspan="2" style="padding:5px;"><input type="text" name="spLogonUser" id="spLogonUser" value="#form.spLogonUser#" size="25" maxlength="20"></td>
 		</tr>
 		<tr>
-		<td style="vertical-align:middle;"><label for="spLogonPassword">Password</label></td>
-		<td><input type="password" name="spLogonPassword" id="spLogonPassword" value="#form.spLogonPassword#" size="25" maxlength="100"></td>
+		<td style="vertical-align:middle;" style="padding:5px 0;"><label for="spLogonPassword">Password</label></td>
+		<td colspan="2" style="padding:5px;"><input type="password" name="spLogonPassword" id="spLogonPassword" value="#form.spLogonPassword#" size="25" maxlength="100"></td>
 		</tr>
 		<tr>
-		<td colspan="2" align="right"><input type="submit" value="Login" class="button"></td>
+		<td>&nbsp;</td>
+		<td align="left" style="vertical-align:middle;padding:5px;"><!--- <input type="checkbox" value="1" name="spRememberUser" id="spRememberUser" style="vertical-align:middle;" /><label for="spRememberUser">Remember me</label> ---></td>
+		<td align="right" style="padding:5px;"><input type="submit" value="Login" class="button"></td>
 		</tr>	
 	</table>
+	</div>
+	<!--- </fieldset> --->
 	</form>
 	</cfoutput>
 
