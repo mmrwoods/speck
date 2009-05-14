@@ -29,7 +29,7 @@ Licensed under the Academic Free License version 2.1
 
 	<cfparam name="attributes.allSubLevels" default="false" type="boolean"> <!--- output links for sub-levels of all keywords, not just the curent keyword --->
 	<cfparam name="attributes.levels" default="1" type="numeric"> <!--- no of levels/nodes to traverse --->
-	<cfparam name="attributes.list" default="false" type="boolean"> <!--- output menu items as html list elements and use the class and highlightClass attributes as class attributes for the list item element --->
+	<cfparam name="attributes.list" default="true" type="boolean"> <!--- output menu items as html list elements and use the class and highlightClass attributes as class attributes for the list item element --->
 
 </cfif>
 

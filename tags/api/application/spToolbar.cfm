@@ -46,10 +46,10 @@ Renders toolbar allowing editors and reviewers (i.e. spEdit or spReview permissi
 				background: transparent; 
 				font: 10px Verdana, Arial, Helvetica, sans-serif; 
 			}
-			##spToolbarLogin a { color: ##999; font-weight: normal; background:transparent; text-decoration:none; }
+			##spToolbarLogin a { color: silver; font-weight: normal; background:transparent; text-decoration:none; }
 			##spToolbarLogin a:focus,
 			##spToolbarLogin a:hover,
-			##spToolbarLogin a:active { text-decoration:underline; background-color: transparent;}
+			##spToolbarLogin a:active { color: dimgray; text-decoration:underline; background-color: transparent;}
 			</style>
 			<script type="text/javascript">
 				// simple function taken from about.com, but modified to always return an integer (-1 for unknown)
