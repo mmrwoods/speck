@@ -310,6 +310,14 @@ some added column values. Seems to be a CF5 problem with QofQ on queries that do
 			win.focus();
 		}
 	}
+	function load_keyword(keyword) {
+		if ( window.opener && !window.opener.closed ) {
+			window.opener.location.href = "#request.speck.appWebRoot#/?spKey=" + keyword;
+		} else {
+			alert("Failed to load page - main window has been closed.");
+		}
+		return false;
+	}
 </script>
 <table cellpadding="1" cellspacing="1" border="0" width="100%" class="data_table">
 <!--- <caption>Existing Keywords</caption> --->
@@ -322,8 +330,7 @@ some added column values. Seems to be a CF5 problem with QofQ on queries that do
 			<th>Menu</th>
 			<th>Sitemap</th>
 			<th>Public</th>
-		<cfelse>
-			<th>Friendly&nbsp;Name</th>
+			<th>&nbsp;</th>
 		</cfif>
 		<th>&nbsp;</th>
 		<th>&nbsp;</th>
@@ -341,38 +348,59 @@ some added column values. Seems to be a CF5 problem with QofQ on queries that do
 		<cfset currentLevel = listLen(keyword,".")>
 		
 		<cfset bEditAccess = ( bUserHasEditRole or ( len(roles) and request.speck.userHasPermission(roles) ) )>
+		
+		<cfif currentLevel gt 1>
+			<cfset keywordIndent = 25 * ( listLen(keyword,".") - 1) + 5>
+		<cfelse>
+			<cfset keywordIndent = 5>
+		</cfif>
 
 		<cfoutput>
-			<tr <cfif currentRow mod 2 eq 1>class="alternateRow"</cfif>>
-				<!--- <td nowrap="yes"><cfif currentLevel gt 1><span style="color:gray;">#listSetAt(keyword,currentLevel,"</span>" & listGetAt(keyword,currentLevel,"."),".")#<cfelse>#keyword#</cfif></td> --->
-				<cfif currentLevel gt 1>
-					<cfset indent = 25 * ( listLen(keyword,".") - 1) + 5>
-					<td nowrap="yes" style="padding-left:#indent#px;" title="#keyword#">#name#</td>
-				<cfelse>
-					<td nowrap="yes" style="padding-left:5px;" title="#keyword#">#name#</td>
-				</cfif>
+		<tr <cfif currentRow mod 2 eq 1>class="alternateRow"</cfif>>
+		</cfoutput>
+		
+			<cfif isDefined("request.speck.portal")> 
+			
+				<cfoutput>
+				<td nowrap="yes" style="padding-left:#keywordIndent#px;" title="#keyword#">#name#</td>
+				<!--- <td nowrap="yes" style="text-align:center"><cfif len(layout)>#layout#<cfelse>-- default --</cfif></td> --->
+				<td nowrap="yes" style="text-align:center"><cfif len(template)>#template#<cfelseif isDefined("request.speck.portal.template") and len(request.speck.portal.template)>#request.speck.portal.template#<cfelse>text</cfif></td>
+				<td nowrap="yes" style="text-align:center">#yesNoFormat(spMenu)#</td>
+				<td nowrap="yes" style="text-align:center">#yesNoFormat(spSitemap)#</td>
+				<td nowrap="yes" style="text-align:center"><cfif len(groups)>No<cfelse>Yes</cfif></td>
+				<td nowrap="yes" style="text-align:center"><a href="javascript:return false;" onclick="load_keyword('#keyword#');return false;" title="View page #keyword# in main window">view</a></td>
+				</cfoutput>
 				
-				<cfif isDefined("request.speck.portal")> 
-					<!--- <td nowrap="yes" style="text-align:center"><cfif len(layout)>#layout#<cfelse>-- default --</cfif></td> --->
-					<td nowrap="yes" style="text-align:center"><cfif len(template)>#template#<cfelseif isDefined("request.speck.portal.template") and len(request.speck.portal.template)>#request.speck.portal.template#<cfelse>text</cfif></td>
-					<td nowrap="yes" style="text-align:center">#yesNoFormat(spMenu)#</td>
-					<td nowrap="yes" style="text-align:center">#yesNoFormat(spSitemap)#</td>
-					<td nowrap="yes" style="text-align:center"><cfif len(groups)>No<cfelse>Yes</cfif></td>
-				<cfelse>
-					<td nowrap="yes">#name#</td>
-				</cfif>
-				<cfif bEditAccess>
-					<td style="text-align:center"><cfif currentLevel lt request.speck.maxKeywordLevels><a href="javascript:launch_add_child('#keyword#','#jsStringFormat(name)#')" title="Add Sub-section">add</a><cfelse>&nbsp;</cfif></td>
-					<td style="text-align:center"><a href="javascript:launch_edit('spKeywords','#spId#', '', '','Navigation Section')">edit</a></td>
-					<td style="text-align:center"><a href="javascript:launch_delete('spKeywords','#spId#', '#jsStringFormat(name)#', '', '', 'Navigation Section');">delete</a></td>
-					<td nowrap="yes" style="text-align:center">
-						<a href="#cgi.script_name#?app=#request.speck.appName#&amp;keyword=#qKeywords.keyword#&amp;action=moveUp" title="Move Section Up"><img style="vertical-align:middle" src="/speck/admin/images/move_up.gif" width="9" height="9" border="0" /></a>
-						<a href="#cgi.script_name#?app=#request.speck.appName#&amp;keyword=#qKeywords.keyword#&amp;action=moveDown" title="Move Section Down"><img style="vertical-align:middle" src="/speck/admin/images/move_down.gif" width="9" height="9" border="0" /></a>
-					</td>
-				<cfelse>
-					<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
-				</cfif>
-			</tr>
+			<cfelse>
+			
+				<cfoutput>
+				<td nowrap="yes" style="padding-left:#keywordIndent#px;" title="#keyword#">#name#</td>
+				</cfoutput>
+				
+			</cfif>
+			
+			<cfif bEditAccess>
+			
+				<cfoutput>
+				<td style="text-align:center"><cfif currentLevel lt request.speck.maxKeywordLevels><a href="javascript:launch_add_child('#keyword#','#jsStringFormat(name)#')" title="Add Sub-section">add</a><cfelse>&nbsp;</cfif></td>
+				<td style="text-align:center"><a href="javascript:launch_edit('spKeywords','#spId#', '', '','Navigation Section')">edit</a></td>
+				<td style="text-align:center"><a href="javascript:launch_delete('spKeywords','#spId#', '#jsStringFormat(name)#', '', '', 'Navigation Section');">delete</a></td>
+				<td nowrap="yes" style="text-align:center">
+					<a href="#cgi.script_name#?app=#request.speck.appName#&amp;keyword=#qKeywords.keyword#&amp;action=moveUp" title="Move Section Up"><img style="vertical-align:middle" src="/speck/admin/images/move_up.gif" width="9" height="9" border="0" /></a>
+					<a href="#cgi.script_name#?app=#request.speck.appName#&amp;keyword=#qKeywords.keyword#&amp;action=moveDown" title="Move Section Down"><img style="vertical-align:middle" src="/speck/admin/images/move_down.gif" width="9" height="9" border="0" /></a>
+				</td>
+				</cfoutput>
+				
+			<cfelse>
+			
+				<cfoutput>
+				<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+				</cfoutput>
+				
+			</cfif>
+				
+		<cfoutput>
+		</tr>
 		</cfoutput>
 		
 	</cfloop>
