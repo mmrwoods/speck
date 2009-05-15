@@ -614,13 +614,16 @@ Licensed under the Academic Free License version 2.1
 			
 			<!--- start with the parent keywords, if the child isn't dependent, we'll add any other existing keywords when saving --->
 			<cfif isDefined("caller.attributes.stContent.spKeywords")>
-				<cfset keywords = caller.attributes.stContent.spKeywords>
+				<cfset parentKeywords = caller.attributes.stContent.spKeywords>
 			<cfelse>
-				<cfset keywords = "">
+				<cfset parentKeywords = "">
 			</cfif>
 			
 			<cfloop query="qPicked">
 			
+				<!--- start off with the parent keywords --->
+				<cfset keywords = parentKeywords>
+				
 				<cfif not stPD.dependent>
 				
 					<!--- append existing keywords not found in parent keywords before saving --->

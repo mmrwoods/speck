@@ -319,7 +319,7 @@ bShowAddAdmin = false;
 	
 	</cfif>
 
-	<cfif ( trim(attributes.id & attributes.label) eq "" or content.recordCount eq 0 ) and bShowAddAdmin>
+	<cfif ( trim(attributes.id & attributes.label) eq "" or content.recordCount eq 0 ) and bShowAddAdmin and ( attributes.maxRows lt 1 or content.recordCount lt attributes.maxRows )>
 	
 		<cfoutput><a class="spAdminLink spAdd" href="javascript:launch_add('#attributes.type#', '#listSort(attributes.keywords,"textNoCase")#', '#urlEncodedFormat(jsStringFormat(attributes.label))#', '#urlEncodedFormat(lCacheNames)#', '#caption#')">#request.speck.buildString("A_CONTENT_ADD")# #caption#</a><br /></cfoutput>
 	
