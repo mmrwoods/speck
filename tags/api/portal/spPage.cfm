@@ -431,4 +431,6 @@ Licensed under the Academic Free License version 2.1
 </cfoutput>
 
 <!--- always clear the flash structure after each request --->
-<cfset void = structClear(session.speck.flash)>
+<cfif structKeyExists(session.speck,"flash")>
+	<cfset void = structClear(session.speck.flash)>
+</cfif>
