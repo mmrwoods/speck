@@ -53,17 +53,15 @@ Licensed under the Academic Free License version 2.1
 		executed. It contains most of the data that ends up in request.speck.
 		--->
 		
-		<!--- 
-		Code to update Blurbs to be compatible with new verison of cf_spPage.
-		Call to cf_spContent to produce default text page when no template has 
-		been configured now includes keywords attribute (in addition to label).
-		--->
+		<!--- Update Blurbs to be compatible with new verison of cf_spPage --->
 		<cfquery name="qUpdateBlurbs" datasource="#context.codb#">
 			UPDATE Blurb
-			SET spKeywords = spLabel
-			WHERE spKeywords IS NULL 
-				AND spLabel IS NOT NULL
+			SET spLabel = 'page_content',
+				spLabelIndex = 'PAGE_CONTENT'
+			WHERE spLabel IS NOT NULL
+				AND spLabel <> 'page_content'
 				AND spLabel IN (SELECT keyword FROM spKeywords)
+				AND spLabel = spKeywords
 		</cfquery>
 		
 	</cf_spHandler>

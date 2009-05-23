@@ -172,9 +172,9 @@ Licensed under the Academic Free License version 2.1
 		<cfelse>
 		
 			<!--- use blurb type to generate content --->
-			<cf_spCacheThis cacheName="blurb_#replace(request.speck.page.keyword,".","_","all")#">
+			<cf_spCacheThis cacheName="blurb_#request.speck.page.cacheKeyword#">
 			
-				<cf_spContent type="Blurb" label="#request.speck.page.keyword#" keywords="#request.speck.page.keyword#" forceParagraphs="yes">
+				<cf_spContent type="Blurb" label="page_content" keywords="#request.speck.page.keyword#" forceParagraphs="yes">
 		
 			</cf_spCacheThis>
 			
