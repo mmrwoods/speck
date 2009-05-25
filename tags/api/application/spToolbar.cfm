@@ -34,12 +34,16 @@ Renders toolbar allowing editors and reviewers (i.e. spEdit or spReview permissi
 	<cfif request.speck.session.auth neq "logon">
 	
 		<cfif isDefined("request.speck.portal") and structKeyExists(request.speck.session.roles, "spSuper")>
+			
+			<cfparam name="request.speck.portal.toolbarLogin" default="auto"> <!--- yes|no|auto probable TODO: make this a standard Speck config setting --->
 	
 			<!--- experimental idea to show login link if auth level is cookie --->
+			<!--- TODO: move styles to toolbar.css and get link caption from strings file --->
 			<cfoutput>
 			<style type="text/css">
 			##spToolbarLogin {
 				position:absolute;
+				z-index:876892234;
 				top: 5px;
 				right: 5px;
 				color: ##aaa; 
@@ -51,18 +55,34 @@ Renders toolbar allowing editors and reviewers (i.e. spEdit or spReview permissi
 			##spToolbarLogin a:hover,
 			##spToolbarLogin a:active { color: dimgray; text-decoration:underline; background-color: transparent;}
 			</style>
-			<script type="text/javascript">
-				// simple function taken from about.com, but modified to always return an integer (-1 for unknown)
-				function pageWidth() {return window.innerWidth != null? window.innerWidth : document.documentElement && document.documentElement.clientWidth ? document.documentElement.clientWidth : document.body != null ? document.body.clientWidth : -1;} 
-				if ( pageWidth() > 1024 ) {
-					document.write("<div id='spToolbarLogin'>");
-				} else {
-					document.write("<div id='spToolbarLogin' style='display:none;'>");
-				}
-			</script>
-				<a href="/speck/login.cfm?app=#request.speck.appName#">Administrator Login</a>
-			</div>
 			</cfoutput>
+			
+			<cfif not isBoolean(request.speck.portal.toolbarLogin)>
+				
+				<!--- assume non-boolean value is "auto" and only show login link if browser width > 1024 --->
+				<cfoutput>
+				<script type="text/javascript">
+					// simple function taken from about.com, but modified to always return an integer (-1 for unknown)
+					function pageWidth() {return window.innerWidth != null? window.innerWidth : document.documentElement && document.documentElement.clientWidth ? document.documentElement.clientWidth : document.body != null ? document.body.clientWidth : -1;} 
+					if ( pageWidth() > 1024 ) {
+						document.write("<div id='spToolbarLogin'>");
+					} else {
+						document.write("<div id='spToolbarLogin' style='display:none;'>");
+					}
+				</script>
+				<a href="/speck/login.cfm?app=#request.speck.appName#">Administrator Login</a>
+				</div>
+				</cfoutput>
+			
+			<cfelseif request.speck.portal.toolbarLogin>
+			
+				<cfoutput>
+				<div id="spToolbarLogin">
+				<a href="/speck/login.cfm?app=#request.speck.appName#">Administrator Login</a>
+				</div>
+				</cfoutput>
+			
+			</cfif>
 		
 		</cfif>
 	
