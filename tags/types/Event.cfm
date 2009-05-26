@@ -131,7 +131,7 @@ Licensed under the Academic Free License version 2.1
 		maxSelect="#attributes.context.getConfigString("types","event","documents_max_select",5)#">
 		
 	<cf_spIndex
-		title="title,venue"
+		title="title"
 		description="summary"
 		body="title,venue,summary,description"
 		date="startDate">
