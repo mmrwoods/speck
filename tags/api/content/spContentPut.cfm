@@ -908,7 +908,7 @@ Attributes:
 			<cf_spContentIndex 
 				type="#attributes.type#"
 				id="#qContent.spId[item]#"
-				keyword="#listFirst(qContent.spKeywords[item])#"
+				keywords="#qContent.spKeywords[item]#"
 				attributeCollection="#stContentIndex#">
 				
 		<cfcatch type="SpeckError">
