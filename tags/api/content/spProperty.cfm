@@ -149,9 +149,11 @@ Attributes:
 	<cfset validateAttributesTemplate = "/#ca.context.mapping#/properties/#a.type#.cfm"> <!--- default path to template containing validateAttributes method --->
 	
 	<!--- check if we're doing type definition... --->
+	<!--- 
+	this code shouldn't be necessary, we can't get this far unless method eq spTypeDefinition
 	<cfset stTypeVars = getBaseTagData("CF_SPTYPE")>
 	
-	<cfif stTypeVars.a.method eq "spTypeDefinition">
+	<cfif stTypeVars.a.method eq "spTypeDefinition"> --->
 
 		<!--- if doing type definition, do property definition, i.e. get methods list --->
 		
@@ -228,7 +230,7 @@ Attributes:
 		
 		</cfif>
 
-	</cfif>
+	<!--- </cfif> --->
 	
 	<!--- Call property handler, method="validateAttributes" to give it a chance to throw an error for invalid attributes and default others --->
 	<cfmodule template="#validateAttributesTemplate#" method="validateAttributes" stPD=#a# r_stPD="stValidatedPD">

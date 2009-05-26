@@ -256,9 +256,10 @@ Attributes:
 		qContent=#qContent#
 		type=#attributes.type#
 		method="promote"
+		revision=#attributes.revision#
 		newLevel=#attributes.newLevel#>
 
-</cfif>	
+</cfif>
 	
 <cfloop from=1 to=#arrayLen(stType.props)# index="prop">
 
@@ -285,15 +286,63 @@ Attributes:
 	<!--- update the keywords index --->
 	<cfquery name="qDeleteKeywords" datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
 		DELETE FROM spKeywordsIndex
-		WHERE id = '#qContent.spId#'
+		WHERE id = '#attributes.id#'
 	</cfquery>
 	<cfif len(qContent.spKeywords)>
 		<cfloop list="#qContent.spKeywords#" index="keyword">
 			<cfquery name="qInsertKeyword" datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
 				INSERT INTO spKeywordsIndex (contentType, keyword, id)
-				VALUES ('#uCase(stType.name)#', '#uCase(trim(keyword))#', '#qContent.spId#' )
+				VALUES ('#uCase(stType.name)#', '#uCase(trim(keyword))#', '#attributes.id#' )
 			</cfquery>
 		</cfloop>
+	</cfif>
+	
+	<cfif attributes.revision eq 0>
+	
+		<!--- delete from content index --->
+		<cfquery name="qDelete" datasource="#request.speck.codb#">
+			DELETE FROM spContentIndex WHERE id = '#attributes.id#'
+		</cfquery>		
+	
+	<cfelseif structKeyExists(stType,"contentIndex")>
+	
+		<!--- update content index --->
+		<cfscript>
+			stContentIndex = structNew();
+			if ( len(evaluate("#stType.contentIndex.date#")) ) {
+				stContentIndex.date = evaluate("#stType.contentIndex.date#");
+			}
+			if ( not structKeyExists(stContentIndex,"date") or not len(stContentIndex.date) ) {
+				stContentIndex.date = spCreated;
+			}
+			stContentIndex.title = "";
+			for (i=1; i le listLen(stType.contentIndex.title); i=i+1) {
+				stContentIndex.title = stContentIndex.title & evaluate("qContent.#listGetAt(stType.contentIndex.title,i)#") & " ";
+			}
+			stContentIndex.description = "";
+			for (i=1; i le listLen(stType.contentIndex.description); i=i+1) {
+				stContentIndex.description = stContentIndex.description & evaluate("qContent.#listGetAt(stType.contentIndex.description,i)#") & " ";
+			}
+			stContentIndex.body = "";
+			for (i=1; i le listLen(stType.contentIndex.body); i=i+1) {
+				stContentIndex.body = stContentIndex.body & evaluate("qContent.#listGetAt(stType.contentIndex.body,i)#") & " ";
+			}						
+		</cfscript>
+					
+		<cftry>
+			
+			<cf_spContentIndex 
+				type="#attributes.type#"
+				id="#attributes.id#"
+				keyword="#listFirst(qContent.spKeywords)#"
+				attributeCollection="#stContentIndex#">
+					
+		<cfcatch type="SpeckError">
+			<!--- do nothing, an expected error condition only means that this content item isn't suitable for indexing --->
+			<!--- TODO: log message --->
+		</cfcatch>
+		</cftry>		
+		
 	</cfif>
 
 	<!--- flush the cache if promoting to live --->

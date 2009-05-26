@@ -414,55 +414,6 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 			
 		}
 	</cfscript>
-
-	<cfset bCreateTable = false>
-	<cftry>
-	
-		<cfquery name="qTableExists" datasource="#stApp.codb#">
-			SELECT * FROM spContentIndex WHERE id = 'noSuchId'
-		</cfquery>
-	
-	<cfcatch type="Database">
-
-		<cfif cfcatch.sqlstate eq "S0002" or dbTableNotFound(cfcatch.detail)> <!--- ODBC Error base table does not exist --->
-		
-			<cfset bCreateTable = true>
-			
-		<cfelse>
-		
-			<cfrethrow>
-		
-		</cfif>
-	
-	</cfcatch>
-	</cftry>
-	
-	<cfif bCreateTable>
-	
- 		<cfquery name="qCreateTable" datasource=#stApp.codb#>
-			CREATE TABLE spContentIndex (
-				id #textDDLString(maxIndexKeyLength)#,
-				contentType #textDDLString(50)# NOT NULL,
-				keyword #textDDLString(250)#,
-				title #textDDLString(250)# NOT NULL,
-				description #textDDLString(500)# NOT NULL,
-				body #textDDLString(64000)# NOT NULL,
-				ts #tsDDLString# NOT NULL,
-				PRIMARY KEY (id)
-			)
-		</cfquery>
-		
-		<cfquery name="qAddIndex" datasource=#stApp.codb#>
-			CREATE INDEX spContentIdx1 <!--- damn, fscking sql identifier limitations! --->
-			ON spContentIndex (contentType)
-		</cfquery>
-		
-		<cfquery name="qAddIndex" datasource=#stApp.codb#>
-			CREATE INDEX spContentIdx2 
-			ON spContentIndex (keyword)
-		</cfquery>
-
-	</cfif>
 	
 	<cfif find("portal",stApp.securityZones)>
 

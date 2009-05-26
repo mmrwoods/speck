@@ -7,6 +7,7 @@ work with permission of the copyright owners.
 Licensed under the Academic Free License version 2.1
 --->
 
+<cfparam name="attributes.type">
 <cfparam name="attributes.method" default="display">
 <cfparam name="attributes.separator" default="">
 <cfparam name="attributes.columns" default="1">

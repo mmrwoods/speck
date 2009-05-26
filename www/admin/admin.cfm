@@ -173,11 +173,13 @@ Licensed under the Academic Free License version 2.1
 			
 		</cfif>
 		
-		<cf_spContentGet type="#url.type#" id="#url.id#" r_qContent="qDeletionCandidate">
+		<cf_spContentGet type="#url.type#" id="#url.id#" keywords="#url.keywords#" r_qContent="qDeletionCandidate">
 		
-		<cfif len(url.keywords) and not listFindNoCase(qDeletionCandidate.spKeywords,url.keywords)>
+		<cfif not qDeletionCandidate.recordCount>
 		
-			<cf_spError error="A_ADMIN_ACCESS_DENIED" lParams="#actionString#,#url.type#">
+			<!--- <cf_spError error="A_ADMIN_ACCESS_DENIED" lParams="#actionString#,#url.type#"> --->
+			
+			<cfthrow message="Cannot delete item with type '#url.type#', id '#url.id#' and keywords '#url.keywords#'. Item cannot be found!">
 		
 			<cfexit>
 			

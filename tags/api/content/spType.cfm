@@ -147,6 +147,10 @@ Attributes:
 			// Add array of property attributes to type structure
 			if (isDefined("thisTag.props"))
 				a.props = thisTag.props;
+				
+			if (isDefined("thisTag.contentIndex")) {
+				a.contentIndex = duplicate(thisTag.contentIndex[1]);
+			}
 			
 			// Add methods and roles structures
 			a.methods = structNew();
@@ -196,6 +200,11 @@ Attributes:
 			</cfif>
 			
 			<cfscript>
+				// inherit content index definition
+				if ( structKeyExists(stExtendedType,"contentIndex") and not structKeyExists(a,"contentIndex") ) {
+					a.contentIndex = duplicate(stExtendedType.contentIndex);	
+				}
+				
 				// inherit methods (note: local methods override those in extended type)
 				lLocalMethods = structKeyList(a.methods);
 				for(method in stExtendedType.methods) {
@@ -663,6 +672,8 @@ Attributes:
 		</cfloop>
 		
 		<!--- add a flag to the type definition to say whether it contains revisions at the moment - if revisioning disabled, spContentGet can use this info to improve query performance --->
+		<!--- 
+		Disabled, no longer required, SQL code in spContentGet has been modified such that it no longer needs this flag to improve query performance
 		<cfquery name="qRevisionsCheck" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
 			SELECT MAX(spRevision) AS maxRevision FROM #ca.context.dbIdentifier(a.name,ca.context)#
 		</cfquery>
@@ -671,7 +682,7 @@ Attributes:
 			<cfset a.containsRevisions = true>
 		<cfelse>
 			<cfset a.containsRevisions = false>
-		</cfif>
+		</cfif> --->
 		
 		<!--- Return structure --->
 		<cfset "caller.caller.#caller.attributes.r_stType#" = a>

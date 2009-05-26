@@ -1195,6 +1195,56 @@ I'm sure this all used to be necessary in CF5
 				</cfquery>
 				
 			</cfif>	
+			
+			<!--- check if spContentIndex table exists and create if necessary --->
+			<cfset bCreateTable = false>
+			<cftry>
+			
+				<cfquery name="qTableExists" datasource=#stApp.codb# username=#stApp.database.username# password=#stApp.database.password#>
+					SELECT * FROM spContentIndex WHERE id = 'noSuchId'
+				</cfquery>
+			
+			<cfcatch type="Database">
+		
+				<cfif cfcatch.sqlstate eq "S0002" or stApp.dbTableNotFound(cfcatch.detail,stApp)> <!--- ODBC Error base table does not exist --->
+				
+					<cfset bCreateTable = true>
+					
+				<cfelse>
+				
+					<cfrethrow>
+				
+				</cfif>
+			
+			</cfcatch>
+			</cftry>
+			
+			<cfif bCreateTable>
+			
+		 		<cfquery name="qCreateTable" datasource=#stApp.codb# username=#stApp.database.username# password=#stApp.database.password#>
+					CREATE TABLE spContentIndex (
+						id CHAR (35) NOT NULL,
+						contentType #stApp.textDDLString(50,stApp)# NOT NULL,
+						keyword #stApp.textDDLString(250,stApp)#,
+						title #stApp.textDDLString(250,stApp)# NOT NULL,
+						description #stApp.textDDLString(500,stApp)# NOT NULL,
+						body #stApp.textDDLString(64000,stApp)# NOT NULL,
+						ts #stApp.database.tsDDLString# NOT NULL,
+						PRIMARY KEY (id)
+					)
+				</cfquery>
+				
+				<cfquery name="qAddIndex" datasource=#stApp.codb# username=#stApp.database.username# password=#stApp.database.password#>
+					CREATE INDEX spContentIdx1 <!--- damn, fscking sql identifier limitations! --->
+					ON spContentIndex (contentType)
+				</cfquery>
+				
+				<cfquery name="qAddIndex" datasource=#stApp.codb# username=#stApp.database.username# password=#stApp.database.password#>
+					CREATE INDEX spContentIdx2 
+					ON spContentIndex (keyword)
+				</cfquery>
+		
+			</cfif>
 		
 			<!--- Load speck's type definitions (do these before loading the application's type definitions so 
 				the methods for the default type will be known when loading the application's types - see spType) --->

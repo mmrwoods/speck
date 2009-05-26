@@ -148,6 +148,12 @@ Licensed under the Academic Free License version 2.1
 		displaySize="0"
 		index="yes">
 		
+	<cf_spIndex
+		title="title"
+		description="summary"
+		body="title,summary,content"
+		date="pubDate">
+		
 	
 	<cf_spHandler method="dump">
 	
@@ -815,26 +821,6 @@ Licensed under the Academic Free License version 2.1
 			}
 		</cfscript>
 	
-		<cfif structKeyExists(request.speck,"portal")>
-		
-			<!--- update the content index --->
-			
-			<cfif len(content.pubdate)>
-				<cfset indexDate = content.pubdate>
-			<cfelse>
-				<cfset indexDate = content.spCreated>
-			</cfif>
-				
-			<cf_spContentIndex type="#content.spType#"
-				id="#content.spId#"
-				keyword="#listFirst(content.spKeywords)#"
-				title="#content.title#"
-				description="#content.summary#"
-				body="#content.title# #content.summary# #content.content#"
-				date="#indexDate#">
-				
-		</cfif>
-	
 		<!--- get image dimensions --->
 	
 		<cfset fs = request.speck.fs>
@@ -864,56 +850,6 @@ Licensed under the Academic Free License version 2.1
 			</cftry>
 	
 		</cfloop>
-
-	</cf_spHandler>
-	
-	
-	<cf_spHandler method="promote">
-	
-		<cfif structKeyExists(request.speck,"portal") and attributes.newLevel eq "live">
-		
-			<cfif content.spRevision eq 0>
-			
-				<!--- removal --->
-				<cfquery name="qDelete" datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
-					DELETE FROM spContentIndex WHERE id = '#content.spId#'
-				</cfquery>
-			
-			<cfelse>
-				
-				<!--- update the content index --->
-				
-				<cfif len(content.pubdate)>
-					<cfset indexDate = content.pubdate>
-				<cfelse>
-					<cfset indexDate = content.spCreated>
-				</cfif>
-				
-				<cf_spContentIndex type="#content.spType#"
-					id="#content.spId#"
-					keyword="#listFirst(content.spKeywords)#"
-					title="#content.title#"
-					description="#content.summary#"
-					body="#content.title# #content.summary# #content.content#"
-					date="#indexDate#">
-			
-			</cfif>
-		
-		</cfif>
-
-	</cf_spHandler>
-	
-	
-	<cf_spHandler method="delete">
-	
-		<cfif structKeyExists(request.speck,"portal")>
-		
-			<!--- delete from content index --->
-			<cfquery name="qDelete" datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
-				DELETE FROM spContentIndex WHERE id = '#content.spId#'
-			</cfquery>
-			
-		</cfif>
 
 	</cf_spHandler>
 	

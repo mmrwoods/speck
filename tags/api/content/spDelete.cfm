@@ -87,6 +87,10 @@ Licensed under the Academic Free License version 2.1
 		DELETE FROM spKeywordsIndex WHERE id = '#attributes.id#'
 	</cfquery>
 	
+	<cfquery name="qDelete" datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
+		DELETE FROM spContentIndex WHERE id = '#attributes.id#'
+	</cfquery>
+	
 	<!--- flush the cache --->
 	<cfmodule template="/speck/api/content/spFlushCache.cfm"
 		type=#attributes.type#

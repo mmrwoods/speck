@@ -857,32 +857,67 @@ Attributes:
 				
 				</cfif>
 			
-			</cfif>				
-
-		<cfelse>
-		
-			<!--- update the spKeywordsIndex table... --->
-			<!--- NOTE: this code has been copied into the cf_spPromote tag and is executed when a content item is promoted to live (yes, bad practice, but I'm in a hurry, TODO: DRY up this code)--->
-			<cfquery name="qDeleteKeywords" datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
-				DELETE FROM spKeywordsIndex
-				WHERE id = '#qContent.spId[item]#'
-			</cfquery>
-			<cfif len(thisKeywords)>
-				<cfloop list="#thisKeywords#" index="keyword">
-					<cfquery name="qInsertKeyword" datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
-						INSERT INTO spKeywordsIndex (contentType, keyword, id)
-						VALUES ('#uCase(stType.name)#', '#uCase(trim(keyword))#', '#qContent.spId[item]#' )
-					</cfquery>
-				</cfloop>
-			</cfif>
+			</cfif>	
 			
 		</cfif>
-		
+					
 	</cfif>
 	
-	<cfif not bRevision or ( isDefined("newLevel") and newLevel eq "live" )>
 	
-		<!--- new content at live level - deleting matching caches --->
+	<cfif not bRevision>
+	
+		<!--- update the spKeywordsIndex table... --->
+		<cfquery name="qDeleteKeywords" datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
+			DELETE FROM spKeywordsIndex
+			WHERE id = '#qContent.spId[item]#'
+		</cfquery>
+		<cfif len(thisKeywords)>
+			<cfloop list="#thisKeywords#" index="keyword">
+				<cfquery name="qInsertKeyword" datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
+					INSERT INTO spKeywordsIndex (contentType, keyword, id)
+					VALUES ('#uCase(stType.name)#', '#uCase(trim(keyword))#', '#qContent.spId[item]#' )
+				</cfquery>
+			</cfloop>
+		</cfif>
+		
+		<!--- update content index --->
+		<cfscript>
+			stContentIndex = structNew();
+			if ( len(evaluate("#stType.contentIndex.date#")) ) {
+				stContentIndex.date = evaluate("qContent.#stType.contentIndex.date#[item]");
+			}
+			if ( not structKeyExists(stContentIndex,"date") or not len(stContentIndex.date) ) {
+				stContentIndex.date = spCreated;
+			}
+			stContentIndex.title = "";
+			for (i=1; i le listLen(stType.contentIndex.title); i=i+1) {
+				stContentIndex.title = stContentIndex.title & evaluate("qContent.#listGetAt(stType.contentIndex.title,i)#[item]") & " ";
+			}
+			stContentIndex.description = "";
+			for (i=1; i le listLen(stType.contentIndex.description); i=i+1) {
+				stContentIndex.description = stContentIndex.description & evaluate("qContent.#listGetAt(stType.contentIndex.description,i)#[item]") & " ";
+			}
+			stContentIndex.body = "";
+			for (i=1; i le listLen(stType.contentIndex.body); i=i+1) {
+				stContentIndex.body = stContentIndex.body & evaluate("qContent.#listGetAt(stType.contentIndex.body,i)#[item]") & " ";
+			}						
+		</cfscript>
+		
+		<cftry>
+		
+			<cf_spContentIndex 
+				type="#attributes.type#"
+				id="#qContent.spId[item]#"
+				keyword="#listFirst(qContent.spKeywords[item])#"
+				attributeCollection="#stContentIndex#">
+				
+		<cfcatch type="SpeckError">
+			<!--- do nothing, an expected error condition only means that this content item isn't suitable for indexing --->
+			<!--- TODO: log message --->
+		</cfcatch>
+		</cftry>
+	
+		<!--- flush caches --->
 		<cfmodule template="/speck/api/content/spFlushCache.cfm"
 			type=#attributes.type#
 			id=#qContent.spId[item]#

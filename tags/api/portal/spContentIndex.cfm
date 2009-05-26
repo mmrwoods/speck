@@ -10,12 +10,13 @@ Licensed under the Academic Free License version 2.1
 <!--- 
 Add content to the content index, which can be used to build a search facility.
 
-At the moment, this tag is part of the portal framework and the content index
-table is created by the cf_spPortal tag. In addition, developers have to manually
-manage the index using contentPut, promote and delete event handlers for their 
-content types. Once I'm happy with the general solution, I'll add content indexing 
-to the core of Speck and have the indexes for each content type managed automatically 
-once defined (probably with some additional cf_spType attributes).
+This tag no longer needs to be called manually within contentPut, promote and delete 
+methods for content types. Use the spIndex tag to define the content index as part 
+of a type definition. If you need to do some funky things, for example, conditionally 
+index only content items with a certain label, you can call this tag from the 
+contentPut and promote methods. There is no need to manually delete items from the 
+content index table within promote and delete methods - spPromote and spDelete will
+always take care of this automatically.
 --->
 
 <!--- Validate attributes --->
@@ -154,8 +155,14 @@ lsParseDateTime(timestamp string) throws an exception!
 
 </cfif>
 
-<!--- always do a clean up of the content index in case some deleted content has been left in the index unintentionally (note: this only works when revisioning is off at the moment) --->
+<!--- always do a clean up of the content index in case some deleted content has been left in the index unintentionally --->
 <cfquery name="qDelete" datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
-	DELETE FROM spContentIndex WHERE contentType = '#lCase(attributes.type)#' AND id NOT IN (SELECT DISTINCT(spId) FROM #lCase(attributes.type)#)
+	DELETE FROM spContentIndex 
+	WHERE contentType = '#lCase(attributes.type)#' 
+		AND id NOT IN (
+			SELECT DISTINCT(spId) 
+			FROM #lCase(attributes.type)#
+			WHERE spLevel = 3 AND spArchived IS NULL
+		)
 </cfquery>
 

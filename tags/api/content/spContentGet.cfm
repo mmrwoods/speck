@@ -352,7 +352,7 @@ Licensed under the Academic Free License version 2.1
 		spLabelIndex = '#uCase(attributes.label)#' AND
 	</cfif>
 	<cfif attributes.where neq "">
-		#preserveSingleQuotes(attributes.where)# AND
+		( #preserveSingleQuotes(attributes.where)# ) AND
 	</cfif>
 	#preserveSingleQuotes(keywordsWhere)#
 	#preserveSingleQuotes(revisionWhereClause)#
