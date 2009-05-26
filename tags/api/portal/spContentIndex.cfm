@@ -20,7 +20,7 @@ always take care of this automatically.
 --->
 
 <!--- Validate attributes --->
-<cfloop list="id,type,keyword,title,description,body,date" index="attribute">
+<cfloop list="id,type,title,description,body,date" index="attribute">
 
 	<cfif not structKeyExists(attributes,attribute)>
 	
