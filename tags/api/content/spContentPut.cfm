@@ -880,42 +880,46 @@ Attributes:
 			</cfloop>
 		</cfif>
 		
-		<!--- update content index --->
-		<cfscript>
-			stContentIndex = structNew();
-			if ( len(evaluate("#stType.contentIndex.date#")) ) {
-				stContentIndex.date = evaluate("qContent.#stType.contentIndex.date#[item]");
-			}
-			if ( not structKeyExists(stContentIndex,"date") or not len(stContentIndex.date) ) {
-				stContentIndex.date = spCreated;
-			}
-			stContentIndex.title = "";
-			for (i=1; i le listLen(stType.contentIndex.title); i=i+1) {
-				stContentIndex.title = stContentIndex.title & evaluate("qContent.#listGetAt(stType.contentIndex.title,i)#[item]") & " ";
-			}
-			stContentIndex.description = "";
-			for (i=1; i le listLen(stType.contentIndex.description); i=i+1) {
-				stContentIndex.description = stContentIndex.description & evaluate("qContent.#listGetAt(stType.contentIndex.description,i)#[item]") & " ";
-			}
-			stContentIndex.body = "";
-			for (i=1; i le listLen(stType.contentIndex.body); i=i+1) {
-				stContentIndex.body = stContentIndex.body & evaluate("qContent.#listGetAt(stType.contentIndex.body,i)#[item]") & " ";
-			}						
-		</cfscript>
+		<cfif structKeyExists(stType,"contentIndex")>
 		
-		<cftry>
-		
-			<cf_spContentIndex 
-				type="#attributes.type#"
-				id="#qContent.spId[item]#"
-				keyword="#qContent.spKeywords[item]#"
-				attributeCollection="#stContentIndex#">
-				
-		<cfcatch type="SpeckError">
-			<!--- do nothing, an expected error condition only means that this content item isn't suitable for indexing --->
-			<!--- TODO: log message --->
-		</cfcatch>
-		</cftry>
+			<!--- update content index --->
+			<cfscript>
+				stContentIndex = structNew();
+				if ( len(evaluate("#stType.contentIndex.date#")) ) {
+					stContentIndex.date = evaluate("qContent.#stType.contentIndex.date#[item]");
+				}
+				if ( not structKeyExists(stContentIndex,"date") or not len(stContentIndex.date) ) {
+					stContentIndex.date = spCreated;
+				}
+				stContentIndex.title = "";
+				for (i=1; i le listLen(stType.contentIndex.title); i=i+1) {
+					stContentIndex.title = stContentIndex.title & evaluate("qContent.#listGetAt(stType.contentIndex.title,i)#[item]") & " ";
+				}
+				stContentIndex.description = "";
+				for (i=1; i le listLen(stType.contentIndex.description); i=i+1) {
+					stContentIndex.description = stContentIndex.description & evaluate("qContent.#listGetAt(stType.contentIndex.description,i)#[item]") & " ";
+				}
+				stContentIndex.body = "";
+				for (i=1; i le listLen(stType.contentIndex.body); i=i+1) {
+					stContentIndex.body = stContentIndex.body & evaluate("qContent.#listGetAt(stType.contentIndex.body,i)#[item]") & " ";
+				}						
+			</cfscript>
+			
+			<cftry>
+			
+				<cf_spContentIndex 
+					type="#attributes.type#"
+					id="#qContent.spId[item]#"
+					keyword="#qContent.spKeywords[item]#"
+					attributeCollection="#stContentIndex#">
+					
+			<cfcatch type="SpeckError">
+				<!--- do nothing, an expected error condition only means that this content item isn't suitable for indexing --->
+				<!--- TODO: log message --->
+			</cfcatch>
+			</cftry>
+			
+		</cfif>
 	
 		<!--- flush caches --->
 		<cfmodule template="/speck/api/content/spFlushCache.cfm"
