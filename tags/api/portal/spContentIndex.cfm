@@ -20,7 +20,7 @@ always take care of this automatically.
 --->
 
 <!--- Validate attributes --->
-<cfloop list="id,type,title,description,body,date" index="attribute">
+<cfloop list="id,type,keyword,title,description,body,date" index="attribute">
 
 	<cfif not structKeyExists(attributes,attribute)>
 	
@@ -42,24 +42,15 @@ always take care of this automatically.
 
 </cfif>
 
-<cfif not structKeyExists(attributes,"keyword") and not structKeyExists(attributes,"keywords")>
-
-	<cf_spError error="ATTR_REQ" lParams="keyword">	<!--- Missing attribute --->
-	
-<cfelseif structKeyExists(attributes,"keyword") and structKeyExists(attributes,"keywords")>
-
-	<cf_spError error="ATTR_MUTEX" lParams="keyword,keywords"> <!--- Mutually exclusive attributes --->
-
-</cfif>
-
-<cfif structKeyExists(attributes,"keywords")>
+<cfif listLen(attributes.keyword) gt 1>
 
 	<!--- set attributes.keyword to the first suitable keyword listed in attributes.keywords (we only store one keyword per content item in the index) --->
 	
 	<!--- start off by just using the first keyword and override this if required --->
-	<cfset attributes.keyword = listFirst(attributes.keywords)>
+	<cfset lKeywords = attributes.keyword>
+	<cfset attributes.keyword = listFirst(lKeywords)>
 	
-	<cfif isDefined("request.speck.portal") and listLen(attributes.keywords) gt 1>
+	<cfif isDefined("request.speck.portal")>
 	
 		<cfset stType = request.speck.types[attributes.type]>
 		<cfif structKeyExists(stType,"keywordTemplates") and len(stType.keywordTemplates)>
@@ -75,7 +66,7 @@ always take care of this automatically.
 			<cfif len(lValidKeywords) and not listFind(lValidKeywords,attributes.keyword)>
 			
 				<!--- first keyword in keywords list doesn't seem to be suitable, so loop over the list until we find one that is --->
-				<cfloop list="#listRest(attributes.keywords)#" index="keyword">
+				<cfloop list="#listRest(lKeywords)#" index="keyword">
 					
 					<cfif listFind(lValidKeywords,keyword)>
 					

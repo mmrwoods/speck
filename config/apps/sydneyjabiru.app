@@ -6,14 +6,14 @@
 description = Sydney Jabiru Flying School Website
 
 ; Installation root for this application
-; appInstallRoot = /var/www/webapps/sydneyjabiru
-appInstallRoot = c:\inetpub\webapps\sydneyjabiru
+appInstallRoot = /var/www/webapps/sydneyjabiru
+; appInstallRoot = c:\inetpub\webapps\sydneyjabiru
 
 ; Datasource for content database
 codb = sydneyjabiru
 
 ; Database type access|sqlserver|oracle|postgresql|firebird|mysql|...
-dbtype = access
+dbtype = postgresql
 
 ; Template mapping to application's tags directory - only required if 
 ; appInstallRoot and Speck directory not within same parent directory

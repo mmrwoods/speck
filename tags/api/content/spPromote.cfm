@@ -334,7 +334,7 @@ Attributes:
 			<cf_spContentIndex 
 				type="#attributes.type#"
 				id="#attributes.id#"
-				keywords="#qContent.spKeywords#"
+				keyword="#qContent.spKeywords#"
 				attributeCollection="#stContentIndex#">
 					
 		<cfcatch type="SpeckError">
