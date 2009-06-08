@@ -204,7 +204,7 @@ Licensed under the Academic Free License version 2.1
 						html = replaceNoCase(html," class=MsoNormal","","all");
 						html = replaceNoCase(html," class=""MsoNormal""","","all");	
 						html = reReplace(html,"[[:space:]]+lang=""{0,1}[A-Z]{2}\-[A-Z]{2}""{0,1}","","all");	
-						html = reReplaceNoCase(html,"[[:space:]]+class=mso[^[:space:]\>]*","","all");
+						html = reReplaceNoCase(html,"[[:space:]]+class=("")?mso[^[:space:]\>]*","","all");
 						html = reReplaceNoCase(html,"\<\?xml[^\>]+\>","","all");
 						html = reReplaceNoCase(html, "</?[A-Za-z0-9]+:[A-Za-z0-9]+[^>]*>", "", "all");
 						do {

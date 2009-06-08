@@ -151,7 +151,7 @@ Licensed under the Academic Free License version 2.1
 	
 		<cfparam name="spSitemap" default="1">
 	
-		<cfif ( spMenu eq 1 or ( attributes.sitemap and spSitemap eq 1 ) ) and listLen(keyword,".") eq topLevel and ( not len(attributes.layouts) or listFindNoCase(attributes.layouts,layout) )>
+		<cfif ( ( spMenu eq 1 and not attributes.sitemap ) or ( spSitemap eq 1 and attributes.sitemap ) ) and listLen(keyword,".") eq topLevel and ( not len(attributes.layouts) or listFindNoCase(attributes.layouts,layout) )>
 
 		    <!--- check if user has access to this keyword --->
  			<cfscript>
