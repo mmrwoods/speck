@@ -313,6 +313,7 @@ some added column values. Seems to be a CF5 problem with QofQ on queries that do
 	function load_keyword(keyword) {
 		if ( window.opener && !window.opener.closed ) {
 			window.opener.location.href = "#request.speck.appWebRoot#/?spKey=" + keyword;
+			window.opener.focus();
 		} else {
 			alert("Failed to load page - main window has been closed.");
 		}

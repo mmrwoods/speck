@@ -215,6 +215,7 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 	</cfif>
 	<cfparam name="stApp.sesUrls" default="yes" type="boolean">
 	<cfparam name="stApp.manageKeywords" default="yes" type="boolean">
+	<cfparam name="stApp.appWebRoot" default="yes" type="boolean">
 	
 	<!--- read portal config file --->
 	<cfset stConfig = structNew()>
@@ -853,7 +854,7 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 			stNewkeyword.keyword = "home";
 			stNewKeyword.name = "Home";
 			stNewKeyword.title = stPortal.name;
-			stNewKeyword.href = "#stPortal.appWebRoot#/";
+			stNewKeyword.href = "#stApp.appWebRoot#/";
 			stNewKeyword.spMenu = 1;
 			stNewKeyword.spSitemap = 1;
 		</cfscript>
