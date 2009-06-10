@@ -215,7 +215,7 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 	</cfif>
 	<cfparam name="stApp.sesUrls" default="yes" type="boolean">
 	<cfparam name="stApp.manageKeywords" default="yes" type="boolean">
-	<cfparam name="stApp.appWebRoot" default="yes" type="boolean">
+	<cfparam name="stApp.appWebRoot" default="">
 	
 	<!--- read portal config file --->
 	<cfset stConfig = structNew()>
