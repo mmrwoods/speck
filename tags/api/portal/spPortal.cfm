@@ -43,7 +43,7 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 --->
 <cfset bRefresh = attributes.refresh>
 <cfscript>
-	function fileLastModified(fileName){
+	function fileLastModified(fileName) {
 	    var oFile = createObject("java","java.io.File");
 	    var oDate = createObject("java","java.util.Date");
 	    oFile.init(fileName);

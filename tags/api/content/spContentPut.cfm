@@ -889,7 +889,7 @@ Attributes:
 					stContentIndex.date = evaluate("qContent.#stType.contentIndex.date#[item]");
 				}
 				if ( not structKeyExists(stContentIndex,"date") or not len(stContentIndex.date) ) {
-					stContentIndex.date = spCreated;
+					stContentIndex.date = qContent.spCreated[item];
 				}
 				stContentIndex.title = "";
 				for (i=1; i le listLen(stType.contentIndex.title); i=i+1) {
