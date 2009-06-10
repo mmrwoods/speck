@@ -54,7 +54,7 @@ Licensed under the Academic Free License version 2.1
 			oFileInputStream.init(oFile);
 			oImageInfo.setInput(oFileInputStream);
 		</cfscript>
-		
+
 		<cfif not oImageInfo.check()>
 		
 			<cfthrow message="Image format not supported" detail="ImageInfo.check() failed for file '#attributes.file#'">
