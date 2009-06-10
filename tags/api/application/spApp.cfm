@@ -114,8 +114,8 @@ Licensed under the Academic Free License version 2.1
 
 		<!--- Write to the server.speck structure --->
 		<cflock scope="SERVER" timeout="3" type="EXCLUSIVE">	
-		<cfset server.speck = structNew()>
 		<cfset server.speck = duplicate(stServer)>
+		<cfset server.speck.started = now()>
 		<cfset server.speck.cfVersion = server.coldFusion.productVersion>
 		</cflock>
 
@@ -1409,8 +1409,8 @@ I'm sure this all used to be necessary in CF5
 			
 			<!--- Write to the application.speck structure and cache a copy as a wddx format file --->
 			<cflock scope="APPLICATION" type="EXCLUSIVE" timeout="3">
-			<cfset application.speck = structNew()>
 			<cfset application.speck = duplicate(stApp)>
+			<cfset application.speck.started = now()>
 			</cflock>
 			
 			<cfwddx action="cfml2wddx" input="#stApp#" output="stAppWddx">

@@ -42,8 +42,17 @@ Check if we need to refresh the application. Set bRefresh to true to refresh por
 timeout or CF server restart). Set attributes.refresh to true to force a refresh of the Speck application if necessary.
 --->
 <cfset bRefresh = attributes.refresh>
+<cfscript>
+	function fileLastModified(fileName){
+	    var oFile = createObject("java","java.io.File");
+	    var oDate = createObject("java","java.util.Date");
+	    oFile.init(fileName);
+	    return oDate.init(oFile.lastModified());
+	}
+</cfscript>
 <cflock scope="application" type="readonly" timeout="5">
 <cfif not isDefined("application.speck.portal")>
+
 	<cfset bRefresh = true>
 	<cfif isDefined("application.speck.speckInstallRoot")>
 		<!--- 
@@ -52,19 +61,31 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 		--->
 		<cfset attributes.refresh = true>
 	</cfif>
-<cfelseif isDefined("application.speck.appInstallRoot") and fileExists("#application.speck.appInstallRoot#/tmp/refresh.txt")>
-	<!--- experimental idea nicked from passenger/mod_rails - if tmp/refresh.txt exists, refresh app and remove file once refreshed --->
+	
+<cfelseif isDefined("application.speck.started") 
+	and fileExists("#application.speck.appInstallRoot#/tmp/refresh.txt") 
+	and fileLastModified("#application.speck.appInstallRoot#/tmp/refresh.txt") gt application.speck.started>
+	
+	<!--- idea nicked from passenger/mod_rails - if tmp/refresh.txt exists, and last modified date later than date application was started, force refresh --->
+	<cfset bRefresh = true>
+	<cfset attributes.refresh = true>
+	
+	<cflog type="information" 
+		file="#attributes.name#" 
+		application="no"
+		text="CF_SPPORTAL: Found refresh.txt file in tmp directory with modified date later than date application started - forcing application refresh.">
+	
 	<cftry>
+		<!--- delete the file if possible to avoid issues with backups, or maybe issues with jvm and os time differences --->
 		<cffile action="delete" file="#application.speck.appInstallRoot#/tmp/refresh.txt">
-		<cfset bRefresh = true>
-		<cfset attributes.refresh = true>
 	<cfcatch>
 		<cflog type="warning" 
 			file="#attributes.name#" 
 			application="no"
-			text="CF_SPPORTAL: Could not delete tmp/refresh.txt - application was not refreshed.">
+			text="CF_SPPORTAL: Warning - could not delete tmp/refresh.txt, this is probably a permissions issue.">
 	</cfcatch>
 	</cftry>
+	
 </cfif>
 </cflock>
 
