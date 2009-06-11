@@ -193,8 +193,10 @@ If user doesn't exist in application's security zones the variable specified in 
 		function checkPassword(stUser,password) {
 			if ( len(stUser.encryption) ) {
 				// encrypted passwords
-				if ( compare(evaluate("#stUser.encryption#(password)"),stUser.password) eq 0 ) {
-					// encrypted version of the plain-text password provided matches the password stored in the security zone 
+				if ( structKeyExists(stUser,"salt") and compare(evaluate("#stUser.encryption#(password & stUser.salt)"),stUser.password) eq 0 ) {
+					// note: if the salted match fails, the next condition comparing non-salted version will still run, this is intentional to maintain backwards compatibility (though we might get rid of it at some point)
+					return true;
+				} else if ( compare(evaluate("#stUser.encryption#(password)"),stUser.password) eq 0 ) {
 					return true;
 				} else if ( compare(password,stUser.password) eq 0 and len(evaluate("#stUser.encryption#(password)")) neq len(password) ) {
 					// I know, I know, you're thinking "WTF is this". See notes above RE why we consider this a match

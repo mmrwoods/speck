@@ -33,7 +33,7 @@ Renders toolbar allowing editors and reviewers (i.e. spEdit or spReview permissi
 	
 	<cfif request.speck.session.auth neq "logon">
 	
-		<cfif isDefined("request.speck.portal") and structKeyExists(request.speck.session.roles, "spSuper")>
+		<cfif isDefined("request.speck.portal") and ( structKeyExists(request.speck.session.roles,"spSuper") or structKeyExists(request.speck.session.roles,"spEdit") or structKeyExists(request.speck.session.roles,"spLive") )>
 			
 			<cfparam name="request.speck.portal.toolbarLogin" default="auto"> <!--- yes|no|auto probable TODO: make this a standard Speck config setting --->
 	

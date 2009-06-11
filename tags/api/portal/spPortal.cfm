@@ -465,6 +465,14 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 		</cftry>
 		
 		<cfif not bCreateUserTables>
+		
+			<cfif not listFindNoCase(qTableExists.columnList,"salt")>
+		
+				<cfquery name="qAlterUsers" datasource="#stApp.codb#">
+					ALTER TABLE spUsers ADD salt #textDDLString(50)#
+				</cfquery>
+				
+			</cfif>
 			
 			<cfif not listFindNoCase(qTableExists.columnList,"registered")>
 		
@@ -735,8 +743,8 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 				<cfset generatedPassword = makePassword()>
 				
 		 		<cfquery name="qInsert" datasource=#stApp.codb#>
-					INSERT INTO spUsers (spId, spRevision, spCreated, spCreatedBy, registered, username, fullname, password) 
-					VALUES ('#createUuid()#', 1, #createOdbcDatetime(now())#, 'spSystem', #createOdbcDatetime(now())#, 'admin', 'Admin User', '#generatedPassword#')
+					INSERT INTO spUsers (spId, spRevision, spCreated, spCreatedBy, registered, username, fullname, password, salt) 
+					VALUES ('#createUuid()#', 1, #createOdbcDatetime(now())#, 'spSystem', #createOdbcDatetime(now())#, 'admin', 'Admin User', '#generatedPassword#','#makePassword()#')
 				</cfquery>
 				
 		 		<cfquery name="qInsert" datasource=#stApp.codb#>

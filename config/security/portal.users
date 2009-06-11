@@ -3,5 +3,5 @@ source = database
 
 [database]
 userlist = SELECT username AS "user", fullname, password, email FROM spUsers
-userget = SELECT fullname, password, email, username AS "user", spId AS id FROM spUsers WHERE UPPER(username)=UPPER(%)
-emailget = SELECT fullname, password, username AS "user", spId AS id FROM spUsers WHERE UPPER(email)=UPPER(%)
+userget = SELECT fullname, password, email, username AS "user", spId AS id, salt FROM spUsers WHERE UPPER(username)=UPPER(%)
+emailget = SELECT fullname, password, username AS "user", spId AS id, salt FROM spUsers WHERE UPPER(email)=UPPER(%)
