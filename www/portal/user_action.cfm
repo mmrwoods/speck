@@ -313,14 +313,14 @@ Licensed under the Academic Free License version 2.1
 				
 				<cfscript>
 					stContent.fullname = form.fullname;
-					//if ( form.password neq left(qUser.password,20) ) {
+					if ( form.password neq left(qUser.password,20) ) {
 						if ( len(request.speck.portal.passwordEncryption) ) {
 							stContent.salt = makePassword();
 							stContent.password = evaluate("#request.speck.portal.passwordEncryption#(form.password & stContent.salt)");
 						} else {
 							stContent.password = form.password;
 						}
-					//}
+					}
 					stContent.email = form.email;
 					stContent.notes = form.notes;
 					stContent.newsletter = form.newsletter;
@@ -437,17 +437,19 @@ Licensed under the Academic Free License version 2.1
 			
 			<cfelse>
 			
-				<cfquery name="qCheckUser" datasource="#request.speck.codb#">
-					SELECT * 
-					FROM spUsers 
-					WHERE UPPER(username) = '#uCase(form.username)#'
-				</cfquery>
+				<cfloop list="#structKeyList(application.speck.securityZones)#" index="securityZone">
 				
-				<cfif qCheckUser.recordCount>
+					<cf_spUserGet user="#form.username#" securityZone="#securityZone#" r_stUser="stUser">
+						
+					<cfif not structIsEmpty(stUser)>
+					
+						<cfset void = actionError("Username '#form.username#' is already in use, please choose another username.")>
+						
+						<cfbreak>
+					
+					</cfif>
 				
-					<cfset void = actionError("Username '#form.username#' is already in use, please choose another username.")>
-				
-				</cfif>
+				</cfloop>
 				
 			</cfif>
 			
@@ -476,7 +478,7 @@ Licensed under the Academic Free License version 2.1
 				<cfquery name="qUpdate" datasource="#request.speck.codb#">
 					UPDATE spUsers 
 					SET registered = #createODBCDateTime(now())#
-						salt = '#stContent.salt#'
+					<cfif structKeyExists(stContent,"salt")>,salt = '#stContent.salt#'</cfif>
 					<!--- <cfif form.suspended>,suspended = #createODBCDateTime(now())#</cfif> --->
 					WHERE username = '#stContent.username#'
 				</cfquery>
