@@ -233,36 +233,25 @@ Attributes:
 		
 		<cfif stPD.unique and len(trim(a.newValue)) and len(a.contentType)> <!--- we need to know the content type to check for a unique property value --->
 			
-			<!---
-			This property value should be unique. This is damn tricky with the promotion model enabled, and in 
-			the short term I've gone for the easy solution of just rejecting the property value as not unique 
-			if another content item has a matching property value at any revision. With promotion disabled, we 
-			just need to check the tip revisions.
-			--->
+			<!--- this property value should be unique - check that no other non-archived content item has the same value for this property --->
 			
 			<cfscript>
-				// revision to check
-				if ( request.speck.enablePromotion ) {
-					revision = "all"; // nasty, nasty boys, gimme a nasty groove
-				} else {
-					revision = ""; // let spContentGet do the work
-				}
 				// where clause to check if value already in use
 				if ( request.speck.dbtype eq "access" ) { // bleedin' access again
-					where = "[#stPD.name#] = '#trim(a.newValue)#'";
+					dbIdentifier = "[#a.contentType#]";
+					where = "[#stPD.name#] = '#replace(trim(a.newValue),"'","''","all")#'";
 				} else {
+					dbIdentifier = a.contentType;
 					where = "UPPER(#stPD.name#) = '#uCase(replace(trim(a.newValue),"'","''","all"))#'";
 				}
-				where = where & " AND spId <> '#a.id#'";
+				where = where & " AND spArchived IS NULL AND spId <> '#a.id#'";
 			</cfscript>
-
-			<!--- check for value at this level --->
-			<cfmodule template="/speck/api/content/spContentGet.cfm"
-		 		type="#a.contentType#"
-				properties="spId"
-		 		where="#where#"
-		 		revision="#revision#"
-		 		r_qContent="qCheckUnique">
+		 		
+		 	<cfquery name="qCheckUnique" datasource="#request.speck.codb#">
+				SELECT spId 
+				FROM #dbIdentifier#
+				WHERE #preserveSingleQuotes(where)#
+			</cfquery>
 		 		
 		 	<cfif qCheckUnique.recordCount>
 		 	
