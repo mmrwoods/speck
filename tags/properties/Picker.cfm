@@ -551,6 +551,7 @@ Licensed under the Academic Free License version 2.1
 			<cfif stType.revisioned>
 
 				<!--- get ids and revisions of picked items at the current level --->
+				<!--- note: at levels other than live, spContentGet will return removed items that have not been promoted by default --->
 				<cf_spContentGet type="#stPD.contentType#" id="#value#" properties="spId,spRevision" r_qContent="qPicked">
 				
 				<cfloop query="qPicked">

@@ -544,6 +544,7 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 						username #textDDLString(50)# NOT NULL,
 						fullname #textDDLString(100)# NOT NULL,
 						password #textDDLString(100)# NOT NULL,
+						salt #textDDLString(50)#,
 						email #textDDLString(100)#,
 						phone #textDDLString(100)#,
 						notes #textDDLString(4000)#,

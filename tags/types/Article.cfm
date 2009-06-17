@@ -29,7 +29,6 @@ Licensed under the Academic Free License version 2.1
 		required="yes"
 		maxlength="250"
 		displaySize="70"
-		unique="#attributes.context.getConfigString("types","article","title_unique","yes")#"
 		finder="yes">
 	
  	<cf_spProperty

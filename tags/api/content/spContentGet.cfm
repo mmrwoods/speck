@@ -448,12 +448,11 @@ Licensed under the Academic Free License version 2.1
 			and ( len(attributes.properties) eq 0 or listFindNoCase(attributes.properties,stPD.name) )> <!--- do not run contentGet method for properties not in attributes.properties --->
 
 			<!--- property has a contentGet method, run the handler with this method --->
-
 			<cfif listFirst(request.speck.cfVersion,",.") gte 7>
 
 				<!--- querySetCell() in CFMX7 requires that the column data type be compatible with the value to be set --->
 				<cf_spQueryCastColumn query="qContent" column="#stPD.name#" type="VARCHAR">
-
+				
 			</cfif>
 
 			<cfloop from=1 to=#qContent.RecordCount# index="item">
@@ -469,6 +468,7 @@ Licensed under the Academic Free License version 2.1
 					r_newValue="newValue"
 					bEdit=#attributes.bEdit#>
 
+				<!--- <cfset qContent[stPD.name][item] = javaCast("string",newValue)> --->
 				<cfset void = QuerySetCell(qContent, stPD.name, newValue, item)>
 
 			</cfloop>

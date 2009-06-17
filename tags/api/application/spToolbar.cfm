@@ -69,9 +69,9 @@ Renders toolbar allowing editors and reviewers (i.e. spEdit or spReview permissi
 					} else {
 						document.write("<div id='spToolbarLogin' style='display:none;'>");
 					}
+					document.write("<a href='/speck/login.cfm?app=#request.speck.appName#'>Administrator Login</a>");
+					document.write("</div>");
 				</script>
-				<a href="/speck/login.cfm?app=#request.speck.appName#">Administrator Login</a>
-				</div>
 				</cfoutput>
 			
 			<cfelseif request.speck.portal.toolbarLogin>

@@ -331,7 +331,11 @@ bShowAddAdmin = false;
 <cfif content.recordCount neq 0>
 
 	<!--- default endRow value for the call to the handler --->
-	<cfset endRow = content.recordCount>
+	<cfif structKeyExists(attributes,"endRow") and isNumeric(attributes.endRow) and attributes.endRow lte content.recordCount and attributes.endRow gte attributes.startRow>
+		<cfset endRow = attributes.endRow>
+	<cfelse>
+		<cfset endRow = content.recordCount>
+	</cfif>
 		
 	<!--- as startRow attribute can be provided by user/developer, check that endRow gte startRow before bothering to call handler --->		
 	<cfif endRow gte attributes.startRow>

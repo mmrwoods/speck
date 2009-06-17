@@ -280,14 +280,30 @@ Licensed under the Academic Free License version 2.1
 						stNewContent.spKeywords = lKeywords;
 				}
 				
+				// generate label from source property if necessary
+				if ( not len(stNewContent.spLabel) and structKeyExists(stType,"labelSource") and structKeyExists(stNewContent,stType.labelSource) and len(stNewContent.labelSource) ) {
+					stNewContent.spLabel = lCase(trim(stNewContent[stType.labelSource]));
+					stNewContent.spLabel = replace(stNewContent.spLabel,"&amp;","&","all");
+					stNewContent.spLabel = replace(stNewContent.spLabel,"&euro;","euro","all");
+					stNewContent.spLabel = reReplace(stNewContent.spLabel,"&([a-zA-Z])acute;","\1","all");
+					stNewContent.spLabel = reReplace(stNewContent.spLabel,"&(##)?[a-zA-Z0-9]+;","","all");
+					stNewContent.spLabel = reReplace(stNewContent.spLabel,"[^A-Za-z0-9\-]+","-","all");
+					stNewContent.spLabel = reReplace(stNewContent.spLabel,"[\-]+","-","all");
+					stNewContent.spLabel = replace(urlEncodedFormat(stNewContent.spLabel),"%2D","-","all");
+				}
+				
 				// show error if label is required and value is empty				
-				if ( stType.labelRequired and stNewContent.spLabel eq "") 
+				if ( stType.labelRequired and stNewContent.spLabel eq "" ) {
 					lFormErrors = listAppend(lFormErrors, request.speck.buildString("A_PROPERTY_REQUIRED",stStrings.label));	
+				}
 									
 				// show error if keywords are required and value is empty
-				if ( stType.keywordsRequired and stNewContent.spKeywords eq "" )
+				if ( stType.keywordsRequired and stNewContent.spKeywords eq "" ) {
 					lFormErrors = listAppend(lFormErrors, request.speck.buildString("A_PROPERTY_REQUIRED",stStrings.keywords));		
+				}
 			</cfscript>
+			
+			<!--- TODO: force label to be unique if stType.labelUnique is true --->
 			
 			<!--- check if content type has a validate method and call it if necessary --->
 			<cfif structKeyExists(stType,"methods") and structKeyExists(stType.methods,"validate")>

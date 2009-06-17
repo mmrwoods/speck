@@ -438,6 +438,8 @@ Licensed under the Academic Free License version 2.1
 			<cfelse>
 			
 				<cfloop list="#structKeyList(application.speck.securityZones)#" index="securityZone">
+					
+					<cfset stUser = structNew()> <!--- spUserGet doesn't return anything if user not found, which is a pain --->
 				
 					<cf_spUserGet user="#form.username#" securityZone="#securityZone#" r_stUser="stUser">
 						
