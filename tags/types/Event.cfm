@@ -29,7 +29,6 @@ Licensed under the Academic Free License version 2.1
 		required="yes"
 		maxlength="250"
 		displaySize="75"
-		unique="#attributes.context.getConfigString("types","event","title_unique","yes")#"
 		index="yes">
 	
 	<cf_spProperty
@@ -813,6 +812,21 @@ Licensed under the Academic Free License version 2.1
 				content.spLabel = replace(urlEncodedFormat(content.spLabel),"%2D","-","all");
 			}
 		</cfscript>
+		
+		<!--- check if label is unique and append sequence id if not --->
+		<cfquery name="qCheckLabel" datasource="#request.speck.codb#">
+			SELECT spId 
+			FROM #content.spType# 
+			WHERE spLabelIndex = '#uCase(content.spLabel)#' 
+				AND spArchived IS NULL
+				AND spId <> '#content.spId#'
+		</cfquery>
+		
+		<cfif qCheckLabel.recordCount>
+		
+			<cfset content.spLabel = content.spLabel & "-" & content.spSequenceId>
+		
+		</cfif>		
 	
 		<!--- get image dimensions --->
 	
