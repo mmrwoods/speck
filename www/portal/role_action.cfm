@@ -55,18 +55,18 @@ Licensed under the Academic Free License version 2.1
 			
 				<cfset void = actionError("Role name '#form.rolename#' is already in use, please choose another name.")>
 				
-			<cfelseif form.create_group>
+			<cfelseif len(form.groupname)>
 			
 				<!--- check that group name is also not already in use --->
 				<cfquery name="qCheckGroup" datasource="#request.speck.codb#">
 					SELECT groupname 
 					FROM spGroups 
-					WHERE UPPER(groupname) = '#uCase(form.rolename)#'
+					WHERE UPPER(groupname) = '#uCase(form.groupname)#'
 				</cfquery>
 				
 				<cfif qCheckGroup.recordCount>
 				
-					<cfset void = actionError("Group name '#form.rolename#' is already in use, please choose another name.")>
+					<cfset void = actionError("Group name '#form.groupname#' is already in use, please choose another name.")>
 					
 				</cfif>
 					
@@ -89,7 +89,7 @@ Licensed under the Academic Free License version 2.1
 				)
 			</cfquery>
 			
-			<cfif form.create_group>
+			<cfif len(form.groupname)>
 			
 				<!--- insert group and connect group to role --->
 				<cfquery name="qInsert" datasource="#request.speck.codb#">
@@ -98,12 +98,12 @@ Licensed under the Academic Free License version 2.1
 						description
 					) 
 					VALUES (
-						'#form.rolename#',
-						<cfif len(form.description)>'#form.description#'<cfelse>NULL</cfif>
+						'#form.groupname#',
+						'Users with #form.rolename# role.'
 					)
 				</cfquery>
 				<cfquery name="qDelete" datasource="#request.speck.codb#">
-					DELETE FROM spRolesAccessors WHERE accessor = '#form.rolename#'
+					DELETE FROM spRolesAccessors WHERE accessor = '#form.groupname#'
 				</cfquery>
 				<cfquery name="qInsert" datasource="#request.speck.codb#">
 					INSERT INTO spRolesAccessors (
@@ -112,7 +112,7 @@ Licensed under the Academic Free License version 2.1
 					) 
 					VALUES (
 						'#form.rolename#',
-						'#form.rolename#'
+						'#form.groupname#'
 					)
 				</cfquery>				
 			

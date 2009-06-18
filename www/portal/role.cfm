@@ -25,7 +25,7 @@ Licensed under the Academic Free License version 2.1
 	
 	<cfparam name="form.rolename" default="">
 	<cfparam name="form.description" default="">
-	<cfparam name="form.create_group" default="0">
+	<cfparam name="form.groupname" default="">
 
 </cfif>
 
@@ -58,20 +58,18 @@ Licensed under the Academic Free License version 2.1
 	<cfif not len(url.rolename)>
 		<!--- <cfsavecontent variable="hint">
 		<cfoutput>
-			Roles are used to grant users access to various elements of the content management system (CMS).
-			Users can only be connected to roles via groups, and some default groups (e.g. managers) have 
-			multiple roles in the CMS. Typically, the only reason you'll need to create a new role is to grant 
-			edit permissions to a number of sections of the site to certain users, without giving those users 
-			edit permissions for the entire site. If you are doing this, you'll probably want to use the option
-			to create a group with the same name as the role and place users into that group.
+			Roles are used to grant users access to various elements of the content management system (CMS). 
+			Users can only be connected to roles via groups, and you can use this option to create a group 
+			when creating a role. This is useful when granting edit permissions to a number of site sections 
+			to certain users, without giving those users edit permissions for the entire site. In this case, 
+			you need to create the new role, but also need some way of granting that role to users.
 		</cfoutput>
 		</cfsavecontent>
 		<cfset hint = jsStringFormat(reReplace(hint,"[[:space:]]+"," ","all"))> --->
 		<tr>
-		<td style="vertical-align:middle;whitespace:no-wrap;" nowrap="yes"><label for="create_group">Create Group?</label><!--- &nbsp;<span class="hint" onmouseover="return escape('#hint#');"> </span>&nbsp; ---></td>
+		<td style="vertical-align:middle;whitespace:no-wrap;" nowrap="yes"><label for="groupname">Group Name</label>&nbsp;<span class="hint" onmouseover="return escape('Enter a group name to create a new group with this role');"> </span>&nbsp;</td>
 		<td>
-		<input type="checkbox" name="create_group" id="create_group" value="1" <cfif form.create_group> checked="true"</cfif> />
-		Check the box to create a group which can be used to connect users to this role.
+		<input type="text" name="groupname" id="groupname" value="#form.groupname#" size="30" maxlength="50" />
 		<a href="javascript:return false;" onclick="this.style.display='none';document.getElementById('create_group_info_text').style.display='block';">more info</a>
 		</td>
 		</tr>
@@ -79,12 +77,13 @@ Licensed under the Academic Free License version 2.1
 			<td>&nbsp;</td>
 			<td>
 			<div id="create_group_info_text" style="display:none;">
-			Roles are used to grant users access to various elements of the content management system (CMS).
-			Users can only be connected to roles via groups, and some default groups (e.g. managers) have 
-			multiple roles in the CMS. Typically, the only reason you'll need to create a new role is to grant 
-			edit permissions to a number of sections of the site to certain users, without giving those users 
-			edit permissions for the entire site. If you are doing this, you'll probably want to use the option
-			to create a group with the same name as the role and place users into that group.
+			Roles are used to grant users access to various elements of the content management system (CMS). 
+			Users can only be connected to roles via groups, and you can use this option to create a group 
+			when creating a role. This is useful when granting edit permissions to a number of site sections 
+			to certain users, without giving those users edit permissions for the entire site. In this case, 
+			you need to create the new role, but also need some way of granting that role to users, and this 
+			can be achieved by making them members of the group. 
+			<br><em>Note: when choosing a group name, it's good practice to choose the plural of the role name.</em>
 			</div>
 			</td>
 		</tr>
