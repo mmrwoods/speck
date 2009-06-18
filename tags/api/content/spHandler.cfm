@@ -295,7 +295,15 @@ Attributes:
 			<!--- close current table data --->
 			<cfoutput></td></cfoutput>
 			
-			<cfset remainder = caller.attributes.columns mod caller.attributes.endRow>
+			<cfif caller.attributes.endRow gt caller.attributes.columns>
+			
+				<cfset remainder = caller.attributes.endRow mod caller.attributes.columns>
+				
+			<cfelse>
+			
+				<cfset remainder = caller.attributes.columns - caller.attributes.endRow>
+				
+			</cfif>
 			
 			<cfif remainder neq 0>
 			

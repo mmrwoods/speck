@@ -23,7 +23,7 @@ Licensed under the Academic Free License version 2.1
 	
 	<cf_spHandler method="display">
 		
-		<cfparam name="attributes.columns" default="1">
+		<cfparam name="attributes.displayColumns" default="1">
 		<cfparam name="attributes.showCaption" default="yes">
 		
 		<cf_spContent
@@ -32,7 +32,7 @@ Licensed under the Academic Free License version 2.1
 			id="#content.images#"
 			enableAdminLinks="no"
 			showCaption="#attributes.showCaption#"
-			columns="#attributes.columns#"
+			columns="#attributes.displayColumns#"
 			orderByIds="yes">
 	
 	</cf_spHandler>

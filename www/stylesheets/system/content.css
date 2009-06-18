@@ -46,6 +46,7 @@ a.spAdminLink {
 	font:10px Verdana, Arial, Helvetica, sans-serif;
 	color:#0000FF;
 	text-decoration:underline;
+	letter-spacing: normal;
 }
 a.spAdminLink:hover {
 	font:10px Verdana, Arial, Helvetica, sans-serif;
