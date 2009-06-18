@@ -290,16 +290,16 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 	<cfscript>
 		if ( not len(stPortal.stylesheet) ) {
 			if ( fileExists("#appInstallRoot#/www/stylesheets/screen.css") ) {
-				stPortal.stylesheet = "/stylesheets/screen.css";
+				stPortal.stylesheet = "#stApp.appWebRoot#/stylesheets/screen.css";
 			} else if ( fileExists("#appInstallRoot#/www/stylesheets/main.css") ) {
-				stPortal.stylesheet = "/stylesheets/main.css";
+				stPortal.stylesheet = "#stApp.appWebRoot#/stylesheets/main.css";
 			}
 		}
 		if ( not len(stPortal.printStylesheet) and fileExists("#appInstallRoot#/www/stylesheets/print.css") ) {
-			stPortal.printStylesheet = "/stylesheets/print.css";
+			stPortal.printStylesheet = "#stApp.appWebRoot#/stylesheets/print.css";
 		}
 		if ( not len(stPortal.popupStylesheet) and fileExists("#appInstallRoot#/www/stylesheets/popup.css") ) {
-			stPortal.popupStylesheet = "/stylesheets/popup.css";
+			stPortal.popupStylesheet = "#stApp.appWebRoot#/stylesheets/popup.css";
 		}
 	</cfscript>
 

@@ -495,18 +495,18 @@ Licensed under the Academic Free License version 2.1
 					fs = request.speck.fs;
 					// automatically set EditorAreaCSS, StylesXmlPath and TemplatesXmlPath if settings not found in config struct
 					if ( ( not structKeyExists(stConfig,"EditorAreaCSS") or not len(stConfig.EditorAreaCSS) ) and fileExists(request.speck.appInstallRoot & fs & "www" & fs & "stylesheets" & fs & "fckeditor.css") ) {
-						stConfig.EditorAreaCSS = "/stylesheets/fckeditor.css";
+						stConfig.EditorAreaCSS = "#request.speck.appWebRoot#/stylesheets/fckeditor.css";
 					}
 					if ( not structKeyExists(stConfig,"StylesXmlPath") or not len(stConfig.StylesXmlPath) ) {
 						if ( fileExists(request.speck.appInstallRoot & fs & "www" & fs & "stylesheets" & fs & "fckstyles.xml") ) {
-							stConfig.StylesXmlPath = "/stylesheets/fckstyles.xml";
+							stConfig.StylesXmlPath = "#request.speck.appWebRoot#/stylesheets/fckstyles.xml";
 						} else {
 							stConfig.StylesXmlPath = "/speck/properties/html/editors/fckeditor/speckstyles.xml";
 						}
 					}
 					if ( not structKeyExists(stConfig,"TemplatesXmlPath") or not len(stConfig.TemplatesXmlPath) ) {
 						if ( fileExists(request.speck.appInstallRoot & fs & "www" & fs & "stylesheets" & fs & "fcktemplates.xml") ) {
-							stConfig.TemplatesXmlPath = "/stylesheets/fcktemplates.xml";
+							stConfig.TemplatesXmlPath = "#request.speck.appWebRoot#/stylesheets/fcktemplates.xml";
 						} else {
 							stConfig.TemplatesXmlPath = "/speck/properties/html/editors/fckeditor/specktemplates.xml";
 						}
@@ -514,7 +514,7 @@ Licensed under the Academic Free License version 2.1
 					// if CustomConfigurationsPath not set in config struct, set to app specific fckconfig.js if exists, otherwise default speck configuration
 					if ( not structKeyExists(stConfig,"CustomConfigurationsPath") or not len(stConfig.CustomConfigurationsPath) ) {
 						if ( fileExists(request.speck.appInstallRoot & fs & "www" & fs & "javascripts" & fs & "fckconfig.js") ) {
-							stConfig.CustomConfigurationsPath = "/javascripts/fckconfig.js";
+							stConfig.CustomConfigurationsPath = "#request.speck.appWebRoot#/javascripts/fckconfig.js";
 						} else {
 							stConfig.CustomConfigurationsPath = "/speck/properties/html/editors/fckeditor/speckconfig.js";
 						}
