@@ -112,6 +112,10 @@ Attributes:
 		
 			<cf_spError error="ATTR_REQ" lParams="content">	<!--- Missing attribute --->
 			
+		<cfelseif not isdefined("caller.attributes.r_lErrors")>
+		
+			<cf_spError error="ATTR_REQ" lParams="r_lErrors">	<!--- Missing attribute --->
+			
 		</cfif>
 		
 		<!--- make the content available to the method body --->
@@ -204,11 +208,7 @@ Attributes:
 		
 	<cfelseif attributes.method eq "validate">
 
-		<cfif isDefined("caller.attributes.r_lErrors")>
-	
-			<cfset "caller.caller.#caller.attributes.r_lErrors#" = caller.lErrors>
-	
-		</cfif>
+		<cfset "caller.caller.#caller.attributes.r_lErrors#" = caller.lErrors>
 		
 		<cfexit method="exittag">
 	

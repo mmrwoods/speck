@@ -215,7 +215,7 @@ Licensed under the Academic Free License version 2.1
 							
 						<cfif len(lPropertyErrors)>
 							
-							<cfset lFormErrors = listAppend(lFormErrors, lPropertyErrors)>
+							<cfset lFormErrors = listAppend(lFormErrors, htmlEditFormat(lPropertyErrors))>
 							<cfset lErrorFields = listAppend(lErrorFields, stPD.name)>
 						
 						</cfif>
@@ -299,9 +299,9 @@ Licensed under the Academic Free License version 2.1
 					content="#content#"
 					type="#stType.name#"
 					method="validate"
-					r_lErrors="lErrors">
+					r_lErrors="lTypeErrors">
 							
-				<cfset lFormErrors = listAppend(lFormErrors, lErrors)>
+				<cfset lFormErrors = listAppend(lFormErrors, htmlEditFormat(lTypeErrors))>
 						
 			</cfif>
 		
