@@ -372,13 +372,13 @@ Licensed under the Academic Free License version 2.1
 						sesTitle = reReplace(sesTitle,"[^A-Za-z0-9\-]+","-","all");
 						sesTitle = reReplace(sesTitle,"[\-]+","-","all");
 						sesTitle = replace(urlEncodedFormat(sesTitle),"%2D","-","all");
-						displayMethodUrl = "/#request.speck.portal.rewritePrefix##replace(keyword,".",request.speck.portal.keywordSeparator,"all")#/#sesTitle#/spId/#id##request.speck.sesSuffix#";
+						displayMethodUrl = "#request.speck.appWebRoot#/#request.speck.portal.rewritePrefix##replace(keyword,".",request.speck.portal.keywordSeparator,"all")#/#sesTitle#/spId/#id##request.speck.sesSuffix#";
 					} else {
-						displayMethodUrl = "/#request.speck.portal.rewritePrefix##replace(keyword,".",request.speck.portal.keywordSeparator,"all")#/spId/#id##request.speck.sesSuffix#";
+						displayMethodUrl = "#request.speck.appWebRoot#/#request.speck.portal.rewritePrefix##replace(keyword,".",request.speck.portal.keywordSeparator,"all")#/spId/#id##request.speck.sesSuffix#";
 					}
 				} else {
 					// new rewrite url format
-					displayMethodUrl = "/#request.speck.portal.rewritePrefix##replace(keyword,".",request.speck.portal.keywordSeparator,"all")#/#id##request.speck.sesSuffix#";
+					displayMethodUrl = "#request.speck.appWebRoot#/#request.speck.portal.rewritePrefix##replace(keyword,".",request.speck.portal.keywordSeparator,"all")#/#id##request.speck.sesSuffix#";
 				}
 			} else {
 				displayMethodUrl = cgi.script_name & "/spKey/#replace(keyword,".",request.speck.portal.keywordSeparator,"all")#/spId/#id##request.speck.sesSuffix#";
@@ -465,14 +465,23 @@ Licensed under the Academic Free License version 2.1
 		// with this is it'll remove paragraph tags from within divs, which shouldn't really be a problem.
 		
 		var nl = chr(13) & chr(10);
-		var blockElementsPattern = "address|blockquote|div|dl|form|h1|h2|h3|h4|h5|h6|hr|ol|p|pre|table|ul";
+		var blockElementsPattern = "p|address|blockquote|div|dl|form|h1|h2|h3|h4|h5|h6|hr|ol|pre|table|ul";
+		var nestedElementsPattern = listRest(blockElementsPattern,"|");
 		var cleanElementsPattern = "address|div|dd|dt|h1|h2|h3|h4|h5|h6|li|pre|td|th";
+		
 
 		// tidy up the html
 		// rip out any non-breaking spaces
 		html = trim(html);		
 		html = replaceNoCase(html,"&nbsp;"," ","all");
 		html = replaceNoCase(html,"&##160;"," ","all");
+		
+		// simple check for nested, non-paragraph, block level elements (this function is too simple to deal with that kind of input)
+		// note: this check isn't all that reliable, it would be nice to improve it (tbh, it would be nice to just rewrite this function)
+		if ( reFindNoCase("(<(#nestedElementsPattern#)[^>]*>)[^>]*(<(#nestedElementsPattern#)[^>]*>)",html) ) {
+			return html;
+		}
+		
 		// replace sequences of two or more br tags with a p tag
 		html = reReplaceNoCase(html,"(<br[[:space:]]*/?>[[:space:]]*){2,}","<p>","all");
 		
@@ -489,16 +498,23 @@ Licensed under the Academic Free License version 2.1
 		} while ( reFindNoCase("(<(#cleanElementsPattern#)[^>]*>)([^<]*)<p[^>]*>",html) );
 		
 		// insert opening paragraph tags
-		if ( not reFindNoCase("^<(#blockElementsPattern#)>",html) ) {
+		if ( not reFindNoCase("^<(#blockElementsPattern#)[^>]*>",html) ) {
 			html = "<p>" & html;
 		}
-		html = reReplaceNoCase(html,"(</(#blockElementsPattern#)[^>]*>)[[:space:]]*([A-Za-z0-9]{1})","\1#nl#<p>\3","all");
-
+		html = reReplaceNoCase(html,"(</(#blockElementsPattern#)[^>]*>)[[:space:]]*([[:print:]]{1})","\1#nl#<p>\3","all");
+		
+		// clean up opening paragraph tags immediately followed by another block level element
+		html = reReplaceNoCase(html,"(<p[^>]*>)[[:space:]]*(<(#blockElementsPattern#)[^>]*>)","\2","all");
+		
 		// insert closing paragraph tags
-		html = reReplaceNoCase(html,"([A-Za-z0-9]{1})[[:space:]]*(<(#blockElementsPattern#)[^>]*>)","\1</p>#nl#\2","all");
+		html = reReplaceNoCase(html,"([[:print:]]{1})[[:space:]]*(<(#blockElementsPattern#)[^>]*>)","\1</p>#nl#\2","all");
+		//html = reReplaceNoCase(html,"(<(#blockElementsPattern#)[^>]*>)","</p>#nl#\1","all");
 		if ( not reFindNoCase("</(#blockElementsPattern#)>$",html) ) {
 			html = trim(html) & "</p>";
 		}
+		
+		// clean up closing block level element immediately followed by closing paragraph tag
+		html = reReplaceNoCase(html,"(</(#blockElementsPattern#)[^>]*>)[[:space:]]*(</p[^>]*>)","\1","all");
 
 		// tidy up any empty paragraphs (browsers are supposed to ignore them, but I'm taking no chances)
 		html = reReplace(html,"<p[^>]*>[[:space:]]*</p>","","all");
