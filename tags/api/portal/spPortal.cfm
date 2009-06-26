@@ -1521,11 +1521,11 @@ request.speck.page.name = request.speck.page.qKeyword.name;
 			keyword = arguments[1];	
 		}
 		if ( request.speck.portal.rewriteEngine ) {
-			keywordUrl = "/" & request.speck.portal.rewritePrefix;
+			keywordUrl = request.speck.appWebRoot & "/" & request.speck.portal.rewritePrefix;
 		} else {
 			keywordUrl = cgi.script_name & "/spKey/";
 		}
-		keywordUrl = keywordUrl & replace(request.speck.page.keyword,".",request.speck.portal.keywordSeparator,"all");
+		keywordUrl = keywordUrl & replace(keyword,".",request.speck.portal.keywordSeparator,"all");
 		if ( not request.speck.portal.rewriteEngine ) {
 			keywordUrl = keywordUrl & request.speck.sesSuffix;
 		}

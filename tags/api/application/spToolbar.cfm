@@ -117,13 +117,16 @@ Renders toolbar allowing editors and reviewers (i.e. spEdit or spReview permissi
 				refreshURL = REReplace(refreshURL,"/$","");
 			}
 			queryString = request.speck.getCleanQueryString();
+			if ( isDefined("request.speck.portal.keyword") and not findNoCase("spKey",queryString) and not findNoCase("spPath",queryString) ) {
+				queryString = listAppend(queryString,"spKey=#request.speck.portal.keyword#","&");
+			}
 			if ( len(queryString) ) {
 				refreshURL = refreshURL & "?" & queryString;
 				resetCacheURL = refreshURL & "&resetcache=1";
 			} else {
 				resetCacheURL = refreshURL & "?resetcache=1";
 			}
-					
+			
 		</cfscript>
 		
 		<cflock scope="session" type="readonly" timeout="3" throwontimeout="Yes">
