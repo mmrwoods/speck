@@ -1460,7 +1460,7 @@ I'm sure this all used to be necessary in CF5
 
 <!--- Set up Session scope --->
 <cflock scope="SESSION" timeout="3" type="READONLY">
-<cfset sessionExists = structKeyExists(session,"speck") and isStruct(session.speck) and not structIsEmpty(session.speck)>
+<cfset sessionExists = structKeyExists(session,"speck") and isStruct(session.speck) and not structIsEmpty(session.speck) and structKeyExists(session.speck,"user")>
 </cflock>
 
 <!--- Do we have a reason to lock up the session scope? --->

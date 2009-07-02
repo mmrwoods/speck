@@ -120,6 +120,14 @@ This is a work in progress - it's not pretty and is subject to change.
 			</cfquery>
 			
 		</cfif>
+		
+		<!--- update pre-defined speck session keys if session user matches this user --->
+		<cflock scope="session" type="exclusive" throwontimeout="false" timeout="5">
+		<cfif session.speck.user eq content.username>
+			<cfset session.speck.fullName = content.fullName>
+			<cfset session.speck.email = content.email>
+		</cfif>
+		</cflock>
 	
 	</cf_spHandler>
 	

@@ -67,21 +67,17 @@
 </cfif>
 
 <cfoutput>
-<table style="padding:3px;margin:10px 0;">
+<table style="padding:3px;margin:10px 0;" width="280">
 	<tr>
 	<td style="vertical-align:middle;padding:3px;"><label for="spLogonUser">Username</label></td>
-	<td>&nbsp;</td>
-	<td style="padding:3px;"><input type="text" class="form_field" name="spLogonUser" id="spLogonUser" value="#form.spLogonUser#" size="25" maxlength="100" /></td>
-	<td>&nbsp;</td>
+	<td style="padding-right:0;" align="right"><input type="text" style="width:180px;" class="form_field" name="spLogonUser" id="spLogonUser" value="#form.spLogonUser#" size="25" maxlength="100" /></td>
 	</tr>
 	<tr>
 	<td style="vertical-align:middle;padding:3px;"><label for="spLogonPassword">Password</label></td>
-	<td>&nbsp;</td>
-	<td style="padding:3px;"><input type="password" class="form_field" name="spLogonPassword" id="spLogonPassword" value="#form.spLogonPassword#" size="25" maxlength="100" /></td>
-	<td>&nbsp;</td>
+	<td style="padding-right:0;" align="right"><input type="password" style="width:180px;" class="form_field" name="spLogonPassword" id="spLogonPassword" value="#form.spLogonPassword#" size="25" maxlength="100" /></td>
 	</tr>
 	<tr>
-	<td colspan="3" align="right" style="padding:3px;">
+	<td colspan="2" align="right" style="padding-right:0;">
 	<input type="submit" class="form_button" value="Login" />
 	<cfif len(form.referrer)>
 		<input type="button" class="form_button" onclick="window.location.href='#form.referrer#';" value="Cancel">
@@ -126,7 +122,7 @@
 <cfif len(notRegisteredHtml) or len(forgotPasswordHtml)>
 	
 	<cfoutput>
-	<tr><td colspan="3" align="center"><div style="padding:0;margin:10px 0 0 0;">
+	<tr><td colspan="2" align="center"><div style="padding:0;margin:10px 0 0 0;">
 	</cfoutput>
 	
 	<cfif len(notRegisteredHtml)>
