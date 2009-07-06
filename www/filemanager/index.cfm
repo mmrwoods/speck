@@ -698,7 +698,7 @@
 			});
 			function resizeEditArea(frameId) {
 				document.getElementById(frameId).style.width = "100%";
-				document.getElementById(frameId).style.height = "80%";
+				document.getElementById(frameId).style.height = "85%";
 			}
 			</script>
 		</cfoutput>
@@ -709,7 +709,11 @@
 		<span id="saving" style="vertical-align:middle;visibility:hidden;">Saving...</span>
 		<input type="submit" class="button" style="vertical-align:middle;" value="<cfoutput>#cffm.resourceKit.buttonText.t1#</cfoutput>" onclick="this.disabled=true;document.getElementById('saving').style.visibility='visible';if (this.form.onsubmit) {this.form.onsubmit();};this.form.submit();">
 	</cfif>
-	<input type="button" class="button" style="vertical-align:middle;" value="<cfoutput>#cffm.resourceKit.buttonText.t2#</cfoutput>" onClick="javascript:window.location.href='<cfoutput>#cffm.cffmFilename#?subdir=#urlEncodedFormat(variables.subdir)#</cfoutput>';">
+	<cfif findNoCase("action=edit",cgi.HTTP_REFERER)>
+		<input type="button" class="button" style="vertical-align:middle;" value="<cfoutput>#cffm.resourceKit.buttonText.t2#</cfoutput>" onClick="javascript:window.location.href='<cfoutput>#cffm.cffmFilename#?subdir=#urlEncodedFormat(variables.subdir)#</cfoutput>';">
+	<cfelse>
+		<input type="button" class="button" style="vertical-align:middle;" value="<cfoutput>#cffm.resourceKit.buttonText.t2#</cfoutput>" onClick="javascript:history.go(-1);">
+	</cfif>	
 	</div>
 	</form>
 <cfelseif action eq "commitChanges">
