@@ -504,7 +504,8 @@
 		{
 			variables.errorMessage = variables.errorMessage & "<li>#variables.saveResults.errorMessage#</li>#Chr(10)#";		
 		} else {
-			relocate(cffm.cffmFilename & "?subdir=" & urlEncodedFormat(variables.subdir));
+			// relocate(cffm.cffmFilename & "?subdir=" & urlEncodedFormat(variables.subdir));
+			relocate(cffm.cffmFilename & "?subdir=" & urlEncodedFormat(variables.subdir) & "&editFileName=" & urlEncodedFormat(variables.editFilename) & "&action=edit");
 		}
 	} else if (variables.action eq "create") {
 		if (variables.createNewFilename contains "/" or variables.createNewFilename contains "\") {
@@ -693,6 +694,7 @@
 				,start_highlight: true				// to display with highlight mode on start-up
 				,font_size: 9						// default font size, user can change once editor loaded
 				,EA_init_callback: "resizeEditArea"	// immediately resize editor once initialized, we want it to scale to fit the screen
+				,allow_toggle: false
 			});
 			function resizeEditArea(frameId) {
 				document.getElementById(frameId).style.width = "100%";
@@ -702,10 +704,13 @@
 		</cfoutput>
 	</cfsavecontent>
 	<cfhtmlhead text="#addToHtmlHead#">
+	<div style="text-align:right;width:100%;margin-bottom:20px;">
 	<cfif variables.action eq "edit">
-		<input type="submit" class="button" value="<cfoutput>#cffm.resourceKit.buttonText.t1#</cfoutput>">
+		<span id="saving" style="vertical-align:middle;visibility:hidden;">Saving...</span>
+		<input type="submit" class="button" style="vertical-align:middle;" value="<cfoutput>#cffm.resourceKit.buttonText.t1#</cfoutput>" onclick="this.disabled=true;document.getElementById('saving').style.visibility='visible';if (this.form.onsubmit) {this.form.onsubmit();};this.form.submit();">
 	</cfif>
-	<input type="button" class="button" value="<cfoutput>#cffm.resourceKit.buttonText.t2#</cfoutput>" onClick="javascript:history.go(-1);">
+	<input type="button" class="button" style="vertical-align:middle;" value="<cfoutput>#cffm.resourceKit.buttonText.t2#</cfoutput>" onClick="javascript:window.location.href='<cfoutput>#cffm.cffmFilename#?subdir=#urlEncodedFormat(variables.subdir)#</cfoutput>';">
+	</div>
 	</form>
 <cfelseif action eq "commitChanges">
 	<cffile action="COPY" source="#variables.workingDirectory#/#variables.editFilename#" destination="#variables.workingDirectory#/#reReplace(variables.editFilename,"^\_\_TEMP\_\_","","ALL")#">

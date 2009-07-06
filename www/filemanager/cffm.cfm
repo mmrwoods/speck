@@ -1,3 +1,5 @@
+<cfabort>
+
 <cfsetting enablecfoutputonly="yes">
 <!---
 	CFFM 1.16

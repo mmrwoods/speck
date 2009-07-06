@@ -91,3 +91,12 @@ div.cffmDirectoryLinks {
 A.downloadLink {
 	font-size: 9px;
 }
+
+#loading, #saving {
+	font: 12px Verdana, Arial, Helvetica, sans-serif;
+	font-weight: bold;
+	color: white;
+	text-decoration: none; 
+	background-color: #484;
+	padding:2px;
+}
