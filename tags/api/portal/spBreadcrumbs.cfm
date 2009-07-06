@@ -12,7 +12,7 @@ Licensed under the Academic Free License version 2.1
 <cfparam name="attributes.selectedClass" default=""> <!--- class for current keyword link --->
 <cfparam name="attributes.prefix" default=""> <!--- prefix each link caption with this string --->
 <cfparam name="attributes.suffix" default=""> <!--- suffix each link caption with this string --->
-<cfparam name="attributes.truncate" default="false" type="boolean"> <!--- true or number of chars to truncate at --->
+<cfparam name="attributes.truncate" default="false" type="boolean"> <!--- true|false or number of chars to truncate at --->
 <cfif isNumeric(attributes.truncate)>
 	<cfset truncateAt = attributes.truncate>
 <cfelseif structKeyExists(attributes,"truncateAt")> <!--- old deprecated attribute --->

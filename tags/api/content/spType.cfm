@@ -81,6 +81,8 @@ Attributes:
 
 <cfif thisTag.ExecutionMode eq "START">
 
+	<cfset sa = duplicate(attributes)> <!--- source attributes passed in the call to cf_spType, without any default values applied using cfparam --->
+
 	<!--- get context --->
 	<cfif not isDefined("ca.context")>
 	
@@ -200,6 +202,19 @@ Attributes:
 			</cfif>
 			
 			<cfscript>
+				// inherit standard attributes
+				// we need to replace attributes with those from the extended type, and then override those attributes as necessary with whatever was passed directly when this tag was called
+				for ( key in stExtendedType ) {
+					if ( isSimpleValue(stExtendedType[key]) ) {
+						// key represents an attribute, copy attribute value from extended type
+						a[key] = stExtendedType[key];						
+					}
+				}
+				// override inherited attributes with any specified when this tag was called
+				for ( key in sa ) {
+					a[key] = sa[key];
+				}
+				
 				// inherit content index definition
 				if ( structKeyExists(stExtendedType,"contentIndex") and not structKeyExists(a,"contentIndex") ) {
 					a.contentIndex = duplicate(stExtendedType.contentIndex);	
@@ -215,7 +230,6 @@ Attributes:
 				}
 			
 				// inherit properties (local properties override those in extended type)
-				
 				if ( isDefined("stExtendedType.props") ) {
 					
 					if ( isDefined("a.props") ) {

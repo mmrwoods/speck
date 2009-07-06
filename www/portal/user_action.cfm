@@ -500,7 +500,7 @@ Licensed under the Academic Free License version 2.1
 					<cfset nl = chr(13) & chr(10)>
 					<cfset domain = request.speck.portal.domain>
 					<cfset mailFrom = "#request.speck.portal.name# <noreply@#domain#>">
-					<cfset subject = "Welcome to #request.speck.portal.name#">
+					<cfset subject = "#request.speck.portal.name# Account Details">
 					<cfset message = "
 						This is a automatically generated email. Please do not reply to this email. If you have any questions, please email info@#domain#.
 						
