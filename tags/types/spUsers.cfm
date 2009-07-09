@@ -121,13 +121,16 @@ This is a work in progress - it's not pretty and is subject to change.
 			
 		</cfif>
 		
-		<!--- update pre-defined speck session keys if session user matches this user --->
-		<cflock scope="session" type="exclusive" throwontimeout="false" timeout="5">
-		<cfif session.speck.user eq content.username>
+		<cfif request.speck.session.user eq content.username>
+			
+			<!--- update pre-defined speck session keys if session user matches this user --->
+			<cflock scope="session" type="exclusive" throwontimeout="false" timeout="5">
 			<cfset session.speck.fullName = content.fullName>
 			<cfset session.speck.email = content.email>
+			<cfset session.speck.password = content.password>
+			</cflock>
+		
 		</cfif>
-		</cflock>
 	
 	</cf_spHandler>
 	
