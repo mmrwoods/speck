@@ -468,13 +468,11 @@ Licensed under the Academic Free License version 2.1
 		var blockElementsPattern = "p|address|blockquote|div|dl|form|h1|h2|h3|h4|h5|h6|hr|ol|pre|table|ul";
 		var nestedElementsPattern = listRest(blockElementsPattern,"|");
 		var cleanElementsPattern = "address|div|dd|dt|h1|h2|h3|h4|h5|h6|li|pre|td|th";
-		
 
-		// tidy up the html
-		// rip out any non-breaking spaces
-		html = trim(html);		
-		html = replaceNoCase(html,"&nbsp;"," ","all");
-		html = replaceNoCase(html,"&##160;"," ","all");
+		html = trim(html);	
+		
+		// clean up non-breaking spaces (note: we used to replace these with a space character but that screwed up tables that had non-breaking spaces in cells to fix IE's stupid rendering problems)	
+		html = reReplaceNoCase(html,"([[:space:]]+)?(&nbsp;|&##160;)+([[:space:]]+)?","&nbsp;","all");
 		
 		// simple check for nested, non-paragraph, block level elements (this function is too simple to deal with that kind of input)
 		// note: this check isn't all that reliable, it would be nice to improve it (tbh, it would be nice to just rewrite this function)

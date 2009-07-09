@@ -31,7 +31,7 @@ Licensed under the Academic Free License version 2.1
 	tidy.setShowWarnings(false);
 	tidy.setTidyMark(false);
 	tidy.setMakeClean(true);
-	tidy.setMakeBare(true);
+	tidy.setMakeBare(false);
 	tidy.setQuiet(false);
 	tidy.setWord2000(true);
 	tidy.setWraplen(1024);
