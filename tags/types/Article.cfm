@@ -7,20 +7,14 @@ work with permission of the copyright owners.
 Licensed under the Academic Free License version 2.1
 --->
 
-<cfscript>
-	// unfortunately, the context isn't always provided as an attribute when this template is called as a module, so...
-	if ( structKeyExists(attributes,"context") ) {
-		getConfigString = attributes.context.getConfigString;
-	} else {
-		getConfigString = request.speck.getConfigString;
-	}
-	// possible TODO: update calls to type handler templates to always pass a context, and update spType to throw an exception if context not found??
-</cfscript>
+<!--- make sure the context is always available as an attribute, whether it was explicitly provided or not --->
+<!--- note: attributes.context is always available within cf_spType tags, but we need it when calling cf_spType itself --->
+<cfparam name="attributes.context" default="#iif( structKeyExists(request,"speck"), "request.speck", "attributes.context" )#">
 
 <cf_spType
 	name="Article"
 	description="Article"
-	keywordTemplates="#getConfigString("types","article","keyword_templates")#">
+	keywordTemplates="#attributes.context.getConfigString("types","article","keyword_templates")#">
 
  	<cf_spProperty
 		name="title"
