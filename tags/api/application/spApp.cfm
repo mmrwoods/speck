@@ -362,7 +362,8 @@ I'm sure this all used to be necessary in CF5
 				<!--- Write to the application.speck structure --->
 				<cflock scope="APPLICATION" type="EXCLUSIVE" timeout="3">
 				<cfset application.speck = structNew()>
-				<cfset application.speck = duplicate(stAppCached)>	
+				<cfset application.speck = duplicate(stAppCached)>
+				<cfset application.speck.started = now()>
 				</cflock>
 				
 				<cfset bAppLoadedFromCache = true>
