@@ -51,7 +51,7 @@ Licensed under the Academic Free License version 2.1
 		inString = attributes.html;
 	} else {
 		inString = createObject("java","java.lang.String");
-		inString.init(attributes.html);
+		inString.init(javaCast("String",attributes.html));
 	}
 	inBytes = inString.getBytes("UTF-16");
 	inStream = createObject("java","java.io.ByteArrayInputStream");
