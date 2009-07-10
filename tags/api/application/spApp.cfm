@@ -1227,6 +1227,7 @@ I'm sure this all used to be necessary in CF5
 						id CHAR (35) NOT NULL,
 						contentType #stApp.textDDLString(50,stApp)# NOT NULL,
 						keyword #stApp.textDDLString(250,stApp)#,
+						label #stApp.textDDLString(250,stApp)#,
 						title #stApp.textDDLString(250,stApp)# NOT NULL,
 						description #stApp.textDDLString(500,stApp)# NOT NULL,
 						body #stApp.textDDLString(64000,stApp)# NOT NULL,
@@ -1244,6 +1245,27 @@ I'm sure this all used to be necessary in CF5
 					CREATE INDEX spContentIdx2 
 					ON spContentIndex (keyword)
 				</cfquery>
+				
+			<cfelseif not listFindNoCase(qTableExists.columnList,"label")>
+			
+				<cfquery name="qAlterContentIndex" datasource="#stApp.codb#">
+					ALTER TABLE spContentIndex ADD label #stApp.textDDLString(250,stApp)#
+				</cfquery>
+				
+				<!--- ouch, now this is naaaasty, but I don't think all DBMS support correlated subqueries in update statements --->
+				<cfquery name="qContentIndex" datasource="#stApp.codb#">
+					SELECT id, contentType FROM spContentIndex WHERE label IS NULL
+				</cfquery>
+				
+				<cfloop query="qContentIndex">
+				
+					<cfquery name="qUpdate" datasource="#stApp.codb#">
+						UPDATE spContentIndex 
+						SET label = ( SELECT spLabel FROM #contentType# WHERE spId = '#id#' AND spArchived IS NULL AND spLevel = 3 )
+						WHERE id = '#id#'
+					</cfquery>
+				
+				</cfloop>
 		
 			</cfif>
 		

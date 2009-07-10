@@ -30,6 +30,12 @@ always take care of this automatically.
 
 </cfloop>
 
+<cfif not structKeyExists(request.speck.types,attributes.type)>
+
+	<cf_spError error="ATTR_INV" lParams="#attributes.type#,type"> <!--- Invalid attribute --->
+
+</cfif>
+
 <cfif not request.speck.isUUID(attributes.id)>
 
 	<cf_spError error="ATTR_INV" lParams="#attributes.id#,id"> <!--- Invalid attribute --->
@@ -156,8 +162,23 @@ lsParseDateTime(timestamp string) throws an exception!
 
 <!--- check if we need to insert or update (CF prior to version 8 does not have a simple way of obtaining the number of rows affected by an update)  --->
 <cfquery name="qCheckExists"datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
-	SELECT id FROM spContentIndex WHERE id = '#uCase(attributes.id)#'
+	SELECT <!--- id ---> * FROM spContentIndex WHERE id = '#uCase(attributes.id)#'
 </cfquery>
+
+<cfif listFindNoCase(qCheckExists.columnList,"label")>
+
+	<!--- get label for content item --->
+	<cfquery name="qLabel"datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
+		SELECT spLabel FROM #attributes.type# WHERE id = '#uCase(attributes.id)#' AND spArchived IS NULL AND spLevel = 3
+	</cfquery>
+	
+	<cfset bIndexHasLabel = true>
+	
+<cfelse>
+
+	<cfset bIndexHasLabel = false>
+	
+</cfif>
 
 <cfif qCheckExists.recordCount>
 
@@ -166,6 +187,9 @@ lsParseDateTime(timestamp string) throws an exception!
 		UPDATE spContentIndex
 		SET contentType = '#lCase(attributes.type)#',
 			keyword = <cfif len(attributes.keyword)>'#left(lCase(attributes.keyword),250)#'<cfelse>NULL</cfif>,
+			<cfif bIndexHasLabel>
+				label = <cfif len(qLabel.spLabel)>'#qLabel.spLabel#'<cfelse>NULL</cfif>,
+			</cfif>
 			title = '#left(attributes.title,250)#',
 			description = '#left(attributes.description,500)#',
 			body = <cfqueryparam value="#left(attributes.body,64000)#" cfsqltype="CF_SQL_LONGVARCHAR" maxlength="64000">,
@@ -181,6 +205,7 @@ lsParseDateTime(timestamp string) throws an exception!
 			contentType,
 			id,
 			keyword,
+			<cfif bIndexHasLabel>label,</cfif>
 			title,
 			description,
 			body,
@@ -189,6 +214,9 @@ lsParseDateTime(timestamp string) throws an exception!
 			'#lCase(attributes.type)#',
 			'#uCase(attributes.id)#',
 			<cfif len(attributes.keyword)>'#left(lCase(attributes.keyword),250)#'<cfelse>NULL</cfif>,
+			<cfif bIndexHasLabel>
+				<cfif len(qLabel.spLabel)>'#qLabel.spLabel#'<cfelse>NULL</cfif>,
+			</cfif>
 			'#left(attributes.title,250)#',
 			'#left(attributes.description,500)#',
 			<cfqueryparam value="#left(attributes.body,64000)#" cfsqltype="CF_SQL_LONGVARCHAR" maxlength="64000">,
