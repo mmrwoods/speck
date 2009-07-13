@@ -230,11 +230,16 @@ Licensed under the Academic Free License version 2.1
 </cfscript>
 
 <!--- some code to maintain backwards compatibility with templates designed before we had request.speck.page --->
+<!--- if key values in request.speck.portal have changed, assume an old template was used to generate content and copy key values to request.speck.page --->
 <cfloop list="keyword,title,description,keywords" index="key">
 	<cfif compare(request.speck.portal[key],request.speck.page.qKeyword[key][1]) neq 0>
 		<!--- key has chaged during processing, copy to request.speck.page --->
 		<cfset request.speck.page[key] = request.speck.portal[key]>
 	</cfif>
+</cfloop>
+<!--- always copy key values in request.speck.page to request.speck.portal (new templates could be used with old layouts) --->
+<cfloop list="keyword,title,description,keywords" index="key">
+	<cfset request.speck.portal[key] = request.speck.page[key]>
 </cfloop>
 
 <cfparam name="request.speck.portal.breadCrumbPageTitles" default="no">

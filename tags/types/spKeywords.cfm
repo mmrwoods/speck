@@ -244,6 +244,31 @@ Licensed under the Academic Free License version 2.1
 			SELECT * FROM spKeywords WHERE spId = '#content.spId#'
 		</cfquery>
 		
+		<cfif not qExisting.recordCount and listLen(content.keyword,".") gte 2 and not request.speck.userHasPermission("spSuper")>
+		
+			<!--- adding a new keyword at second level or below and user may not have access to set all property values - inherit property values --->
+			
+			<cfset parent = listDeleteAt(content.keyword,listLen(content.keyword,"."),".")>
+			
+			<cfquery name="qParent" datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
+				SELECT * FROM spKeywords
+				WHERE keyword = '#parent#'
+			</cfquery>
+				
+			<cfset aProps = request.speck.types[content.spType]['props']>
+			<cfloop from="1" to="#arrayLen(aProps)#" index="i">
+			
+				<cfset stPD = aProps[i]>
+				<cfif structKeyExists(stPD,"roles") and len(stPD.roles) and not request.speck.userHasPermission(stPD.roles)>
+				
+					<cfset content[stPD.name] = qParent[stPD.name][1]>
+				
+				</cfif>
+			
+			</cfloop>
+		
+		</cfif>
+		
 		<cftransaction>
 
 			<!--- if new content item, get keyId --->
