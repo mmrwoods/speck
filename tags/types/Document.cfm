@@ -7,9 +7,8 @@ work with permission of the copyright owners.
 Licensed under the Academic Free License version 2.1
 --->
 
-<cf_spType
-	name="Document"
-	description="Document">
+<cf_spType 
+	name="Document">
 		
  	<cf_spProperty
 		name="title"

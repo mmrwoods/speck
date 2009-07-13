@@ -8,8 +8,7 @@ Licensed under the Academic Free License version 2.1
 --->
 
 <cf_spType
-	name="Image"
-	description="Image">
+	name="Image">
 	
 	<cf_spProperty
 		name="caption"

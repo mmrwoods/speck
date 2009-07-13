@@ -13,7 +13,6 @@ Licensed under the Academic Free License version 2.1
 
 <cf_spType
 	name="Article"
-	description="Article"
 	keywordTemplates="#attributes.context.getConfigString("types","article","keyword_templates")#">
 
  	<cf_spProperty

@@ -9,7 +9,7 @@ Licensed under the Academic Free License version 2.1
 
 <cf_spType
 	name="Blurb"
-	description="Text">
+	caption="Text">
 
  	<cf_spProperty
 		name="blurb"

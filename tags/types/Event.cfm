@@ -13,7 +13,6 @@ Licensed under the Academic Free License version 2.1
 
 <cf_spType
 	name="Event"
-	description="Event"
 	keywordTemplates="#attributes.context.getConfigString("types","event","keyword_templates")#">
 	
  	<cf_spProperty
