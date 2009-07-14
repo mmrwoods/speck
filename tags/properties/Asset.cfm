@@ -94,7 +94,7 @@ Licensed under the Academic Free License version 2.1
 			<cfscript>
 				fs = request.speck.fs;
 				idHash = assetHash(id);
-				bPublicAsset = ( stPD.secureKeys eq "" and ( not request.speck.enableRevisions or (caller.attributes.revision eq "tip" and caller.attributes.level eq "live" and caller.attributes.date eq "") ) );
+				bPublicAsset = ( stPD.secureKeys eq "" and ( not request.speck.enableRevisions or ( (caller.attributes.revision eq "tip" or caller.attributes.level eq "live") and caller.attributes.date eq "" and not caller.attributes.showRemoved ) ) );
 				
 				publicAssetDir = request.speck.appInstallRoot & fs & "www" & fs & "assets" & fs & idHash & fs & id & "_" & stPD.name & fs;
 				if ( len(trim(value)) ) {
