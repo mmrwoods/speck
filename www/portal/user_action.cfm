@@ -504,7 +504,8 @@ Licensed under the Academic Free License version 2.1
 					<cfset message = "
 						This is a automatically generated email. Please do not reply to this email. If you have any questions, please email info@#domain#.
 						
-						You have been registered as a user on the #request.speck.portal.name# web site.
+						You have been registered as a user on the #request.speck.portal.name# web site. You can access the site at:
+						http://#cgi.http_host##request.speck.appWebRoot#
 						
 						To log in, you will need your username and password. Please make a note of these for future reference.
 			

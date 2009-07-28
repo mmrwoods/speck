@@ -22,12 +22,15 @@ Licensed under the Academic Free License version 2.1
 		<cfset thisTag.bSave = false>
 		
 		<!--- 
-		Remove spaces from cache names. Applications may generated cache names automatically 
-		based on input from the client (querystring parameters etc.), we'll just allow for 
-		slightly mangled user input here (we also remove spaces from ids in spContentGet)
+		Do some minor cleaning up of the provided cache name. Cache names are often generated 
+		based on input from the client request (querystring parameters etc.), we'll just allow 
+		for slightly mangled user input here (spContentGet does some similar cleaning up).
+		Note: this code also replaces dots with underscores, allowing application keywords 
+		to be passed as part or all of a cache name without having to do any pre-processing.
 		--->
-		<!--- <cfset attributes.cacheName = replace(attributes.cacheName,chr(32),"","all")> --->
-		<cfset attributes.cacheName = REReplace(attributes.cacheName,"[[:space:]]+","","all")>
+		<cfset attributes.cacheName = reReplace(attributes.cacheName,"[[:space:]]+","","all")>
+		<cfset attributes.cacheName = reReplace(attributes.cacheName,"[^A-Za-z0-9_]+$","","all")>
+		<cfset attributes.cacheName = replace(attributes.cacheName,".","_","all")>
 		
 		<cfif len(attributes.cacheName) gt 250>
 		

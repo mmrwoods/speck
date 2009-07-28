@@ -708,6 +708,8 @@
 	<cfif variables.action eq "edit">
 		<span id="saving" style="vertical-align:middle;visibility:hidden;">Saving...</span>
 		<input type="submit" class="button" style="vertical-align:middle;" value="<cfoutput>#cffm.resourceKit.buttonText.t1#</cfoutput>" onclick="this.disabled=true;document.getElementById('saving').style.visibility='visible';if (this.form.onsubmit) {this.form.onsubmit();};this.form.submit();">
+	<cfelse>
+		<input type="submit" class="button" style="vertical-align:middle;text-decoration:line-through;" value="<cfoutput>#cffm.resourceKit.buttonText.t1#</cfoutput>" disabled="true">
 	</cfif>
 	<cfif findNoCase("action=edit",cgi.HTTP_REFERER)>
 		<input type="button" class="button" style="vertical-align:middle;" value="<cfoutput>#cffm.resourceKit.buttonText.t2#</cfoutput>" onClick="javascript:window.location.href='<cfoutput>#cffm.cffmFilename#?subdir=#urlEncodedFormat(variables.subdir)#</cfoutput>';">
