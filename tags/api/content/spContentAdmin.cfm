@@ -149,12 +149,12 @@ Licensed under the Academic Free License version 2.1
 				<a onmouseover="#highlightOn#" 
 					onmouseout="#highlightOff#" 
 					href="javascript:launch_promote('#caller.caller.attributes.type#','#caller.caller.content.spId#', '#jsSafeLabel#', '#jsSafeKeywords#', '#jsSafeCacheList#', '#jsSafeCaption#')" 
-					title="#stStrings.promote# #caption#"
+					title="#stStrings.promoteTooltip#"
 					class="spAdminLink spPromote">#stStrings.promote#</a>&nbsp;
 				<a onmouseover="#highlightWarning#" 
 					onmouseout="#highlightOff#" 
 					href="javascript:launch_demote('#caller.caller.attributes.type#','#caller.caller.content.spId#', '#jsSafeLabel#', '#jsSafeKeywords#', '#jsSafeCacheList#', '#jsSafeCaption#')" 
-					title="#stStrings.demote# #caption#"
+					title="#stStrings.demoteTooltip#"
 					class="spAdminLink spAdminWarning spDemote">#stStrings.demote#</a>
 				</cfoutput>
 			<cfelse>
@@ -192,23 +192,20 @@ Licensed under the Academic Free License version 2.1
 	
 		<cfoutput>
 		<span class="spAdminLinks spWarning">
-		<a title="#stStrings.forRemoval#" 
-			onmouseover="#highlightWarning#" 
+		<a onmouseover="#highlightWarning#" 
 			onmouseout="#highlightOff#" 
 			href="javascript:launch_edit('#caller.caller.attributes.type#','#caller.caller.content.spId#', '#jsSafeKeywords#', '#jsSafeCacheList#', '#jsSafeCaption#')"
 			title="#stStrings.review# #caption# (#stStrings.forRemoval#)"
 			class="spAdminLink spAdminWarning spReview">#stStrings.review#</a>&nbsp;
-		<a title="#stStrings.forRemoval#" 
-			onmouseover="#highlightWarning#" 
+		<a onmouseover="#highlightWarning#" 
 			onmouseout="#highlightOff#" 
 			href="javascript:launch_promote('#caller.caller.attributes.type#','#caller.caller.content.spId#', '#jsSafeLabel#', '#jsSafeKeywords#', '#jsSafeCacheList#', '#jsSafeCaption#')" 
-			title="#stStrings.promote# #caption# (#stStrings.forRemoval#)"
+			title="#stStrings.promoteTooltip# (#stStrings.forRemoval#)"
 			class="spAdminLink spAdminWarning spPromote">#stStrings.promote#</a>&nbsp;
-		<a title="#stStrings.forRemoval#" 
-			onmouseover="#highlightWarning#" 
+		<a onmouseover="#highlightWarning#" 
 			onmouseout="#highlightOff#" 
 			href="javascript:launch_demote('#caller.caller.attributes.type#','#caller.caller.content.spId#', '#jsSafeLabel#', '#jsSafeKeywords#', '#jsSafeCacheList#', '#jsSafeCaption#')" 
-			title="#stStrings.demote# #caption# (#stStrings.forRemoval#)"
+			title="#stStrings.demoteTooltip# (#stStrings.forRemoval#)"
 			class="spAdminLink spAdminWarning spDemote">#stStrings.demote#</a>
 		</span>
 		</cfoutput>
@@ -240,12 +237,12 @@ Licensed under the Academic Free License version 2.1
 			<a onmouseover="#highlightOn#" 
 				onmouseout="#highlightOff#" 
 				href="javascript:launch_promote('#caller.caller.attributes.type#','#caller.caller.content.spId#', '#jsSafeLabel#', '#jsSafeKeywords#', '#jsSafeCacheList#', '#jsSafeCaption#')" 
-				title="#stStrings.promote# #caption#"
+				title="#stStrings.promoteTooltip#"
 				class="spAdminLink spPromote">#stStrings.promote#</a>&nbsp;
 			<a onmouseover="#highlightWarning#"
 				onmouseout="#highlightOff#" 
 				href="javascript:launch_demote('#caller.caller.attributes.type#','#caller.caller.content.spId#', '#jsSafeLabel#', '#jsSafeKeywords#', '#jsSafeCacheList#', '#jsSafeCaption#')" 
-				title="#stStrings.demote# #caption#"
+				title="#stStrings.demoteTooltip#"
 				class="spAdminLink spAdminWarning spDemote">#stStrings.demote#</a>
 			</span>
 			</cfoutput>

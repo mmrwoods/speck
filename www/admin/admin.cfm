@@ -163,15 +163,6 @@ Licensed under the Academic Free License version 2.1
 		</body>
 		</html>
 		</cfoutput>
-	
-		<!--- live access required to delete content from the live site --->
-		<cfif not bLiveAccess>
-	
-			<cf_spError error="A_ADMIN_ACCESS_DENIED" lParams="#actionString#,#url.type#">
-		
-			<cfexit>
-			
-		</cfif>
 		
 		<cf_spContentGet type="#url.type#" id="#url.id#" keywords="#url.keywords#" r_qContent="qDeletionCandidate">
 		
@@ -190,11 +181,37 @@ Licensed under the Academic Free License version 2.1
 			<!--- revisions enabled, so promote revision 0 to mark content item as "deleted" --->
 			<cfparam name="changeId" default="">
 			
+			<cfif request.speck.session.viewLevel eq "edit">
+				
+				<cfif bLiveAccess>
+				
+					<cfset newLevel = "live">
+				
+				<cfelse>
+				
+					<cfset newLevel = "review">
+					
+				</cfif>
+			
+			<cfelseif request.speck.session.viewLevel eq "review">
+			
+				<cfset newLevel = "live">
+			
+			</cfif>
+			
+			<cfif ( newLevel eq "review" and not bPromoteAccess ) or ( newLevel eq "live" and not bLiveAccess )>
+		
+				<cf_spError error="A_ADMIN_ACCESS_DENIED" lParams="#actionString#,#url.type#">
+			
+				<cfexit>
+				
+			</cfif>	
+			
 			<cf_spPromote
 				id = #id#
 				type = #url.type#
 				revision = 0
-				newLevel = #request.speck.session.viewLevel#
+				newLevel = #newLevel#
 				editor = #request.speck.session.user#
 				changeId = #changeId#>
 				
@@ -208,6 +225,15 @@ Licensed under the Academic Free License version 2.1
 			</script>
 			</cfoutput>
 			
+			<cfexit>
+			
+		</cfif>
+		
+		<!--- live access required to delete content from the live site --->
+		<cfif not bLiveAccess>
+	
+			<cf_spError error="A_ADMIN_ACCESS_DENIED" lParams="#actionString#,#url.type#">
+		
 			<cfexit>
 			
 		</cfif>

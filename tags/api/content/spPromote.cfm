@@ -126,8 +126,13 @@ Attributes:
 
 <!--- Calculate range of promotions to insert --->
 <cfset targetLevel = listFindNoCase("edit,review,live", attributes.newLevel)>
-	
-<cfif request.speck.enablePromotion>
+
+<cfif attributes.revision eq 0>
+
+	<!--- deletions need to be the latest entries in the history table at all levels --->
+	<cfset firstPromotion = listFindNoCase("edit,review,live", request.speck.session.viewLevel)>
+
+<cfelseif request.speck.enablePromotion>
 
 	<!--- set table alias keyword (Access requires the use of AS) --->
 	<cfset ta = request.speck.database.tableAliasKeyword>
@@ -195,8 +200,6 @@ Attributes:
 	
 </cfif>
 
-<!--- <cfoutput>loop from=#firstPromotion# to=#targetLevel#<Br></cfoutput> --->
-
 <!--- we need to send the content query to the promote methods for the content type and property types --->
 <cfquery name="qContent" datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
 	SELECT * FROM #attributes.type#
@@ -219,29 +222,28 @@ Attributes:
 			VALUES ('#attributes.id#', #attributes.revision#, '#attributes.type#', #level#, '#attributes.editor#', #changeValue#, #createODBCDateTime(now())#)
 		</cfquery>
 		
-		<!--- archive the previous version at this level --->
+		<!--- archive existing revision at this level --->
 		<cfquery name="qUpdateLevel" datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
 			UPDATE #attributes.type# 
 			SET spArchived = #createODBCDateTime(now())#
-			WHERE spId = '#qContent.spId#' 
-				AND spRevision < #qContent.spRevision#
+			WHERE spId = '#qContent.spId#'
+				AND spLevel = #level#
 				AND spArchived IS NULL
 		</cfquery>
 		
-		<!--- update the row in the content table for this revision - set the level to the current level and set the archived date as required (NULL, unless we're promoting a deletion to live) --->
-		<cfquery name="qUpdateLevel" datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
-			UPDATE #attributes.type# 
-			SET spLevel = #targetLevel#, 
-			<cfif level eq 3 and attributes.revision eq 0>
-				<!--- promoting a deletion to live, archive this row in the content table --->
-				spArchived = #createODBCDateTime(now())#
-			<cfelse>
-				spArchived = NULL
-			</cfif>
-			WHERE spId = '#qContent.spId#' 
-				AND spRevision = #qContent.spRevision#
-		</cfquery>
-	
+		<cfif attributes.revision neq 0>
+			
+			<!--- update the row in the content table for this revision - set the level to the current level and set the archived date to null --->
+			<cfquery name="qUpdateLevel" datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
+				UPDATE #attributes.type# 
+				SET spLevel = #level#, 
+					spArchived = NULL
+				WHERE spId = '#qContent.spId#' 
+					AND spRevision = #attributes.revision#
+			</cfquery>
+			
+		</cfif>
+
 	</cftransaction>
 
 </cfloop>
@@ -309,8 +311,8 @@ Attributes:
 		<!--- update content index --->
 		<cfscript>
 			stContentIndex = structNew();
-			if ( len(evaluate("#stType.contentIndex.date#")) ) {
-				stContentIndex.date = evaluate("#stType.contentIndex.date#");
+			if ( isDefined("qContent.#stType.contentIndex.date#") ) {
+				stContentIndex.date = evaluate("qContent.#stType.contentIndex.date#");
 			}
 			if ( not structKeyExists(stContentIndex,"date") or not len(stContentIndex.date) ) {
 				stContentIndex.date = spCreated;

@@ -885,7 +885,7 @@ Attributes:
 			<!--- update content index --->
 			<cfscript>
 				stContentIndex = structNew();
-				if ( len(evaluate("#stType.contentIndex.date#")) ) {
+				if ( isDefined("qContent.#stType.contentIndex.date#") ) {
 					stContentIndex.date = evaluate("qContent.#stType.contentIndex.date#[item]");
 				}
 				if ( not structKeyExists(stContentIndex,"date") or not len(stContentIndex.date) ) {

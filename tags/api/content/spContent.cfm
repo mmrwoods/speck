@@ -243,13 +243,18 @@ bShowAddAdmin = false;
 				if ( bLiveAccess ) {
 					// users with live access promote directly to live site
 					request.speck.spContent.strings.promote = request.speck.buildString("A_CONTENT_PUBLISH");
+					request.speck.spContent.strings.promoteTooltip = request.speck.buildString("A_CONTENT_PUBLISH_TOOLTIP");
 				} else {
 					request.speck.spContent.strings.promote = request.speck.buildString("A_CONTENT_SUBMIT");
+					request.speck.spContent.strings.promoteTooltip = request.speck.buildString("A_CONTENT_SUBMIT_TOOLTIP");
 				}
 				request.speck.spContent.strings.demote = request.speck.buildString("A_CONTENT_REVERT");
+				request.speck.spContent.strings.demoteTooltip = request.speck.buildString("A_CONTENT_REVERT_TOOLTIP");
 			} else {
 				request.speck.spContent.strings.promote = request.speck.buildString("A_CONTENT_PUBLISH");
+				request.speck.spContent.strings.promoteTooltip = request.speck.buildString("A_CONTENT_PUBLISH_TOOLTIP");
 				request.speck.spContent.strings.demote = request.speck.buildString("A_CONTENT_REJECT");
+				request.speck.spContent.strings.demoteTooltip = request.speck.buildString("A_CONTENT_REJECT_TOOLTIP");
 			}
 			
 			// some extra strings used in handler tag if promotion is enabled (and if it isn't, set the rollback string 

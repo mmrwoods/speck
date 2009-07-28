@@ -169,7 +169,7 @@ lsParseDateTime(timestamp string) throws an exception!
 
 	<!--- get label for content item --->
 	<cfquery name="qLabel"datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
-		SELECT spLabel FROM #attributes.type# WHERE id = '#uCase(attributes.id)#' AND spArchived IS NULL AND spLevel = 3
+		SELECT spLabel FROM #attributes.type# WHERE spId = '#uCase(attributes.id)#' AND spArchived IS NULL AND spLevel = 3
 	</cfquery>
 	
 	<cfset bIndexHasLabel = true>
