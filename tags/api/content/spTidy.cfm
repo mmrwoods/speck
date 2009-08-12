@@ -37,8 +37,8 @@ Licensed under the Academic Free License version 2.1
 	tidy.setWraplen(1024);
 	tidy.setXHTML(true);
 	tidy.setLogicalEmphasis(true);
-	tidy.setInputEncoding("UTF-16");
-	tidy.setOutputEncoding("UTF-16");
+	tidy.setInputEncoding("UTF-8");
+	tidy.setOutputEncoding("UTF-8");
 	tidy.setDropFontTags(true);
 
 	// TODO: read properties into a Properties object and store in application scope
@@ -53,7 +53,7 @@ Licensed under the Academic Free License version 2.1
 		inString = createObject("java","java.lang.String");
 		inString.init(javaCast("String",attributes.html));
 	}
-	inBytes = inString.getBytes("UTF-16");
+	inBytes = inString.getBytes("UTF-8");
 	inStream = createObject("java","java.io.ByteArrayInputStream");
 	inStream.init(inBytes);
 	
@@ -65,11 +65,7 @@ Licensed under the Academic Free License version 2.1
 	tidy.parse(inStream, outStream);
 	
 	// convert the output stream to a string
-	if ( listFirst(request.speck.cfVersion) gte 6 ) {
-		outString = outStream.toString("UTF-16");
-	} else {
-		outString = outStream.toString("ISO-8859-1");
-	}
+	outString = outStream.toString("UTF-8");
 
 	// close the streams
 	inStream.close();
