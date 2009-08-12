@@ -21,5 +21,5 @@ usergroups=select group from usergroup where UPPER(user)=%
 ; One group per line in the following format:
 ; groupname=user1,user2,...,userN
 
-admin=robin
+admins=robin
 editors=mwoods

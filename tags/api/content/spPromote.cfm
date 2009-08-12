@@ -129,7 +129,7 @@ Attributes:
 
 <cfif attributes.revision eq 0>
 
-	<!--- deletions need to be the latest entries in the history table at all levels --->
+	<!--- deletions need to be the latest entries in the history table at all levels (this is a brittle hack and shouldn't be necessary, but we'll live with it because it's only temporary - the history table is due to be decommissioned and the promotion code further simplified) --->
 	<cfset firstPromotion = listFindNoCase("edit,review,live", request.speck.session.viewLevel)>
 
 <cfelseif request.speck.enablePromotion>
@@ -213,9 +213,9 @@ Attributes:
 		</cfif>
 </cfquery>
 
-<cfloop from=#firstPromotion# to=#targetLevel# index="level">
-	
-	<cftransaction isolation="serializable">
+<cftransaction isolation="serializable">
+
+	<cfloop from=#firstPromotion# to=#targetLevel# index="level">
 	
 		<cfquery name="qInsertPromotion" datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
 			INSERT INTO spHistory (id,revision,contentType,promoLevel,editor,changeId,ts)
@@ -244,9 +244,9 @@ Attributes:
 			
 		</cfif>
 
-	</cftransaction>
+	</cfloop>
 
-</cfloop>
+</cftransaction>
 
 <!--- run promote handlers for the target level only (this is a big change and I'm not sure how this will affect things like the auto promote feature of the picker property) --->
 

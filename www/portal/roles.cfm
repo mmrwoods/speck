@@ -7,14 +7,10 @@ work with permission of the copyright owners.
 Licensed under the Academic Free License version 2.1
 --->
 
-<!--- always return all groups (we'll just assume there won't be hundreds of groups) --->
-<!--- um, maybe this correlated subquery and union is overly complicated if we're not returning loads of rows --->
 <cfquery name="qRoles" datasource="#request.speck.codb#">
-	
 	SELECT rolename, description
 	FROM spRoles
 	ORDER BY UPPER(rolename)
-	
 </cfquery>
 
 <cfinclude template="header.cfm">

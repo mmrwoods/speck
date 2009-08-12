@@ -17,7 +17,7 @@ Licensed under the Academic Free License version 2.1
 		type="Picker"
 		contentType="Article"
 		required="no"
-		maxSelect="25"
+		maxSelect="#attributes.context.getConfigString("types","article_container","articles_max_select",25)#"
 		dependent="#attributes.context.getConfigString("types","article_container","articles_dependent","no")#"
 		showSort="yes"
 		prepend="yes">

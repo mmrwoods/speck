@@ -26,7 +26,7 @@ If user doesn't exist in application's security zones the variable specified in 
 <cfparam name="attributes.securityZone" default=""> <!--- optional attribute, if passed, only return user if found within the specified security zone --->
 
 <!--- nab the security zones from application scope --->
-<cflock scope="application" timeout="3" type="READONLY">
+<cflock scope="application" timeout="3" type="readonly">
 <cfset stSecurityZones = duplicate(application.speck.securityZones)>
 </cflock>
 
@@ -36,8 +36,36 @@ If user doesn't exist in application's security zones the variable specified in 
 	
 <cfelse>
 
-	<cfset lSecurityZones = structKeyList(stSecurityZones)>
-
+	<cfif structCount(stSecurityZones) gt 1>
+	
+		<!--- when we have more than one security zone, we'd ideally like to use the order of the zone list in the config file to indicate precedence --->
+		<cflock scope="application" timeout="3" type="readonly">
+		<cfif structKeyExists(application.speck,"securityZonesList")>
+			<cfset lSecurityZones = application.speck.securityZonesList>
+		</cfif>
+		</cflock>
+		
+		<cfif not isDefined("lSecurityZones")>
+		
+			<!--- get the list of security zones from the application configuration --->
+			<cflock scope="server" timeout="3" type="readonly">
+			<cfset stApp = server.speck.apps[request.speck.appName]>
+			<cfset lSecurityZones = stApp.securityZones>
+			</cflock>
+			
+			<!--- cache the zones list in application scope (possible TODO: do this during application initialisation) --->
+			<cflock scope="application" timeout="3" type="exclusive">
+			<cfset application.speck.securityZonesList = lSecurityZones>
+			</cflock>
+			
+		</cfif>
+		
+	<cfelse>
+	
+		<cfset lSecurityZones = structKeyList(stSecurityZones)>
+	
+	</cfif>
+	
 </cfif>
 
 <cfset stUser = structNew()> <!--- populate this struct with user details if user is found - only return struct to caller if user found --->
@@ -46,9 +74,7 @@ If user doesn't exist in application's security zones the variable specified in 
 
 <cfloop list="#lSecurityZones#" index="zone">
 
-	<cflock scope="application" timeout="3" type="READONLY">
 	<cfset stSecurityZone = stSecurityZones[zone]>
-	</cflock>
 	
 	<!--- optional encryption setting in user options - if specified, this is the name of function used to encrypt passwords --->
 	<cfparam name="stSecurityZone.users.options.encryption" default="">

@@ -18,7 +18,7 @@ Licensed under the Academic Free License version 2.1
 		contentType="Document"
 		required="yes"
 		dependent="#attributes.context.getConfigString("types","document_container","documents_dependent","no")#"
-		maxSelect="25"
+		maxSelect="#attributes.context.getConfigString("types","document_container","documents_max_select",25)#"
 		showSort="yes"
 		prepend="yes">
 	
