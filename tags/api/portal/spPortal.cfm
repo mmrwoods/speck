@@ -1165,60 +1165,60 @@ update: I found it, a logout script wasn't deleting the speck key from session s
 					</cfif>
 											
 				</cfcatch>
-				</cftry>
+				</cftry>					
 				
-				<!--- track user activity --->
-				<cfif request.speck.portal.trackUserActivity>
-				
-					<!--- note: only update the db every 90 seconds --->
-					<cfif not structKeyExists(request.speck.session,"lastActive") or 
-						( structKeyExists(request.speck.session,"lastActive") and dateDiff("s",request.speck.session.lastActive,now()) gt 90 )>
-					
-						<cftry>
-						
-							<cfquery name="qUpdateLastActive" datasource="#request.speck.codb#">
-								UPDATE spUsers 
-								SET lastActive = <cfqueryparam cfsqltype="cf_sql_timestamp" value="#createODBCDateTime(now())#">
-								WHERE username = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lCase(request.speck.session.user)#">
-							</cfquery>
-							
-						<cfcatch>
-						
-							<cfquery name="qTableCheck" datasource="#request.speck.codb#">
-								SELECT * FROM spUsers WHERE spId = 'noSuchId'
-							</cfquery>
-							
-							<cfif not listFindNoCase(qTableCheck.columnList, "lastActive")>
-					
-								<!--- note: frequently updated column, do not index! --->
-								<cfquery name="qAlterUsers" datasource="#request.speck.codb#">
-									ALTER TABLE spUsers ADD lastActive #request.speck.database.tsDDLString#
-								</cfquery>
-								
-							<cfelse>
-							
-								<cfrethrow>
-								
-							</cfif>
-									
-						</cfcatch>
-						</cftry>
-						
-						<cflock scope="session" type="exclusive" timeout="3">
-						<cfif structKeyExists(session,"speck") and isStruct(session.speck) and not structIsEmpty(session.speck)>
-							<cfset session.speck.lastActive = now()>
-						</cfif>
-						</cflock>
-						
-					</cfif>
-				
-				</cfif>						
-				
-			</cfif> <!--- end code to update last logon and last active --->
+			</cfif> <!--- end code to update last logon --->
 			
 		</cfif> <!--- check if logon succeeded --->
 			
 	</cfif> <!--- check if logon form posted  --->
+	
+	<!--- track user activity --->
+	<cfif request.speck.portal.trackUserActivity and request.speck.session.auth eq "logon">
+	
+		<!--- note: only update the db every 90 seconds --->
+		<cfif not structKeyExists(request.speck.session,"lastActive") or 
+			( structKeyExists(request.speck.session,"lastActive") and dateDiff("s",request.speck.session.lastActive,now()) gt 90 )>
+		
+			<cftry>
+			
+				<cfquery name="qUpdateLastActive" datasource="#request.speck.codb#">
+					UPDATE spUsers 
+					SET lastActive = <cfqueryparam cfsqltype="cf_sql_timestamp" value="#createODBCDateTime(now())#">
+					WHERE username = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lCase(request.speck.session.user)#">
+				</cfquery>
+				
+			<cfcatch>
+			
+				<cfquery name="qTableCheck" datasource="#request.speck.codb#">
+					SELECT * FROM spUsers WHERE spId = 'noSuchId'
+				</cfquery>
+				
+				<cfif not listFindNoCase(qTableCheck.columnList, "lastActive")>
+		
+					<!--- note: frequently updated column, do not index! --->
+					<cfquery name="qAlterUsers" datasource="#request.speck.codb#">
+						ALTER TABLE spUsers ADD lastActive #request.speck.database.tsDDLString#
+					</cfquery>
+					
+				<cfelse>
+				
+					<cfrethrow>
+					
+				</cfif>
+						
+			</cfcatch>
+			</cftry>
+			
+			<cflock scope="session" type="exclusive" timeout="3">
+			<cfif structKeyExists(session,"speck") and isStruct(session.speck) and not structIsEmpty(session.speck)>
+				<cfset session.speck.lastActive = now()>
+			</cfif>
+			</cflock>
+			
+		</cfif>
+	
+	</cfif>	
 
 </cfif> <!--- check for portal security zone --->
 

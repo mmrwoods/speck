@@ -19,6 +19,9 @@ Note: uses some strings from simplepicker property type
 		<cfparam name="stPD.list" default=""> <!--- deprecated, valueList is clearer --->
 		<cfparam name="stPD.valueList" default="#stPD.list#">
 		<cfparam name="stPD.optionList" default="#caller.ca.context.capitalize(stPD.valueList)#"> <!--- use to overide the list of options that a user sees when selecting a value --->
+		<cfif len(stPD.optionList) and not len(stPD.valueList)>
+			<cfset stPD.valueList = stPD.optionList>
+		</cfif>
 		<cfparam name="stPD.delimiter" default=",">	
 		<cfparam name="stPD.maxSelect" default="1">
 		
@@ -38,7 +41,7 @@ Note: uses some strings from simplepicker property type
 		</cfif>
 		
 		<cfset stPD.maxSelect = int(val(stPD.maxSelect))>
-		<cfif stPD.maxSelect lt 1>
+		<cfif stPD.maxSelect eq 0 or stPD.maxSelect lt -1>
 		
 			<!--- invalid attribute value - maxSelect must be gt 0 --->
 			<cf_spError error="ATTR_INV" lParams="#stPD.maxSelect#,maxSelect" context=#caller.ca.context#>
@@ -70,7 +73,7 @@ Note: uses some strings from simplepicker property type
 			}
 		</cfscript>
 		
-		<cfif stPD.maxSelect gt 1>
+		<cfif stPD.maxSelect neq 1>
 		
 			<cfoutput>
 			<script type="text/javascript">
@@ -155,7 +158,7 @@ Note: uses some strings from simplepicker property type
 			<table border="0" cellpadding="0" cellspacing="0" width="100%">
 			<tr>
 			<td width="45%">#request.speck.buildString("P_SIMPLEPICKER_AVAILABLE")#<br />
-				<select name="#stPD.name#_from" multiple="yes" size="#size#" style="width:100%;">
+				<select name="#stPD.name#_from" id="#stPD.name#_from" multiple="yes" size="#size#" style="width:100%;">
 				</cfoutput>
 				
 				<cfloop from="1" to="#listLen(stPD.valueList,stPD.delimiter)#" index="i">
@@ -174,11 +177,11 @@ Note: uses some strings from simplepicker property type
 				</select>
 			</td>
 			<td width="10%" style="vertical-align:middle;text-align:center;">
-				<input name="#stPD.name#_right" value="&gt;&gt;" onclick="if ( checkMaxSelect_#stPD.name#() ) moveSelectedOptions_#stPD.name#(this.form['#stPD.name#_from'],this.form['#stPD.name#'],true);" type="button"><br />
-				<input name="#stPD.name#_left" value="&lt;&lt;" onclick="moveSelectedOptions_#stPD.name#(this.form['#stPD.name#'],this.form['#stPD.name#_from'],true)" type="button">
+				<input name="#stPD.name#_right" id="#stPD.name#_right" value="&gt;&gt;" onclick="if ( checkMaxSelect_#stPD.name#() ) moveSelectedOptions_#stPD.name#(this.form['#stPD.name#_from'],this.form['#stPD.name#'],true);" type="button"><br />
+				<input name="#stPD.name#_left" id="#stPD.name#_left" value="&lt;&lt;" onclick="moveSelectedOptions_#stPD.name#(this.form['#stPD.name#'],this.form['#stPD.name#_from'],true)" type="button">
 			</td>
 			<td width="45%">#request.speck.buildString("P_SIMPLEPICKER_SELECTED")#<br />
-				<select name="#stPD.name#" multiple="yes" size="#size#" style="width:100%;">
+				<select name="#stPD.name#" id="#stPD.name#" multiple="yes" size="#size#" style="width:100%;">
 				</cfoutput>
 				
 				<cfloop from="1" to="#listLen(stPD.valueList,stPD.delimiter)#" index="i">
@@ -198,13 +201,15 @@ Note: uses some strings from simplepicker property type
 			</td>
 			</tr>
 			</table>
-			(#request.speck.buildString("P_SIMPLEPICKER_MAXSELECT_NOTE","#stPD.maxSelect#,#stPD.caption#")#)
+			<cfif stPD.maxSelect neq -1>
+				(#request.speck.buildString("P_SIMPLEPICKER_MAXSELECT_NOTE","#stPD.maxSelect#,#stPD.caption#")#)
+			</cfif>
 			</cfoutput>
 		
 		<cfelse>
 		
 			<cfoutput>
-			<select name="#stPD.name#">
+			<select name="#stPD.name#" id="#stPD.name#">
 			</cfoutput>
 			
 			<cfset forceWidth = "">
@@ -245,7 +250,7 @@ Note: uses some strings from simplepicker property type
 	
 	<cf_spPropertyHandlerMethod method="validateValue">
 	
-		<cfif listLen(newValue) gt stPD.maxSelect>
+		<cfif stPD.maxSelect neq -1 and listLen(newValue) gt stPD.maxSelect>
 			<cfset lErrors = request.speck.buildString("P_SIMPLEPICKER_SELECTED_GT_MAXSELECT", "#stPD.caption#,#listLen(newValue)#,#stPD.maxSelect#")>
 		</cfif>
 		
