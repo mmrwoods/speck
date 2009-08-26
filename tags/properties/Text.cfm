@@ -130,13 +130,13 @@ Licensed under the Academic Free License version 2.1
 
 		<cfif listLen(stPD.displaySize) eq 2>
 		
-			<cfoutput><textarea class="text" #readonlyAttribute# name="#stPD.name#" wrap="virtual" cols="#listFirst(stPD.displaySize)#" rows="#listLast(stPD.displaySize)#">#value#</textarea></cfoutput>
+			<cfoutput><textarea class="text" #readonlyAttribute# name="#stPD.name#" id="#stPD.name#" wrap="virtual" cols="#listFirst(stPD.displaySize)#" rows="#listLast(stPD.displaySize)#">#value#</textarea></cfoutput>
 		
 		<cfelse>
 		
 			<cfif stPD.password>
 			
-				<cfoutput><input class="password" #readonlyAttribute# type="password" name="#stPD.name#" value="#value#" size="#stPD.displaySize#" maxlength="#stPD.maxlength#"></cfoutput>
+				<cfoutput><input class="password" #readonlyAttribute# type="password" name="#stPD.name#" id="#stPD.name#" value="#value#" size="#stPD.displaySize#" maxlength="#stPD.maxlength#"></cfoutput>
 				
 				<cfif stPD.confirm>
 				
@@ -150,13 +150,13 @@ Licensed under the Academic Free License version 2.1
 					
 					</cfif>
 				
-					<cfoutput>#request.speck.buildString("P_TEXT_CONFIRM_CAPTION")# <input class="password" type="password" name="#stPD.name#_confirm" value="#confirmValue#" size="#stPD.displaySize#" maxlength="#stPD.maxlength#"></cfoutput>
+					<cfoutput>#request.speck.buildString("P_TEXT_CONFIRM_CAPTION")# <input class="password" type="password" name="#stPD.name#_confirm" id="#stPD.name#_confirm" value="#confirmValue#" size="#stPD.displaySize#" maxlength="#stPD.maxlength#"></cfoutput>
 				
 				</cfif>
 			
 			<cfelse>
 			
-				<cfoutput><input class="text" #readonlyAttribute# type="text" name="#stPD.name#" value="#replace(value,"""","&quot;","all")#" size="#stPD.displaySize#" maxlength="#stPD.maxlength#"></cfoutput>
+				<cfoutput><input class="text" #readonlyAttribute# type="text" name="#stPD.name#" id="#stPD.name#" value="#replace(value,"""","&quot;","all")#" size="#stPD.displaySize#" maxlength="#stPD.maxlength#"></cfoutput>
 			
 			</cfif>
 		

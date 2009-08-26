@@ -101,7 +101,7 @@ Licensed under the Academic Free License version 2.1
 		paramNameValueSeparator = "="; 
 		sesSuffix = ""; // only used with old rewtite urls
 		if ( len(attributes.basePath) ) {
-			basePath = attributes.basePath;
+			basePath = attributes.basePath; //NOTE: base path is accepted as provided, without cleaning paging related params out, this can cause problems and tbh, should probably be considered a bug
 			if ( find("?",basePath) )
 				qsPrefix = "&";
 		} else {

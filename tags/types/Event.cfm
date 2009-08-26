@@ -770,7 +770,7 @@ Licensed under the Academic Free License version 2.1
 		<cftry>
 			<cflock scope="application" type="exclusive" timeout="3">
 			<cfscript>
-				if ( not isDefined("application.eventCache") )
+				if ( not isDefined("application.metaCache") )
 					application.metaCache = structNew();
 				application.metaCache[cacheName] = duplicate(stCache);
 			</cfscript>

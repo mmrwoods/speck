@@ -213,9 +213,42 @@ Attributes:
 		</cfif>
 </cfquery>
 
-<cftransaction isolation="serializable">
+<cfloop from=#firstPromotion# to=#targetLevel# index="level">
 
-	<cfloop from=#firstPromotion# to=#targetLevel# index="level">
+	<!--- Run the type's promote handler --->
+	<cfif structKeyExists(stType.methods, "promote")>
+
+		<!--- call handler with promote method --->
+		<cfmodule template=#stType.methods.promote#
+			qContent=#qContent#
+			type=#attributes.type#
+			method="promote"
+			revision=#attributes.revision#
+			newLevel=#attributes.level#>
+
+	</cfif>
+	
+	<cfloop from=1 to=#arrayLen(stType.props)# index="prop">
+
+		<cfset stPD = stType.props[prop]>
+	
+		<cfif structKeyExists(stPD.methods, "promote")>
+	
+			<!--- property has a promote method, run the handler with this method --->
+			<cfmodule template=#stPD.methods.promote#
+				method="promote"
+				stPD=#stPD#
+				value=#qContent[stPD.name][1]#
+				id=#attributes.id#
+				type=#attributes.type#
+				revision=#attributes.revision#
+				newLevel=#attributes.level#>
+			
+		</cfif>
+	
+	</cfloop>
+
+	<cftransaction isolation="serializable">
 	
 		<cfquery name="qInsertPromotion" datasource=#request.speck.codb# username=#request.speck.database.username# password=#request.speck.database.password#>
 			INSERT INTO spHistory (id,revision,contentType,promoLevel,editor,changeId,ts)
@@ -244,43 +277,8 @@ Attributes:
 			
 		</cfif>
 
-	</cfloop>
+	</cftransaction>
 
-</cftransaction>
-
-<!--- run promote handlers for the target level only (this is a big change and I'm not sure how this will affect things like the auto promote feature of the picker property) --->
-
-<!--- Run the type's promote handler --->
-<cfif structKeyExists(stType.methods, "promote")>
-
-	<!--- call handler with promote method --->
-	<cfmodule template=#stType.methods.promote#
-		qContent=#qContent#
-		type=#attributes.type#
-		method="promote"
-		revision=#attributes.revision#
-		newLevel=#attributes.newLevel#>
-
-</cfif>
-	
-<cfloop from=1 to=#arrayLen(stType.props)# index="prop">
-
-	<cfset stPD = stType.props[prop]>
-	
-	<cfif structKeyExists(stPD.methods, "promote")>
-	
-		<!--- property has a promote method, run the handler with this method --->
-		<cfmodule template=#stPD.methods.promote#
-			method="promote"
-			stPD=#stPD#
-			value=#qContent[stPD.name][1]#
-			id=#attributes.id#
-			type=#attributes.type#
-			revision=#attributes.revision#
-			newLevel=#attributes.newLevel#>
-			
-	</cfif>
-	
 </cfloop>
 
 <cfif attributes.newLevel eq "live">
