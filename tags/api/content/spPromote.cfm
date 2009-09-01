@@ -224,7 +224,7 @@ Attributes:
 			type=#attributes.type#
 			method="promote"
 			revision=#attributes.revision#
-			newLevel=#attributes.level#>
+			newLevel=#level#>
 
 	</cfif>
 	
@@ -242,7 +242,7 @@ Attributes:
 				id=#attributes.id#
 				type=#attributes.type#
 				revision=#attributes.revision#
-				newLevel=#attributes.level#>
+				newLevel=#level#>
 			
 		</cfif>
 	
