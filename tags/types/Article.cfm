@@ -459,8 +459,8 @@ Licensed under the Academic Free License version 2.1
 		<cfparam name="attributes.fullArticleTooltip" default="view article">
 		<cfparam name="attributes.dynamicTooltip" default="yes" type="boolean">
 		<cfparam name="attributes.replaceKeywordInUrl" default="no">
-		<!--- use label as identifier when generating url to view full article (default to value of seoUrls portal setting if exists, otherwise default false) --->
-		<cfparam name="attributes.labelIdentifier" default="#request.speck.getConfigString("portal","settings","seoUrls",false)#" type="boolean">
+		<!--- use label as identifier when generating url to view full article (default to value of seoIdentifiers portal setting if exists, otherwise default false) --->
+		<cfparam name="attributes.labelIdentifier" default="#request.speck.getConfigString("portal","settings","seoIdentifiers",false)#" type="boolean">
 		<!--- prefix article id/label in url with sequence id (only required for google news, and defaults to google_news_urls setting if exists in article section of types.cfg) --->
 		<cfparam name="attributes.sequenceIdUrlPrefix" default="#request.speck.getConfigString("types","article","google_news_urls",false)#" type="boolean">
 		

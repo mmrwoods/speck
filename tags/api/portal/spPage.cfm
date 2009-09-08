@@ -77,6 +77,9 @@ Licensed under the Academic Free License version 2.1
 					}	
 				}
 				// finally, check if the user has been granted edit permission to the keyword
+				// note: edit permission granted to this particular keyword does not apply to 
+				// all content items that may appear on this page, only those that have the 
+				// current keyword in their keywords list (and are retrieved using spContent).				
 				if ( not bAccess and isDefined("request.speck.session.roles") ) {
 					lKeywordRoles = request.speck.page.qKeyword.roles;
 					lUserRoles = structKeyList(request.speck.session.roles);
@@ -304,8 +307,7 @@ Licensed under the Academic Free License version 2.1
 
 <!--- http content body --->
 <cfoutput>
-#docType#
-#htmlElement#
+#docType##nl##htmlElement# <!--- this madness necessary to force new line between docType and htmlElement when whitespace management is enabled in CF8 --->
 <head>
 <meta http-equiv="Content-type" content="text/html; charset=#charset#" />
 <meta http-equiv="Content-language" content="#request.speck.language#" />

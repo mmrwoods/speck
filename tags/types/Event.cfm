@@ -73,11 +73,11 @@ Licensed under the Academic Free License version 2.1
 		required="yes"
 		displaySize="70,20"
 		fckHeight="400"
-		fckFontFormats="#attributes.context.getConfigString("types","event","content_fck_font_formats","")#"
+		fckFontFormats="#attributes.context.getConfigString("types","event","description_fck_font_formats","")#"
 		maxlength="32000"
 		richEdit="yes"
-		safeText="#attributes.context.getConfigString("types","event","content_safe_text","yes")#"
-		forceParagraphs="#attributes.context.getConfigString("types","event","content_force_paragraphs","yes")#">
+		safeText="#attributes.context.getConfigString("types","event","description_safe_text","yes")#"
+		forceParagraphs="#attributes.context.getConfigString("types","event","description_force_paragraphs","yes")#">
 		
 	<cf_spProperty
 		name = "mainImage"
@@ -474,8 +474,8 @@ Licensed under the Academic Free License version 2.1
 		<cfparam name="attributes.viewEventTooltip" default="view event details">
 		<cfparam name="attributes.dynamicTooltip" default="yes" type="boolean">
 		<cfparam name="attributes.replaceKeywordInUrl" default="no">
-		<!--- use label as identifier when generating url to view event (default to value of seoUrls portal setting if exists, otherwise default false) --->
-		<cfparam name="attributes.labelIdentifier" default="#request.speck.getConfigString("portal","settings","seoUrls",false)#" type="boolean">
+		<!--- use label as identifier when generating url to view event (default to value of seoIdentifiers portal setting if exists, otherwise default false) --->
+		<cfparam name="attributes.labelIdentifier" default="#request.speck.getConfigString("portal","settings","seoIdentifiers",false)#" type="boolean">
 		
 		<cfset viewEventTooltip = attributes.viewEventTooltip>
 		
