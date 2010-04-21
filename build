@@ -1,0 +1,53 @@
+#!/usr/bin/env ruby
+
+require 'fileutils'
+
+# force working directory
+Dir.chdir(File.dirname(__FILE__))
+
+# taken from http://blog.macromates.com/2006/wrapping-text-with-regular-expressions/
+def wrap_text(txt, col=80)
+  txt.gsub(/(.{1,#{col}})( +|$\n?)|(.{1,#{col}})/,"\\1\\3\n") 
+end
+
+# based on http://snipplr.com/view/6261/ruby-git-changelog/
+def generate_change_log
+  output = ""
+  changes=`git-log -n 50 --pretty='format:%ci::%an::%s%n%b::::'`
+  changes.split('::::').each do |change|
+    date, author, subject = change.chomp.split("::")
+    date, time, zone = date.split(" ")	
+    output << "#{author}  #{date}\n\n\t* #{wrap_text(subject.strip.gsub("\n","\n* ")).gsub("\n","\n\t")}\n"
+  end
+  File.open('ChangeLog.txt', 'w') {|f| f.write(output) }
+end 
+
+def update_repository
+  # raise exception if local modifications...
+  `git status | grep modified > /dev/null`
+  raise Exception, "Failed to update repository - you have un-committed local changes" if $? == 0
+  `git fetch`
+  `git rebase origin/master`
+end
+
+def create_zip_archive
+  file_name = "speckcms_#{Time.now.strftime("%Y%m%d")}.zip"
+  untracked_files = `git clean --dry-run | sed -e 's/Would remove //g'`.split("\n")
+  untracked_files.delete('ChangeLog.txt') # warning: delete returns nil if obj not found
+  untracked_files.map!{|f| "speck/#{f}"}
+  Dir.chdir ".." do
+    FileUtils.rm_rf file_name
+    `zip -r #{file_name} speck -x "*.git*" "cache/*.wddx" "speck/build"`
+    `zip -d #{file_name} #{untracked_files.join(' ')}`
+  end
+end
+
+puts "Updating repository..."
+update_repository
+
+puts "Generating change log..."
+generate_change_log
+
+puts "Creating zip archive..."
+create_zip_archive
+
