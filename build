@@ -13,7 +13,7 @@ end
 # based on http://snipplr.com/view/6261/ruby-git-changelog/
 def generate_change_log
   output = ""
-  changes=`git-log -n 50 --pretty='format:%ci::%an::%s%n%b::::'`
+  changes=`git log -n 50 --pretty='format:%ci::%an::%s%n%b::::'`
   changes.split('::::').each do |change|
     date, author, subject = change.chomp.split("::")
     date, time, zone = date.split(" ")	
@@ -24,7 +24,7 @@ end
 
 def update_repository
   # raise exception if local modifications...
-  `git status | grep modified > /dev/null`
+  `git status | egrep "new file|modified" > /dev/null`
   raise Exception, "Failed to update repository - you have un-committed local changes" if $? == 0
   `git fetch`
   `git rebase origin/master`
@@ -38,7 +38,7 @@ def create_zip_archive
   Dir.chdir ".." do
     FileUtils.rm_rf file_name
     `zip -r #{file_name} speck -x "*.git*" "cache/*.wddx" "speck/build"`
-    `zip -d #{file_name} #{untracked_files.join(' ')}`
+    `zip -d #{file_name} #{untracked_files.join(' ')}` unless untracked_files.empty?
   end
 end
 
