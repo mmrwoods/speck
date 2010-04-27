@@ -193,7 +193,7 @@ Licensed under the Academic Free License version 2.1
 					
 				</cfif>
 			
-			<cfelseif request.speck.session.viewLevel eq "review">
+			<cfelse>
 			
 				<cfset newLevel = "live">
 			
