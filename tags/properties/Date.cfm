@@ -11,6 +11,8 @@ Licensed under the Academic Free License version 2.1
 
 
 	<cf_spPropertyHandlerMethod method="validateAttributes">
+
+		<cfparam name="stPD.richEdit" default="false" type="boolean">
 		
 		<!--- check format of yearRange, must be YYYY,YYYY --->
 		<cfparam name="stPD.yearRange" default="">
