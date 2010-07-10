@@ -229,7 +229,7 @@ Licensed under the Academic Free License version 2.1
 		<cfif not listFindNoCase(qCheckColumns.columnList,"registered")>
 
 			<cfquery name="qAlterUsers" datasource="#request.speck.codb#">
-				ALTER TABLE spUsers ADD registered #request.speck.database.tsDDLString#
+				ALTER TABLE spUsers ADD registered #request.speck.database.tsDDLString# NULL
 			</cfquery>
 			
 			<cfquery name="qUpdateUsers" datasource="#request.speck.codb#">
@@ -241,7 +241,7 @@ Licensed under the Academic Free License version 2.1
 		<cfif not listFindNoCase(qCheckColumns.columnList,"suspended")>
 
 			<cfquery name="qAlterUsers" datasource="#request.speck.codb#">
-				ALTER TABLE spUsers ADD suspended #request.speck.database.tsDDLString#
+				ALTER TABLE spUsers ADD suspended #request.speck.database.tsDDLString# NULL
 			</cfquery>
 			
 		</cfif>
@@ -249,7 +249,7 @@ Licensed under the Academic Free License version 2.1
 		<cfif not listFindNoCase(qCheckColumns.columnList,"expires")>
 
 			<cfquery name="qAlterUsers" datasource="#request.speck.codb#">
-				ALTER TABLE spUsers ADD expires #request.speck.database.tsDDLString#
+				ALTER TABLE spUsers ADD expires #request.speck.database.tsDDLString# NULL
 			</cfquery>
 			
 		</cfif>

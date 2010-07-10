@@ -944,7 +944,7 @@ I'm sure this all used to be necessary in CF5
 						cacheName #stApp.textDDLString(250,stApp)# NOT NULL,
 						content #stApp.textDDLString(64000,stApp)#, <!--- note: hard-coded max length for cache items stored in database --->
 						created #stApp.database.tsDDLString# NOT NULL, 
-						expires #stApp.database.tsDDLString#, <!--- note: NULL means cache never expires --->
+						expires #stApp.database.tsDDLString# NULL, <!--- note: NULL means cache never expires --->
 						contentLength #stApp.database.integerDDLString#,
 						PRIMARY KEY (cacheName)
 					)

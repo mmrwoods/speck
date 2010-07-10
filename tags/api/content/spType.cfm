@@ -354,10 +354,10 @@ Attributes:
 					spLabelIndex #ca.context.textDDLString(250,ca.context)# ,
 					spCreated #ca.context.database.tsDDLString# NOT NULL ,
 					spCreatedby #ca.context.textDDLString(20,ca.context)# ,
-					spUpdated #ca.context.database.tsDDLString# ,
+					spUpdated #ca.context.database.tsDDLString# NULL ,
 					spUpdatedby #ca.context.textDDLString(20,ca.context)# ,
 					spKeywords #ca.context.textDDLString(ca.context.database.maxIndexKeyLength,ca.context)# ,
-					spArchived #ca.context.database.tsDDLString#,
+					spArchived #ca.context.database.tsDDLString# NULL ,
 					spLevel #ca.context.database.integerDDLString#,
 					PRIMARY KEY (spId,spRevision)
 				)
@@ -450,7 +450,7 @@ Attributes:
 					</cfquery>
 					
 					<cfquery name="qCreateColumn" datasource=#ca.context.codb# username=#ca.context.database.username# password=#ca.context.database.password#>
-						ALTER TABLE #ca.context.dbIdentifier(a.name,ca.context)# ADD spArchived #ca.context.database.tsDDLString#
+						ALTER TABLE #ca.context.dbIdentifier(a.name,ca.context)# ADD spArchived #ca.context.database.tsDDLString# NULL
 					</cfquery>
 					
 					<!--- create an index for the new columns --->
@@ -637,7 +637,7 @@ Attributes:
 					</cfcase>
 					
 					<cfcase value="DATETIME">
-						<cfset propDDLString = ca.context.database.tsDDLString>
+						<cfset propDDLString = ca.context.database.tsDDLString & " NULL">
 					</cfcase>		
 					
 					<cfcase value="FLOAT">

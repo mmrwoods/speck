@@ -477,7 +477,7 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 			<cfif not listFindNoCase(qTableExists.columnList,"registered")>
 		
 				<cfquery name="qAlterUsers" datasource="#stApp.codb#">
-					ALTER TABLE spUsers ADD registered #tsDDLString#
+					ALTER TABLE spUsers ADD registered #tsDDLString# NULL
 				</cfquery>
 				
 				<cfquery name="qUpdateUsers" datasource="#stApp.codb#">
@@ -489,7 +489,7 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 			<cfif not listFindNoCase(qTableExists.columnList,"suspended")>
 		
 				<cfquery name="qAlterUsers" datasource="#stApp.codb#">
-					ALTER TABLE spUsers ADD suspended #tsDDLString#
+					ALTER TABLE spUsers ADD suspended #tsDDLString# NULL
 				</cfquery>
 				
 			</cfif>
@@ -497,7 +497,7 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 			<cfif not listFindNoCase(qTableExists.columnList,"expires")>
 		
 				<cfquery name="qAlterUsers" datasource="#stApp.codb#">
-					ALTER TABLE spUsers ADD expires #tsDDLString#
+					ALTER TABLE spUsers ADD expires #tsDDLString# NULL
 				</cfquery>
 				
 			</cfif>
@@ -509,7 +509,7 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 			<cfif not listFindNoCase(qUsersGroups.columnList,"expires")>
 		
 				<cfquery name="qAlterUsers" datasource="#stApp.codb#">
-					ALTER TABLE spUsersGroups ADD expires #tsDDLString#
+					ALTER TABLE spUsersGroups ADD expires #tsDDLString# NULL
 				</cfquery>
 				
 			</cfif>
@@ -531,16 +531,16 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 						spLabel #textDDLString(50)#,
 						spCreated #tsDDLString# NOT NULL,
 						spCreatedby #textDDLString(20)#,
-						spUpdated #tsDDLString#,
+						spUpdated #tsDDLString# NULL,
 						spUpdatedby #textDDLString(20)#,
 						spKeywords #textDDLString(maxIndexKeyLength)#,
-						spArchived #tsDDLString#,
+						spArchived #tsDDLString# NULL,
 						spLevel #integerDDLString#,
-						lastLogon #tsDDLString#,
-						lastActive #tsDDLString#,
-						registered #tsDDLString#,
-						suspended #tsDDLString#,
-						expires #tsDDLString#,
+						lastLogon #tsDDLString# NULL,
+						lastActive #tsDDLString# NULL,
+						registered #tsDDLString# NULL,
+						suspended #tsDDLString# NULL,
+						expires #tsDDLString# NULL,
 						username #textDDLString(50)# NOT NULL,
 						fullname #textDDLString(100)# NOT NULL,
 						password #textDDLString(100)# NOT NULL,
@@ -574,7 +574,7 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 					CREATE TABLE spUsersGroups (				
 						username #textDDLString(50)# NOT NULL,
 						groupname #textDDLString(50)# NOT NULL,
-						expires #tsDDLString#,
+						expires #tsDDLString# NULL,
 						PRIMARY KEY (username,groupname)
 					)
 				</cfquery>				
@@ -1149,7 +1149,7 @@ update: I found it, a logout script wasn't deleting the speck key from session s
 					<cfif not listFindNoCase(qTableCheck.columnList, "lastLogon")>
 			
 						<cfquery name="qAlterUsers" datasource="#request.speck.codb#">
-							ALTER TABLE spUsers ADD lastLogon #request.speck.database.tsDDLString#
+							ALTER TABLE spUsers ADD lastLogon #request.speck.database.tsDDLString# NULL
 						</cfquery>
 						
 						<cfquery name="qAddIndex" datasource="#request.speck.codb#">
@@ -1198,7 +1198,7 @@ update: I found it, a logout script wasn't deleting the speck key from session s
 		
 					<!--- note: frequently updated column, do not index! --->
 					<cfquery name="qAlterUsers" datasource="#request.speck.codb#">
-						ALTER TABLE spUsers ADD lastActive #request.speck.database.tsDDLString#
+						ALTER TABLE spUsers ADD lastActive #request.speck.database.tsDDLString# NULL
 					</cfquery>
 					
 				<cfelse>
