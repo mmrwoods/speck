@@ -37,7 +37,7 @@
 <cfcatch>
 	
 	<cflog type="information" 
-		file="#context.appName#" 
+		file="#attributes.context.appName#" 
 		application="no"
 		text="CF_SPDETECTDBTYPE: Failed to detect dbtype due to exception #cfcatch.message#.">
 	
