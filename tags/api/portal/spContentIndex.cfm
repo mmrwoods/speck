@@ -232,7 +232,7 @@ lsParseDateTime(timestamp string) throws an exception!
 	WHERE contentType = '#lCase(attributes.type)#' 
 		AND id NOT IN (
 			SELECT DISTINCT(spId) 
-			FROM #lCase(attributes.type)#
+			FROM #attributes.type#
 			WHERE spLevel = 3 AND spArchived IS NULL
 		)
 </cfquery>
