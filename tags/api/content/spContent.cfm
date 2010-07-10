@@ -149,17 +149,7 @@ bShowAddAdmin = false;
 			if ( not len(attributes.keywords) and len(content.spKeywords) ) {
 				lKeywords = content.spKeywords;
 			}
-			for ( i=1; i le listLen(lKeywords); i = i + 1 ) {
-				thisKeyword = listGetAt(lKeywords,i);
-				if ( structKeyExists(request.speck.keywords,thisKeyword) 
-						and len(trim(request.speck.keywords[thisKeyword]))
-						and request.speck.userHasPermission(trim(request.speck.keywords[thisKeyword])) ) {
-					// keyword exists, has edit roles and user has one of the roles
-					bKeywordsAccess = true;
-					break;
-				}
-			}
-			bEditAccess = bKeywordsAccess;
+			bEditAccess = request.speck.userHasKeywordsPermission(lKeywords);
 		}
 		
 		if ( attributes.enableAdminLinks ) {

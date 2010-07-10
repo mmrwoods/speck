@@ -113,24 +113,7 @@ Licensed under the Academic Free License version 2.1
 			
 		<cfelse>
 		
-			<cfscript>
-				// see if the user gets granted edit access from having one of the keyword roles
-				bKeywordsAccess = false; // set to true if user has keyword role
-				lKeywords = url.keywords;
-				for ( i=1; i le listLen(lKeywords); i = i + 1 ) {
-					thisKeyword = listGetAt(lKeywords,i);
-					if ( structKeyExists(request.speck.keywords,thisKeyword) 
-							and len(trim(request.speck.keywords[thisKeyword]))
-							and request.speck.userHasPermission(trim(request.speck.keywords[thisKeyword])) ) {
-						// keyword exists, has edit roles and user has one of the roles
-						bKeywordsAccess = true;
-						break;
-					}
-				}
-				if ( bKeywordsAccess ) {
-					bEditAccess = true;
-				}
-			</cfscript>
+			<cfset bEditAccess = request.speck.userHasKeywordsPermission(url.keywords)>
 			
 		</cfif>
 	

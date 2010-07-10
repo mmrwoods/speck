@@ -533,6 +533,22 @@ Licensed under the Academic Free License version 2.1
 	function assetHash(id) {
 		return lsParseNumber("0" & REReplace(left(id, 5), "[^0-9]", "", "ALL")) mod 100;
 	}
+	
+	function userHasKeywordsPermission(keywords) {
+		if ( request.speck.userHasPermission("spSuper,spEdit,spLive") ) {
+			return true;
+		} else {
+			for ( i=1; i le listLen(keywords); i = i + 1 ) {
+				if ( structKeyExists(request.speck.keywords,listGetAt(keywords,i)) 
+						and len(trim(request.speck.keywords[listGetAt(keywords,i)]))
+						and request.speck.userHasPermission(trim(request.speck.keywords[listGetAt(keywords,i)])) ) {
+					// keyword exists, has edit roles and user has one of the roles
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
 	stServer.buildString = buildString;
 	stServer.getNextRow = getNextRow;
@@ -556,6 +572,7 @@ Licensed under the Academic Free License version 2.1
 	stServer.forceParagraphs = forceParagraphs;
 	stServer.getDomainFromHostName = getDomainFromHostName;
 	stServer.assetHash = assetHash;
-
+	stServer.userHasKeywordsPermission = userHasKeywordsPermission;
+	
 </cfscript>
 
