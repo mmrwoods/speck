@@ -226,7 +226,7 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 	<cfset stApp.appName = attributes.name>
 	<cfset stApp.appInstallRoot = appInstallRoot>
 	<cfparam name="stApp.codb" default="#stApp.appName#">
-	<cfparam name="stApp.dbType" default="ansicompliant">
+	<cfparam name="stApp.dbType" default="autodetect">
 	<cfparam name="stApp.labelRoles" default="spSuper,spEdit=r">
 	<cfparam name="stApp.keywordsRoles" default="spSuper,spEdit=r">
 	<cfparam name="stApp.sesSuffix" default=".html"> <!--- dummy suffix appended to the end of urls (when rewrite engine enabled, this only gets appended to urls referencing a content item) --->	
@@ -285,6 +285,11 @@ timeout or CF server restart). Set attributes.refresh to true to force a refresh
 			stPortal[key] = stConfig.settings[key];
 		}
 	</cfscript>
+	
+	<cfif stApp.dbType eq "autodetect">
+		<!--- autodetect dbtype to be saved in application config file --->
+		<cf_spDetectDbType r_dbtype="stApp.dbType" context=#stApp#>
+	</cfif>	
 	
 	<!--- look for default stylesheets --->
 	<cfscript>
