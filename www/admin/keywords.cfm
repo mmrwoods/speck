@@ -9,12 +9,11 @@ Licensed under the Academic Free License version 2.1
 		
 <cfif not request.speck.userHasPermission("spSuper,spKeywords")>
 
-	<cfheader statuscode="403" statustext="Access Denied">
-	<!--- <cf_spError error="ACCESS_DENIED" throwException="no"> --->
-		
+	<cfheader statuscode="403" statustext="#request.speck.buildString("ERR_ACCESS_DENIED")#">
+	
 	<cfoutput>
-	<h1>#listFirst(request.speck.buildString("ERR_ACCESS_DENIED"),".")#</h1>
-	#listRest(request.speck.buildString("ERR_ACCESS_DENIED"),".")#
+	<h1>#request.speck.buildString("ERR_ACCESS_DENIED")#</h1>
+	<p>#request.speck.buildString("MSG_ACCESS_DENIED")#</p>
 	</cfoutput>
 	<cfabort>
 

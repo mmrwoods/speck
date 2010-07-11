@@ -117,7 +117,7 @@ Renders toolbar allowing editors and reviewers (i.e. spEdit or spReview permissi
 				refreshURL = REReplace(refreshURL,"/$","");
 			}
 			queryString = request.speck.getCleanQueryString();
-			if ( isDefined("request.speck.portal.keyword") and not findNoCase("spKey",queryString) and not findNoCase("spPath",queryString) ) {
+			if ( isDefined("request.speck.portal.keyword") and not findNoCase("/spKey/#request.speck.portal.keyword#",refreshURL) and not findNoCase("spKey",queryString) and not findNoCase("spPath",queryString) ) {
 				queryString = listAppend(queryString,"spKey=#request.speck.portal.keyword#","&");
 			}
 			if ( len(queryString) ) {
