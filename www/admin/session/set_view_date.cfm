@@ -1,7 +1,4 @@
-<cfsetting enablecfoutputonly="Yes">
-
-<cfheader name="Cache-Control" value="no-cache">
-<cfheader name="Pragma" value="no-cache">
+<cfsetting enablecfoutputonly="Yes" showdebugoutput="No">
 
 <cfparam name="url.viewDate" default=""> <!--- pass date in "YYYY:MM:DD HH:MM:SS" format, empty string means now --->
 

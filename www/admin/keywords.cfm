@@ -251,6 +251,7 @@ table.data_table tbody tr:hover { background: ##F2F5A9; }
 </head>
 
 <body>
+<span id="spLoading" style="position:absolute;z-index:87655234;top:2px;left:2px;visibility:hidden;vertical-align:middle;">Loading...</span>
 <!-- ae_prompt HTML code -->
 <div id="aep_ovrl" style="display: none;">&nbsp;</div>
 <div id="aep_ww" style="display: none;">

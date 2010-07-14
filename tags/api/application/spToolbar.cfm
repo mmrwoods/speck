@@ -94,7 +94,6 @@ Renders toolbar allowing editors and reviewers (i.e. spEdit or spReview permissi
 		</cfoutput>
 	
 		<cfscript>
-		
 			// localised strings...
 			stStrings = structNew();
 			stStrings.viewLevel = request.speck.buildString("A_TOOLBAR_VIEW_LEVEL");
@@ -109,73 +108,12 @@ Renders toolbar allowing editors and reviewers (i.e. spEdit or spReview permissi
 			stStrings.manageKeywordsTooltip = request.speck.buildString("A_TOOLBAR_MANAGE_KEYWORDS_TOOLTIP");
 			stStrings.logoutCaption = request.speck.buildString("A_TOOLBAR_LOGOUT_CAPTION");
 			stStrings.nowCaption = request.speck.buildString("A_TOOLBAR_NOW_CAPTION");
-	
-			// urls to refresh page and resetCache
-			refreshURL = request.speck.getCleanRequestedPath();
-			if ( find(".cfm/",refreshURL) ) { 
-				// remove possible trailing slash in path before appending reset cache stuff
-				refreshURL = REReplace(refreshURL,"/$","");
-			}
-			queryString = request.speck.getCleanQueryString();
-			if ( isDefined("request.speck.portal.keyword") and not findNoCase("/spKey/#request.speck.portal.keyword#",refreshURL) and not findNoCase("spKey",queryString) and not findNoCase("spPath",queryString) ) {
-				queryString = listAppend(queryString,"spKey=#request.speck.portal.keyword#","&");
-			}
-			if ( len(queryString) ) {
-				refreshURL = refreshURL & "?" & queryString;
-				resetCacheURL = refreshURL & "&resetcache=1";
-			} else {
-				resetCacheURL = refreshURL & "?resetcache=1";
-			}
-			
 		</cfscript>
 		
-		<cflock scope="session" type="readonly" timeout="3" throwontimeout="Yes">
-		<cfset urlToken = session.urlToken>
-		</cflock>
-	
 		<cfoutput>
 		<script type="text/javascript">
 			<!--
-			//<![CDATA[
-			var spXmlHttp;
-			
-			function spCreateXMLHttpRequest() {
-				if ( window.ActiveXObject ) {
-					try {
-						spXmlHttp = new ActiveXObject("Msxml2.XMLHTTP");
-					} catch (e) {
-						spXmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
-					}
-				} else if ( window.XMLHttpRequest ) {
-					spXmlHttp = new XMLHttpRequest();
-				}
-			}
-			
-			function spSendRequest(url) {
-				document.getElementById("spLoading").style.visibility = "visible";
-				document.spToolbar.style.cursor = "wait";
-				spCreateXMLHttpRequest();
-				if ( url.indexOf('?') == -1 ) {
-					url = url + '?';
-				} else {
-					url = url + '&';
-				}
-				url = url + '#urlToken#';
-				spXmlHttp.onreadystatechange = function() {
-					if ( spXmlHttp.readyState == 4 ) { 
-						if ( spXmlHttp.status == 200 || spXmlHttp.status == 403 ) {
-							window.location.replace("#refreshURL#");
-						} else {
-							alert("Load error:\n\nRequested URL: " + url + "\n\nServer response: " + spXmlHttp.status + " " + spXmlHttp.statusText);
-							document.getElementById("spLoading").style.visibility = "hidden";
-							document.spToolbar.style.cursor = "default";
-						}
-					} 
-				}
-				spXmlHttp.open("GET", url + "&ts=" + new Date().getTime(), true);
-				spXmlHttp.send(null);
-			}
-			
+			//<![CDATA[			
 			function spToggleAdminLinks() {
 				spSendRequest("/speck/admin/session/toggle_admin_links.cfm?app=#request.speck.appName#");
 			}
@@ -220,7 +158,7 @@ Renders toolbar allowing editors and reviewers (i.e. spEdit or spReview permissi
 		</cfif>
 		<cfoutput>
 		<td class="spToolbar">
-		<form class="spToolbar" name="spToolbar" id="spToolbar" method="post" action="#refreshURL#" style="margin:0;padding:0;" onsubmit="spSetViewDate();">
+		<form class="spToolbar" name="spToolbar" id="spToolbar" method="post" style="margin:0;padding:0;" onsubmit="spSetViewDate();">
 		</cfoutput>
 	
 		<cfif request.speck.enablePromotion>
@@ -380,7 +318,7 @@ Renders toolbar allowing editors and reviewers (i.e. spEdit or spReview permissi
 		</cfif>
 		<cfif request.speck.userHasPermission("spLive,spSuper")>
 			<cfoutput>
-			<a class="spToolbar spResetCache" href="#resetCacheURL#" title="#stStrings.resetCacheTooltip#">#stStrings.resetCache#</a>
+			<a class="spToolbar spResetCache" href="#request.speck.resetCacheURL#" title="#stStrings.resetCacheTooltip#">#stStrings.resetCache#</a>
 			</cfoutput>
 		</cfif>
 		<cfif attributes.manageKeywords and findNoCase("spKeywords",request.speck.keywordsSources) and request.speck.userHasPermission("spSuper,spKeywords")>

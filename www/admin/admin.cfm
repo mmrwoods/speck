@@ -1,4 +1,11 @@
 <cfsetting enablecfoutputonly="Yes">
+
+<cfset request.is_xhr = (cgi.HTTP_X_REQUESTED_WITH eq "XMLHttpRequest" or structKeyExists(url,"xhr_test"))>
+
+<cfsetting showdebugoutput="#(not request.is_xhr)#">
+
+<cfset nl = chr(13) & chr(10)>
+
 <!---
 This collective work is Copyright (C) 2001-2007 by Robin Hilliard (robin@zeta.org.au) and Mark Woods (mark@thickpaddy.com), 
 All Rights Reserved. Individual portions may be copyright by individual contributors, and are included in this collective 
@@ -135,17 +142,21 @@ Licensed under the Academic Free License version 2.1
 	
 	<cfif url.action eq "delete">
 	
-		<cfoutput>
-		<html>
-		<head>
-		<title>#heading#</title>
-		<link rel="stylesheet" href="#request.speck.adminStylesheet#" type="text/css">				
-		</head>	
-		<body bgcolor="##C0C0C0">
-		<h4 align="center">#heading#...</h2>
-		</body>
-		</html>
-		</cfoutput>
+		<cfif not request.is_xhr>
+		
+			<cfoutput>
+			<html>
+			<head>
+			<title>#heading#</title>
+			<link rel="stylesheet" href="#request.speck.adminStylesheet#" type="text/css">                          
+			</head> 
+			<body bgcolor="##C0C0C0">
+			<h4 align="center">#heading#...</h2>
+			</body>
+			</html>
+			</cfoutput>
+		
+		</cfif>
 		
 		<cf_spContentGet type="#url.type#" id="#url.id#" keywords="#url.keywords#" r_qContent="qDeletionCandidate">
 		
@@ -198,15 +209,19 @@ Licensed under the Academic Free License version 2.1
 				editor = #request.speck.session.user#
 				changeId = #changeId#>
 				
-			<cfoutput>
-			<script>
-				if (window.opener.closeWindow) {
-					window.onload = function(){window.opener.refresh();window.opener.closeWindow(window);}
-				} else {
-					window.close();	
-				}
-			</script>
-			</cfoutput>
+			<cfif not request.is_xhr>
+			
+				<cfoutput>
+				<script>
+					if (window.opener.closeWindow) {
+						window.onload = function(){window.opener.refresh();window.opener.closeWindow(window);}
+					} else {
+						window.close();	
+					}
+				</script>
+				</cfoutput>
+				
+			</cfif>
 			
 			<cfexit>
 			
@@ -261,15 +276,26 @@ Licensed under the Academic Free License version 2.1
 				
 					<cfset lDescendents = valueList(qDescendents.keyword)>
 					
-					<cfoutput>
-					<script>
-					window.onload = function() {
-						alert("Keyword '#qDeletionCandidate.keyword#' cannot be deleted because is has descendents.\n\nPlease delete the descendent keywords listed below first:\n\n#listChangeDelims(lDescendents,"\n")#");
-						window.opener.closeWindow(window);
-					}
-					</script>
-					</cfoutput>
-	
+					<cfset responseText = "Keyword '#qDeletionCandidate.keyword#' cannot be deleted because is has descendents.#nl##nl#Please delete the descendent keywords listed below first:#nl##nl# * #listChangeDelims(lDescendents,"#nl# * ")#">
+					
+					<cfif request.is_xhr>
+					
+						<cfheader statuscode="409" statustext="Conflict">
+						<cfoutput>#responseText#</cfoutput>
+						
+					<cfelse>
+					
+						<cfoutput>
+						<script>
+						window.onload = function() {
+							alert("#jsStringFormat(responseText)#");
+							window.opener.closeWindow(window);
+						}
+						</script>
+						</cfoutput>
+						
+					</cfif>
+													
 					<cfabort>
 					
 				</cfif>
@@ -307,17 +333,30 @@ Licensed under the Academic Free License version 2.1
 				
 				<cfif len(lDependents)>
 					
-					<cfoutput>
-					<script>
-					window.onload = function() {
-						if ( confirm("Deleting this content item will also delete the following dependents:\n\n#listChangeDelims(lDependents,"\n")#\n\nAre you sure you want to continue?") ) {
-							window.location.href = "#cgi.script_name#?#cgi.query_string#&delete_dependents=1";
-						} else {
-							window.opener.closeWindow(window);
+					<cfset responseText = "Deleting this content item will also delete the following dependents:#nl##nl# * #listChangeDelims(lDependents,"#nl# * ")##nl##nl#Are you sure you want to continue?">
+					<cfset location = "#cgi.script_name#?#cgi.query_string#&delete_dependents=1">
+					
+					<cfif request.is_xhr>
+					
+						<cfheader statuscode="449" statustext="Confirmation Required">
+						<cfheader name="location" value="#location#">
+						<cfoutput>#responseText#</cfoutput>
+						
+					<cfelse>
+					
+						<cfoutput>
+						<script>
+						window.onload = function() {
+							if ( confirm("#jsStringFormat(responseText)#") ) {
+								window.location.href = "#location#";
+							} else {
+								window.opener.closeWindow(window);
+							}
 						}
-					}
-					</script>
-					</cfoutput>
+						</script>
+						</cfoutput>
+					
+					</cfif>
 	
 					<cfabort>
 				
@@ -329,33 +368,41 @@ Licensed under the Academic Free License version 2.1
 			<cf_spDelete id="#id#" type="#url.type#">
 			
 		</cfif>
+		
+		<cfif not request.is_xhr>
 
-		<!--- always force reset cache using resetCache function on opener --->
-		<cfoutput>
-		<script>
-			if (window.opener.closeWindow) {
-				window.onload = function(){window.opener.resetCache("#URLEncodedFormat(url.cacheList)#");window.opener.closeWindow(window);}
-			} else {
-				window.close();	
-			}
-		</script>
-		</cfoutput>
+			<!--- always force reset cache using resetCache function on opener --->
+			<cfoutput>
+			<script>
+				if (window.opener.closeWindow) {
+					window.onload = function(){window.opener.resetCache("#URLEncodedFormat(url.cacheList)#");window.opener.closeWindow(window);}
+				} else {
+					window.close();	
+				}
+			</script>
+			</cfoutput>
+		
+		</cfif>
 		
 		<cfexit>
 		
 	<cfelseif url.action eq "demote">
-		 
-		<cfoutput>
-		<html>
-		<head>
-		<title>#heading#</title>
-		<link rel="stylesheet" href="#request.speck.adminStylesheet#" type="text/css">			
-		</head>	
-		<body bgcolor="##C0C0C0">
-		<h4 align="center">#heading#...</h2>
-		</body>
-		</html>
-		</cfoutput>
+	
+		<cfif not request.is_xhr>
+		
+			<cfoutput>
+			<html>
+			<head>
+			<title>#heading#</title>
+			<link rel="stylesheet" href="#request.speck.adminStylesheet#" type="text/css">                  
+			</head> 
+			<body bgcolor="##C0C0C0">
+			<h4 align="center">#heading#...</h2>
+			</body>
+			</html>
+			</cfoutput>
+	
+		</cfif>
 			
 		<cfif not bPromoteAccess>
 			
@@ -439,24 +486,32 @@ Licensed under the Academic Free License version 2.1
 		
 		</cfloop>
 		
-		<cfoutput><script>window.onload = function(){window.opener.refresh();window.opener.closeWindow(window);}</script></cfoutput>
+		<cfif not request.is_xhr>
+		
+			<cfoutput><script>window.onload = function(){window.opener.refresh();window.opener.closeWindow(window);}</script></cfoutput>
+		
+		</cfif>
 							
 		<cfexit>
 		
 		
 	<cfelseif url.action eq "promote">
+		
+		<cfif not request.is_xhr>
+		
+			<cfoutput>
+			<html>
+			<head>
+			<title>#heading#</title>
+			<link rel="stylesheet" href="#request.speck.adminStylesheet#" type="text/css">                  
+			</head> 
+			<body bgcolor="##C0C0C0">
+			<h4 align="center">#heading#...</h2>
+			</body>
+			</html>
+			</cfoutput>
 	
-		<cfoutput>
-		<html>
-		<head>
-		<title>#heading#</title>
-		<link rel="stylesheet" href="#request.speck.adminStylesheet#" type="text/css">
-		</head>	
-		<body bgcolor="##C0C0C0">
-		<h4 align="center">#heading#...</h2>
-		</body>
-		</html>
-		</cfoutput>
+		</cfif>
 		
 		<cfif not bPromoteAccess>
 
@@ -514,17 +569,21 @@ Licensed under the Academic Free License version 2.1
 			newLevel = #newLevel#
 			editor = #request.speck.session.user#
 			changeId = #changeId#>
-		
-		<cfif newLevel eq "live">
-				
-			<!--- also force reset cache using resetCache function on opener --->
-			<cfoutput><script>window.onload = function(){window.opener.resetCache("#URLEncodedFormat(url.cacheList)#");window.opener.closeWindow(window);}</script></cfoutput>
 			
-		<cfelse>
+		<cfif not request.is_xhr>
 		
-			<!--- reload opener --->
-			<cfoutput><script>window.onload = function(){window.opener.refresh();window.opener.closeWindow(window);}</script></cfoutput>
-		
+			<cfif newLevel eq "live">
+					
+				<!--- also force reset cache using resetCache function on opener --->
+				<cfoutput><script>window.onload = function(){window.opener.resetCache("#URLEncodedFormat(url.cacheList)#");window.opener.closeWindow(window);}</script></cfoutput>
+				
+			<cfelse>
+			
+				<!--- reload opener --->
+				<cfoutput><script>window.onload = function(){window.opener.refresh();window.opener.closeWindow(window);}</script></cfoutput>
+			
+			</cfif>
+			
 		</cfif>
 			
 		<cfexit>
@@ -766,32 +825,45 @@ Licensed under the Academic Free License version 2.1
 	
 <cfcatch type="any">
 	
-	<!--- workaround for CFMX cfcatch bug (cfcatch not always a structure) --->
-	<cfscript>
-		stError = structNew();
-		stError.type = cfcatch.type;
-		stError.message = cfcatch.message;
-		stError.detail = cfcatch.detail;
-		if ( isDefined("cfcatch.errorCode") )
-			stError.errorCode = cfcatch.errorCode;
-		if ( isDefined("cfcatch.tagContext") )
-			stError.tagContext = duplicate(cfcatch.tagContext);
-		if ( isDefined("cfcatch.extendedInfo") )
-			stError.extendedInfo = cfcatch.extendedInfo;
-	</cfscript>
+	<cfif request.is_xhr>
+	
+		<!--- TODO: STRIP HTML --->
+		<cfheader statuscode="500" statustext="#cfcatch.message#">
+		<cfoutput>#cfcatch.detail#</cfoutput>
+	
+	<cfelse>
 		
-	<cfdump var=#stError#>
-	
-	<cfif cfcatch.type eq "speckError">
+		<!--- workaround for CFMX cfcatch bug (cfcatch not always a structure) --->
+		<cfscript>
+			stError = structNew();
+			stError.type = cfcatch.type;
+			stError.message = cfcatch.message;
+			stError.detail = cfcatch.detail;
+			if ( isDefined("cfcatch.errorCode") )
+				stError.errorCode = cfcatch.errorCode;
+			if ( isDefined("cfcatch.tagContext") )
+				stError.tagContext = duplicate(cfcatch.tagContext);
+			if ( isDefined("cfcatch.extendedInfo") )
+				stError.extendedInfo = cfcatch.extendedInfo;
+		</cfscript>
 
-		<!--- a little bit more user-friendly --->
-		<cfoutput><script>alert("#jsStringFormat(replace(cfcatch.detail,". ",".#chr(13)##chr(10)#","all"))#");</script></cfoutput>
+		<cfdump var=#stError#>
+		
+		<cfif cfcatch.type eq "speckError">
 	
+			<!--- a little bit more user-friendly --->
+			<cfoutput><script>alert("#jsStringFormat(replace(cfcatch.detail,". ",".#chr(13)##chr(10)#","all"))#");</script></cfoutput>
+		
+		</cfif>
+		
 	</cfif>
 	
-	<!--- rethrow exceptions not handled by spError so 
-	they can be caught by site-wide error handler etc. --->
-	<cfrethrow>	
+	<cfsilent>
+		
+		<!--- allow site wide error handler send notifications --->
+		<cfrethrow>
+		
+	</cfsilent>	
 
 </cfcatch>
 

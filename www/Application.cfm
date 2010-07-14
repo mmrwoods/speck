@@ -37,4 +37,5 @@ Licensed under the Academic Free License version 2.1
 <cfheader name="Content-language" value="#request.speck.language#">
 
 <!--- never cache --->
+<cfheader name="Pragma" value="no-cache">
 <cfheader name="Cache-Control" value="private, no-cache, must-revalidate">
