@@ -140,23 +140,23 @@ Licensed under the Academic Free License version 2.1
 		bPromoteAccess = ( ( request.speck.session.viewLevel eq "edit" and bEditAccess ) or bLiveAccess );
 	</cfscript>
 	
-	<cfif url.action eq "delete">
+	<cfif not request.is_xhr and listFindNoCase("delete,demote,promote",url.action)>
+
+		<cfoutput>
+		<html>
+		<head>
+		<title>#heading#</title>
+		<link rel="stylesheet" href="#request.speck.adminStylesheet#" type="text/css">
+		</head>
+		<body bgcolor="##C0C0C0">
+		<h4 align="center">#heading#...</h2>
+		</body>
+		</html>
+		</cfoutput>
+
+	</cfif>
 	
-		<cfif not request.is_xhr>
-		
-			<cfoutput>
-			<html>
-			<head>
-			<title>#heading#</title>
-			<link rel="stylesheet" href="#request.speck.adminStylesheet#" type="text/css">                          
-			</head> 
-			<body bgcolor="##C0C0C0">
-			<h4 align="center">#heading#...</h2>
-			</body>
-			</html>
-			</cfoutput>
-		
-		</cfif>
+	<cfif url.action eq "delete">
 		
 		<cf_spContentGet type="#url.type#" id="#url.id#" keywords="#url.keywords#" r_qContent="qDeletionCandidate">
 		
@@ -387,22 +387,6 @@ Licensed under the Academic Free License version 2.1
 		<cfexit>
 		
 	<cfelseif url.action eq "demote">
-	
-		<cfif not request.is_xhr>
-		
-			<cfoutput>
-			<html>
-			<head>
-			<title>#heading#</title>
-			<link rel="stylesheet" href="#request.speck.adminStylesheet#" type="text/css">                  
-			</head> 
-			<body bgcolor="##C0C0C0">
-			<h4 align="center">#heading#...</h2>
-			</body>
-			</html>
-			</cfoutput>
-	
-		</cfif>
 			
 		<cfif not bPromoteAccess>
 			
@@ -496,22 +480,6 @@ Licensed under the Academic Free License version 2.1
 		
 		
 	<cfelseif url.action eq "promote">
-		
-		<cfif not request.is_xhr>
-		
-			<cfoutput>
-			<html>
-			<head>
-			<title>#heading#</title>
-			<link rel="stylesheet" href="#request.speck.adminStylesheet#" type="text/css">                  
-			</head> 
-			<body bgcolor="##C0C0C0">
-			<h4 align="center">#heading#...</h2>
-			</body>
-			</html>
-			</cfoutput>
-	
-		</cfif>
 		
 		<cfif not bPromoteAccess>
 

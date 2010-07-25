@@ -199,20 +199,6 @@ bShowAddAdmin = false;
 			}
 		}	
 		
-		// urls to refresh page and resetCache
-		refreshURL = request.speck.getCleanRequestedPath();
-		if ( find(".cfm/",refreshURL) ) { 
-			// remove possible trailing slash in path before appending reset cache stuff
-			refreshURL = REReplace(refreshURL,"/$","");
-		}
-		queryString = request.speck.getCleanQueryString();
-		if ( len(queryString) ) {
-			refreshURL = refreshURL & "?" & queryString;
-			resetCacheURL = refreshURL & "&resetcache=1&cachelist=";
-		} else {
-			resetCacheURL = refreshURL & "?resetcache=1&cachelist=";
-		}
-		
 		// get strings for use in admin links and JS functions
 		
 		// save to request scope because they are also required in spContentAdmin and they are the same for all spContent calls per request
