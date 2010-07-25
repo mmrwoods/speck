@@ -1,7 +1,4 @@
-<cfsetting enablecfoutputonly="Yes">
-
-<cfheader name="Cache-Control" value="no-cache">
-<cfheader name="Pragma" value="no-cache">
+<cfsetting enablecfoutputonly="Yes" showdebugoutput="No">
 
 <cfparam name="url.viewLevel" default=""> <!--- one of edit, review, live --->
 

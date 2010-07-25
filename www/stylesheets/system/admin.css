@@ -33,7 +33,7 @@
 	padding: 2px 18px 2px 0;
 	background: transparent url(/speck/images/icons/silk/help.png) no-repeat center right;
 }
-#loading, #saving {
+#loading, #saving, #spLoading {
 	font: 12px Verdana, Arial, Helvetica, sans-serif;
 	font-weight: bold;
 	color: white;

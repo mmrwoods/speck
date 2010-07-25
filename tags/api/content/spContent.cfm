@@ -199,20 +199,6 @@ bShowAddAdmin = false;
 			}
 		}	
 		
-		// urls to refresh page and resetCache
-		refreshURL = request.speck.getCleanRequestedPath();
-		if ( find(".cfm/",refreshURL) ) { 
-			// remove possible trailing slash in path before appending reset cache stuff
-			refreshURL = REReplace(refreshURL,"/$","");
-		}
-		queryString = request.speck.getCleanQueryString();
-		if ( len(queryString) ) {
-			refreshURL = refreshURL & "?" & queryString;
-			resetCacheURL = refreshURL & "&resetcache=1&cachelist=";
-		} else {
-			resetCacheURL = refreshURL & "?resetcache=1&cachelist=";
-		}
-		
 		// get strings for use in admin links and JS functions
 		
 		// save to request scope because they are also required in spContentAdmin and they are the same for all spContent calls per request
@@ -281,29 +267,29 @@ bShowAddAdmin = false;
 			function launch_promote(type, id, label, keywords, cacheList, caption) {
 				if ( label.length > 0 ) { label = " '" + label + "'"; }
 				if (window.confirm("#request.speck.spContent.strings.promote# " + caption + label + "?")) {
-					var win = window.open("/speck/admin/admin.cfm?action=promote&app=#request.speck.appname#&type=" + type + "&id=" + id + "&label=" + label + "&keywords=" + keywords + "&cacheList=" + cacheList + "&caption=" + caption, "promote" + id.replace(/-/g, "_"), "menubar=no,scrollbars=no,resizable=yes,width=150,height=100");
+					spSendRequest("/speck/admin/admin.cfm?action=promote&app=#request.speck.appname#&type=" + type + "&id=" + id + "&label=" + label + "&keywords=" + keywords + "&caption=" + caption, cacheList);
 				}
 			}
 			function launch_demote(type, id, label, keywords, cacheList, caption) {
 				if ( label.length > 0 ) { label = " '" + label + "'"; }
 				if (window.confirm("#request.speck.spContent.strings.demote# " + caption + label + "?")) {
-					var win = window.open("/speck/admin/admin.cfm?action=demote&app=#request.speck.appname#&type=" + type + "&id=" + id + "&label=" + label + "&keywords=" + keywords + "&cacheList=" + cacheList + "&caption=" + caption, "rollback" + id.replace(/-/g, "_"), "menubar=no,scrollbars=no,resizable=yes,width=150,height=100");
+					spSendRequest("/speck/admin/admin.cfm?action=demote&app=#request.speck.appname#&type=" + type + "&id=" + id + "&label=" + label + "&keywords=" + keywords + "&caption=" + caption, cacheList);
 				}
 			}
 			function launch_delete(type, id, label, keywords, cacheList, caption) {
 				if ( label.length > 0 ) { label = " '" + label + "'"; }
 				if (window.confirm("#request.speck.spContent.strings.delete# " + caption + label + "?")) {
-					var win = window.open("/speck/admin/admin.cfm?action=delete&app=#request.speck.appname#&type=" + type + "&id=" + id + "&label=" + label + "&keywords=" + keywords + "&cacheList=" + cacheList + "&caption=" + caption, "delete" + id.replace(/-/g, "_"), "menubar=no,scrollbars=no,resizable=yes,width=150,height=100");
+					spSendRequest("/speck/admin/admin.cfm?action=delete&app=#request.speck.appname#&type=" + type + "&id=" + id + "&label=" + label + "&keywords=" + keywords + "&caption=" + caption, cacheList);
 				}
 			}
 			function refresh() {
-				window.location.replace("#refreshURL#");
+				window.location.replace("#request.speck.refreshURL#");
 			}
 			function resetCache() {
 				if ( arguments.length > 0 )
-					window.location.replace("#resetCacheURL#" + arguments[0]);
+					window.location.replace("#request.speck.resetCacheURL#" + arguments[0]);
 				else
-					window.location.replace("#resetCacheURL#");
+					window.location.replace("#request.speck.resetCacheURL#");
 			}
 			function closeWindow(w) {
 				w.close();

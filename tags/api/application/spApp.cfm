@@ -1645,3 +1645,104 @@ I'm sure this all used to be necessary in CF5
 	<cfset request.speck.contentStylesheet = "/speck/stylesheets/content.css">
 </cfif>
 
+<cfif structKeyExists(request.speck.session, "roles") and not structIsEmpty(request.speck.session.roles)
+	and cgi.HTTP_X_REQUESTED_WITH neq "XMLHttpRequest">
+	
+	<!--- set up some variables in request scope for use by both spContent and spToolbar --->
+	<cfscript>
+		// urls to refresh page and resetCache
+		request.speck.refreshURL = request.speck.getCleanRequestedPath();
+		if ( find(".cfm/",request.speck.refreshURL) ) { 
+			// remove possible trailing slash in path before appending reset cache stuff
+			request.speck.refreshURL = REReplace(request.speck.refreshURL,"/$","");
+		}
+		queryString = request.speck.getCleanQueryString();
+		if ( isDefined("request.speck.portal.keyword") 
+				and not findNoCase("/spKey/#request.speck.portal.keyword#",request.speck.refreshURL) 
+				and not findNoCase("spKey",queryString) and not findNoCase("spPath",queryString) ) {
+			queryString = listAppend(queryString,"spKey=#request.speck.portal.keyword#","&");
+		}
+		if ( len(queryString) ) {
+			request.speck.refreshURL = request.speck.refreshURL & "?" & queryString;
+			request.speck.resetCacheURL = request.speck.refreshURL & "&resetcache=1&cachelist=";
+		} else {
+			request.speck.resetCacheURL = request.speck.refreshURL & "?resetcache=1&cachelist=";
+		}
+	</cfscript>
+	
+	<!--- add xmlhttp functions to html head--->
+	
+	<cfsavecontent variable="xmlhttp">
+		<cfoutput>
+		<script type="text/javascript">
+		<!--
+		//<![CDATA[
+		var spXmlHttp;
+		
+		function spCreateXMLHttpRequest() {
+			if ( window.ActiveXObject ) {
+				try {
+					spXmlHttp = new ActiveXObject("Msxml2.XMLHTTP");
+				} catch (e) {
+					spXmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
+				}
+			} else {
+				spXmlHttp = new XMLHttpRequest();
+			}
+		}
+		
+		function spSendRequest(url) {
+			<cfif request.speck.session.viewLevel eq "live">
+				if ( arguments.length > 1 ) {
+					var replaceUrl = encodeURI("#request.speck.resetCacheURL#") + arguments[1];
+				} else {
+					var replaceUrl = encodeURI("#request.speck.refreshURL#");
+				}
+			<cfelse>
+				var replaceUrl = encodeURI("#request.speck.refreshURL#");
+			</cfif>
+			if ( document.getElementById("spLoading") != null ) {
+				document.getElementById("spLoading").style.visibility = "visible";
+			}
+			spCreateXMLHttpRequest();
+			spXmlHttp.onreadystatechange = function() {
+				if ( spXmlHttp.readyState == 4 ) {
+					switch(spXmlHttp.status) {
+						case 200:
+							window.location.replace(replaceUrl);
+							break;
+						case 449: // retry with new location after confirmation
+							if ( confirm(spXmlHttp.responseText) ) {
+								spSendRequest(spXmlHttp.getResponseHeader("location"));
+							}
+							break;
+						case 403:
+							alert(spXmlHttp.statusText + "\n\n" + spXmlHttp.responseText);
+							break;
+						case 404: 
+							alert(spXmlHttp.statusText + "\n\n" + spXmlHttp.responseText);
+							break;
+						case 409: // conflict
+							alert(spXmlHttp.statusText + "\n\n" + spXmlHttp.responseText);
+							break;
+						default:
+							alert("Unexpected Error:\n\nRequested URL: " + url + "\n\nServer response: " + spXmlHttp.status + " " + spXmlHttp.statusText);
+					}
+					if ( document.getElementById("spLoading") != null ) {
+						document.getElementById("spLoading").style.visibility = "hidden";
+					}			
+				} 
+			}
+			spXmlHttp.open("GET", encodeURI(url), true);
+			spXmlHttp.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+			spXmlHttp.send(null);		
+		}
+		//]]>
+		//-->
+		</script>
+		</cfoutput>
+	</cfsavecontent>
+	
+	<cfhtmlhead text="#xmlhttp#">
+
+</cfif>
