@@ -67,6 +67,7 @@ Licensed under the Academic Free License version 2.1
 		--->
 		<cfset newValue = reReplaceNoCase(newValue, "^<(br)[^>]*>", "", "all")>
 		<cfset newValue = reReplaceNoCase(newValue, "^<p>(&nbsp;|&##160;)?</p>", "", "all")>
+		<cfset newValue = reReplaceNoCase(newValue, "^[[:space:]]*(&nbsp;|&##160;)+[[:space:]]*$", "")>
 		
 		<cfif len(newValue)>
 		
