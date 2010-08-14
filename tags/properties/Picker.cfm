@@ -352,7 +352,7 @@ Licensed under the Academic Free License version 2.1
 			so we'll lash out a JavaScript alert onclick instead rather than disable the button.
 			--->
 			<cfscript>
-			 if ( stPD.maxSelect eq listLen(value) ) {
+			 if ( stPD.maxSelect gte listLen(value) ) {
 			 	addOnClick = "alert('#request.speck.buildString("A_PICKER_MAX_SELECTED_ALERT")#')";
 				selectOnClick = addOnClick; // don't need a different warning for adding and selecting
 			 } else if (stPD.dependent) {
@@ -524,7 +524,7 @@ Licensed under the Academic Free License version 2.1
 	
 		<cfif listLen(newValue) gt stPD.maxSelect>
 		
-			<cfset lErrors = request.speck.buildString("P_PICKER_TOO_MANY_SELECTED","")>
+			<cfset lErrors = request.speck.buildString("P_PICKER_TOO_MANY_SELECTED",stPD.maxSelect)>
 		
 		</cfif>
 		
